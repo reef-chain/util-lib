@@ -74,7 +74,6 @@ export class ReefSigningKeyWrapper implements InjectedSigner {
   signRaw (raw: SignerPayloadRaw){
     return this.sigKey?.signRaw?this.sigKey.signRaw(raw):Promise.reject('ReefSigningKeyWrapper - not implemented');
   };
-
 }
 
 export class ReefSignerWrapper extends Signer {
