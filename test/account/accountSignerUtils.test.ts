@@ -1,13 +1,13 @@
-import { Provider, Signer } from '@reef-defi/evm-provider';
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import {
   getReefAccountSigner,
-  getAccountSigner
-} from '../../src/account/accountSignerUtils'
+  getAccountSigner,
+} from "../../src/account/accountSignerUtils";
 import { ReplaySubject, Subject, BehaviorSubject } from "rxjs";
-import type { Signer as InjectedSigningKey } from '@polkadot/api/types';
+import type { Signer as InjectedSigningKey } from "@polkadot/api/types";
 
-import { describe, it, expect } from 'vitest';
-import jest from 'jest';
+import { describe, it, expect } from "vitest";
+import jest from "jest";
 
 jest.mock("./example", () => ({
   getAccountSigner: jest.fn(),
@@ -19,7 +19,8 @@ describe("getReefAccountSigner", () => {
     const address = "0x123abc";
     const source = "extension";
     const provider = {} as Provider;
-    const accountsJsonSigningKeySubj = new BehaviorSubject<InjectedSigningKey | null>(null);
+    const accountsJsonSigningKeySubj =
+      new BehaviorSubject<InjectedSigningKey | null>(null);
 
     // Mock accountsJsonSigningKeySubj.getValue()
     const mockGetValue = jest
@@ -34,11 +35,7 @@ describe("getReefAccountSigner", () => {
     expect(mockGetValue).toHaveBeenCalledWith();
 
     expect(getAccountSigner).toHaveBeenCalledTimes(1);
-    expect(getAccountSigner).toHaveBeenCalledWith(
-      address,
-      provider,
-      source
-    );
+    expect(getAccountSigner).toHaveBeenCalledWith(address, provider, source);
   });
 
   it("should return the result of getAccountSigner", async () => {
@@ -49,7 +46,9 @@ describe("getReefAccountSigner", () => {
     const signer = {} as any;
 
     // Mock getAccountSigner()
-    jest.spyOn(getReefAccountSigner, "getAccountSigner").mockResolvedValue(signer);
+    jest
+      .spyOn(getReefAccountSigner, "getAccountSigner")
+      .mockResolvedValue(signer);
 
     // Act
     const result = await getReefAccountSigner({ address, source }, provider);

@@ -1,14 +1,18 @@
-import { Provider } from '@reef-defi/evm-provider';
-import { handleErr, TxStatusHandler, TxStatusUpdate } from '../token/transactionUtil';
-import {ReefSigner} from "../account/accountModel";
+import { Provider } from "@reef-defi/evm-provider";
+import {
+  handleErr,
+  TxStatusHandler,
+  TxStatusUpdate,
+} from "../token/transactionUtil";
+import { ReefSigner } from "../account/accountModel";
 
 export const bindEvmAddress = (
   signer: ReefSigner,
   provider: Provider,
-  onTxChange?: TxStatusHandler,
+  onTxChange?: TxStatusHandler
 ): string => {
   if (!provider || !signer || signer?.isEvmClaimed) {
-    return '';
+    return "";
   }
 
   const txIdent = Math.random().toString(10);
@@ -16,7 +20,9 @@ export const bindEvmAddress = (
     .claimDefaultAccount()
     .then(() => {
       if (!onTxChange) {
-        alert(`Success, Ethereum VM address is ${signer.evmAddress}. Use this address ONLY on Reef chain.`);
+        alert(
+          `Success, Ethereum VM address is ${signer.evmAddress}. Use this address ONLY on Reef chain.`
+        );
       } else {
         onTxChange({
           txIdent,
@@ -25,10 +31,11 @@ export const bindEvmAddress = (
         });
       }
     })
-    .catch((err) => {
-      const errHandler = onTxChange
-        || ((txStat: TxStatusUpdate) => alert(txStat.error?.message));
-      handleErr(err, txIdent, '', errHandler, signer);
+    .catch(err => {
+      const errHandler =
+        onTxChange ||
+        ((txStat: TxStatusUpdate) => alert(txStat.error?.message));
+      handleErr(err, txIdent, "", errHandler, signer);
     });
   return txIdent;
 };

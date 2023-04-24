@@ -1,44 +1,45 @@
-import {BigNumber, ContractInterface, utils} from 'ethers';
-import {BigNumber as BN} from 'bignumber.js';
+import { BigNumber, ContractInterface, utils } from "ethers";
+import { BigNumber as BN } from "bignumber.js";
 import {
-    ContractType, EMPTY_ADDRESS,
-    REEF_ADDRESS,
-    REEF_TOKEN,
-    Token,
-    TokenBalance,
-    TokenPrices,
-    TokenState,
-    TokenWithAmount,
-} from './tokenModel';
-import {Pool} from "./pool";
+  ContractType,
+  EMPTY_ADDRESS,
+  REEF_ADDRESS,
+  REEF_TOKEN,
+  Token,
+  TokenBalance,
+  TokenPrices,
+  TokenState,
+  TokenWithAmount,
+} from "./tokenModel";
+import { Pool } from "./pool";
 import {
-    StatusDataObject,
-    FeedbackStatusCode,
-    findMinStatusCode,
-    toFeedbackDM
+  StatusDataObject,
+  FeedbackStatusCode,
+  findMinStatusCode,
+  toFeedbackDM,
 } from "../reefState/model/statusDataObject";
-import {ERC20} from "./abi/ERC20";
-import {ERC721Uri} from "./abi/ERC721Uri";
-import {ERC1155Uri} from "./abi/ERC1155Uri";
+import { ERC20 } from "./abi/ERC20";
+import { ERC721Uri } from "./abi/ERC721Uri";
+import { ERC1155Uri } from "./abi/ERC1155Uri";
 
-const {parseUnits, formatEther} = utils;
+const { parseUnits, formatEther } = utils;
 
 const getReefTokenPoolReserves = (
-    reefTokenPool: Pool,
-    reefAddress: string,
+  reefTokenPool: Pool,
+  reefAddress: string
 ): { reefReserve: number; tokenReserve: number } => {
-    let reefReserve: number;
-    let tokenReserve: number;
-    if (
-        reefTokenPool.token1.address.toLowerCase() === reefAddress.toLowerCase()
-    ) {
-        reefReserve = parseInt(reefTokenPool.reserve1, 10);
-        tokenReserve = parseInt(reefTokenPool.reserve2, 10);
-    } else {
-        reefReserve = parseInt(reefTokenPool.reserve2, 10);
-        tokenReserve = parseInt(reefTokenPool.reserve1, 10);
-    }
-    return {reefReserve, tokenReserve};
+  let reefReserve: number;
+  let tokenReserve: number;
+  if (
+    reefTokenPool.token1.address.toLowerCase() === reefAddress.toLowerCase()
+  ) {
+    reefReserve = parseInt(reefTokenPool.reserve1, 10);
+    tokenReserve = parseInt(reefTokenPool.reserve2, 10);
+  } else {
+    reefReserve = parseInt(reefTokenPool.reserve2, 10);
+    tokenReserve = parseInt(reefTokenPool.reserve1, 10);
+  }
+  return { reefReserve, tokenReserve };
 };
 /*const findReefTokenPool = (
     pools: Pool[],
@@ -52,21 +53,22 @@ const getReefTokenPoolReserves = (
 );*/
 
 const findReefTokenPool_sdo = (
-    pools: StatusDataObject<Pool | null>[],
-    reefAddress: string,
-    token: Token | TokenBalance,
-): StatusDataObject<Pool | null> | undefined => pools.find(
-    (pool_sdo) => {
-        if (!pool_sdo?.data) {
-            return false;
-        }
-        const pool: Pool = pool_sdo.data!;
-        return (pool.token1?.address.toLowerCase() === reefAddress.toLowerCase()
-            && pool.token2?.address.toLowerCase() === token.address.toLowerCase())
-            || (pool.token2?.address.toLowerCase() === reefAddress.toLowerCase()
-                && pool.token1?.address.toLowerCase() === token.address.toLowerCase());
+  pools: StatusDataObject<Pool | null>[],
+  reefAddress: string,
+  token: Token | TokenBalance
+): StatusDataObject<Pool | null> | undefined =>
+  pools.find(pool_sdo => {
+    if (!pool_sdo?.data) {
+      return false;
     }
-);
+    const pool: Pool = pool_sdo.data!;
+    return (
+      (pool.token1?.address.toLowerCase() === reefAddress.toLowerCase() &&
+        pool.token2?.address.toLowerCase() === token.address.toLowerCase()) ||
+      (pool.token2?.address.toLowerCase() === reefAddress.toLowerCase() &&
+        pool.token1?.address.toLowerCase() === token.address.toLowerCase())
+    );
+  });
 
 /*export const calculateTokenPrice = (
     token: Token,
@@ -94,32 +96,40 @@ const findReefTokenPool_sdo = (
 };*/
 
 export const calculateTokenPrice_sdo = (
-    token: Token | TokenBalance,
-    pools: StatusDataObject<Pool | null>[],
-    reefPrice: StatusDataObject<number>,
+  token: Token | TokenBalance,
+  pools: StatusDataObject<Pool | null>[],
+  reefPrice: StatusDataObject<number>
 ): StatusDataObject<number> => {
-    let ratio: number;
-    if (token.address.toLowerCase() === REEF_ADDRESS.toLowerCase()) {
-        return reefPrice;
+  let ratio: number;
+  if (token.address.toLowerCase() === REEF_ADDRESS.toLowerCase()) {
+    return reefPrice;
+  }
+
+  const reefTokenPool = findReefTokenPool_sdo(pools, REEF_ADDRESS, token);
+  const minStat = findMinStatusCode([reefTokenPool, reefPrice]);
+
+  if (
+    !reefTokenPool ||
+    !reefTokenPool.data ||
+    minStat < FeedbackStatusCode.COMPLETE_DATA
+  ) {
+    if (!reefTokenPool || reefTokenPool.hasStatus(FeedbackStatusCode.ERROR)) {
+      return toFeedbackDM(
+        0,
+        FeedbackStatusCode.MISSING_INPUT_VALUES,
+        "Pool not found."
+      );
     }
+    return toFeedbackDM(0, minStat);
+  }
 
-    const reefTokenPool = findReefTokenPool_sdo(pools, REEF_ADDRESS, token);
-    const minStat = findMinStatusCode([reefTokenPool, reefPrice])
-
-    if (!reefTokenPool || !reefTokenPool.data || minStat < FeedbackStatusCode.COMPLETE_DATA) {
-        if (!reefTokenPool || reefTokenPool.hasStatus(FeedbackStatusCode.ERROR)) {
-            return toFeedbackDM(0, FeedbackStatusCode.MISSING_INPUT_VALUES, 'Pool not found.')
-        }
-        return toFeedbackDM(0, minStat);
-    }
-
-    const {reefReserve, tokenReserve} = getReefTokenPoolReserves(
-        reefTokenPool.data!,
-        REEF_ADDRESS,
-    );
-    ratio = reefReserve / tokenReserve;
-    const priceVal = ratio * reefPrice.data;
-    return toFeedbackDM(priceVal, FeedbackStatusCode.COMPLETE_DATA);
+  const { reefReserve, tokenReserve } = getReefTokenPoolReserves(
+    reefTokenPool.data!,
+    REEF_ADDRESS
+  );
+  ratio = reefReserve / tokenReserve;
+  const priceVal = ratio * reefPrice.data;
+  return toFeedbackDM(priceVal, FeedbackStatusCode.COMPLETE_DATA);
 };
 
 /*export const calculateBalanceValue = ({price,
@@ -138,27 +148,30 @@ export const calculateTokenPrice_sdo = (
     );
 };*/
 
-export const toCurrencyFormat = (value: number, options = {}): string => Intl.NumberFormat(navigator.language, {
-    style: 'currency',
-    currency: 'USD',
-    currencyDisplay: 'symbol',
+export const toCurrencyFormat = (value: number, options = {}): string =>
+  Intl.NumberFormat(navigator.language, {
+    style: "currency",
+    currency: "USD",
+    currencyDisplay: "symbol",
     ...options,
-}).format(value);
+  }).format(value);
 
-export const normalize = (amount: string | number, decimals: number): BN => new BN(Number.isNaN(amount) ? 0 : amount)
-    .div(new BN(10).pow(decimals));
+export const normalize = (amount: string | number, decimals: number): BN =>
+  new BN(Number.isNaN(amount) ? 0 : amount).div(new BN(10).pow(decimals));
 
-export const getContractTypeAbi = (contractType: ContractType): ContractInterface => {
-    switch (contractType) {
-        case ContractType.ERC20:
-            return ERC20;
-        case ContractType.ERC721:
-            return ERC721Uri;
-        case ContractType.ERC1155:
-            return ERC1155Uri;
-        default:
-            return [] as ContractInterface;
-    }
+export const getContractTypeAbi = (
+  contractType: ContractType
+): ContractInterface => {
+  switch (contractType) {
+    case ContractType.ERC20:
+      return ERC20;
+    case ContractType.ERC721:
+      return ERC721Uri;
+    case ContractType.ERC1155:
+      return ERC1155Uri;
+    default:
+      return [] as ContractInterface;
+  }
 };
 
 /*export const defaultTokenState = (index = 0): TokenState => ({
@@ -168,45 +181,44 @@ export const getContractTypeAbi = (contractType: ContractType): ContractInterfac
 });*/
 
 export const createEmptyToken = (): Token => ({
-    name: 'Select token',
-    address: EMPTY_ADDRESS,
-    balance: BigNumber.from('0'),
-    decimals: -1,
-    iconUrl: '',
-    symbol: 'Select token',
+  name: "Select token",
+  address: EMPTY_ADDRESS,
+  balance: BigNumber.from("0"),
+  decimals: -1,
+  iconUrl: "",
+  symbol: "Select token",
 });
 
-export const createEmptyTokenWithAmount = (/*isEmpty = true*/): TokenWithAmount => ({
+export const createEmptyTokenWithAmount =
+  (/*isEmpty = true*/): TokenWithAmount => ({
     ...createEmptyToken(),
     // isEmpty,
     price: 0,
-    amount: '',
-});
+    amount: "",
+  });
 
 export const toTokenAmount = (
-    token: Token,
-    state: TokenState,
+  token: Token,
+  state: TokenState
 ): TokenWithAmount => ({
-    ...token,
-    ...state,
-    // isEmpty: false,
+  ...token,
+  ...state,
+  // isEmpty: false,
 });
 
 export function isNativeTransfer(token: Token) {
-    return token.address === REEF_ADDRESS;
+  return token.address === REEF_ADDRESS;
 }
 
-export const reefTokenWithAmount = (): TokenWithAmount => toTokenAmount(
-    REEF_TOKEN,
-    {
-        amount: '',
-        index: -1,
-        price: 0,
-    },
-);
+export const reefTokenWithAmount = (): TokenWithAmount =>
+  toTokenAmount(REEF_TOKEN, {
+    amount: "",
+    index: -1,
+    price: 0,
+  });
 
-export const getTokenPrice = (address: string, prices: TokenPrices): BN => new BN(prices[address]
-    ? prices[address]
-    : 0);
+export const getTokenPrice = (address: string, prices: TokenPrices): BN =>
+  new BN(prices[address] ? prices[address] : 0);
 
-export const isNativeAddress = (toAddress: string) => toAddress.length === 48 && toAddress[0] === '5';
+export const isNativeAddress = (toAddress: string) =>
+  toAddress.length === 48 && toAddress[0] === "5";
