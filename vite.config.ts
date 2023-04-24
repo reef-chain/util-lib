@@ -33,7 +33,4 @@ module.exports = defineConfig({
       fileName: (format) => fileName[format],
     },
   },
-  test: {
-
-  }
 });

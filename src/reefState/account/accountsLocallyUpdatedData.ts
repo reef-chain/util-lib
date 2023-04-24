@@ -58,13 +58,3 @@ export const accountsLocallyUpdatedData$: Observable<StatusDataObject<StatusData
     startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
     shareReplay(1)
 );
-
-/*export const onTxUpdateResetSigners = (
-    txUpdateData: TxStatusUpdate,
-    updateActions: UpdateAction[],
-): void => {
-    if (txUpdateData?.isInBlock || txUpdateData?.error) {
-        const delay = txUpdateData.txTypeEvm ? 2000 : 0;
-        setTimeout(() => reloadSignersSubj.next({ updateActions }), delay);
-    }
-};*/

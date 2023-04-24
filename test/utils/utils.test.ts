@@ -1,7 +1,6 @@
-import { describe, it, expect } from 'viit';
-import { TokenWithAmount } from 'path/to/TokenWithAmount';
-// import { TokenWithAmount, BigNumber } from 'ethers';
+import { describe, it, expect } from 'vitest';
 import { BigNumber } from 'ethers';
+import jest from 'jest';
 
 import {
     removeUndefinedItem,
@@ -21,13 +20,13 @@ import {
 
 
 describe('removeReefSpecificStringFromAddress', () => {
-    test('removes Reef specific string from address', () => {
+    it('removes Reef specific string from address', () => {
         const address = '0x1234abcd (ONLY for Reef chain!)';
         const expectedAddress = '0x1234abcd';
         expect(removeReefSpecificStringFromAddress(address)).toBe(expectedAddress);
     });
 
-    test('does not remove anything if Reef specific string not found', () => {
+    it('does not remove anything if Reef specific string not found', () => {
         const address = '0x1234abcd';
         const expectedAddress = '0x1234abcd';
         expect(removeReefSpecificStringFromAddress(address)).toBe(expectedAddress);
@@ -35,7 +34,7 @@ describe('removeReefSpecificStringFromAddress', () => {
 });
 
 describe('addReefSpecificStringFromAddress', () => {
-    test('adds Reef specific string to address', () => {
+    it('adds Reef specific string to address', () => {
         const address = '0x1234abcd';
         const expectedAddress = '0x1234abcd (ONLY for Reef chain!)';
         expect(addReefSpecificStringFromAddress(address)).toBe(expectedAddress);
@@ -126,11 +125,11 @@ describe('shortAddress', () => {
 
 describe('ensure', () => {
     it('should throw an error if the condition is false', () => {
-      expect(() => ensure(false, 'test message')).toThrowError('test message');
+      expect(() => ensure(false, 'it message')).toThrowError('it message');
     });
 
     it('should not throw an error if the condition is true', () => {
-      expect(() => ensure(true, 'test message')).not.toThrowError();
+      expect(() => ensure(true, 'it message')).not.toThrowError();
     });
 });
 
@@ -159,7 +158,7 @@ describe('uniqueCombinations', () => {
 
 describe('errorStatus', () => {
     it('should return a ButtonStatus object with isValid set to false and the specified text', () => {
-      const text = 'test error message';
+      const text = 'it error message';
       expect(errorStatus(text)).toEqual({ isValid: false, text });
     });
 });

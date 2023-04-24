@@ -1,6 +1,8 @@
 import { getEvmAddress } from '../../src/account/addressUtil';
-import {Provider} from "@reef-defi/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 import { describe, it, expect } from 'vitest';
+import jest from 'jest';
+import { beforeEach, afterEach } from '@jest/globals';
 
 // Mock Provider class
 jest.mock('@reef-defi/evm-provider', () => {
