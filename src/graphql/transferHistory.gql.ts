@@ -1,46 +1,45 @@
-import {gql} from "@apollo/client";
+import { gql } from "@apollo/client";
 
 export const TRANSFER_HISTORY_GQL = gql`
   subscription query($accountId: String!) {
-        transfers(
-            where: {
-                OR: [
-                    {from: {id_eq: $accountId}}, 
-                    {to: {id_eq: $accountId}}
-                    ]
-            }, limit: 15, orderBy: timestamp_DESC) 
-        {
-            timestamp
-            amount
-            feeAmount
-            fromEvmAddress
-            id
-            nftId
-        success
+    transfers(
+      where: {
+        OR: [{ from: { id_eq: $accountId } }, { to: { id_eq: $accountId } }]
+      }
+      limit: 15
+      orderBy: timestamp_DESC
+    ) {
+      timestamp
+      amount
+      feeAmount
+      fromEvmAddress
+      id
+      nftId
+      success
+      type
+      toEvmAddress
+      token {
+        id
+        name
         type
-        toEvmAddress
-        token{
+        contractData
+      }
+      extrinsic {
+        id
+        block {
           id
-          name
-          type
-          contractData
+          height
+          hash
         }
-        extrinsic{
-          id
-          block{
-            id
-            height
-            hash
-          }
-        }
-        from{
-          id
-          evmAddress
-        }
-        to{
-          id
-          evmAddress
-        }
+      }
+      from {
+        id
+        evmAddress
+      }
+      to {
+        id
+        evmAddress
+      }
     }
   }
 `;

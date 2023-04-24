@@ -1,17 +1,22 @@
-import {BigNumber, utils} from 'ethers';
-import {REEF_TOKEN, Token, TokenWithAmount} from "../token/tokenModel";
-import {Pool} from "../token/pool";
-import {parseEther} from "ethers/lib/utils";
-import {isNativeTransfer} from "../token/tokenUtil";
-import {ensure, MIN_EVM_TX_BALANCE, MIN_NATIVE_TX_BALANCE, toReefBalanceDisplay} from "./utils";
+import { BigNumber, utils } from "ethers";
+import { REEF_TOKEN, Token, TokenWithAmount } from "../token/tokenModel";
+import { Pool } from "../token/pool";
+import { parseEther } from "ethers/lib/utils";
+import { isNativeTransfer } from "../token/tokenUtil";
+import {
+  ensure,
+  MIN_EVM_TX_BALANCE,
+  MIN_NATIVE_TX_BALANCE,
+  toReefBalanceDisplay,
+} from "./utils";
 
 const findDecimalPoint = (amount: string): number => {
   const { length } = amount;
-  let index = amount.indexOf(',');
+  let index = amount.indexOf(",");
   if (index !== -1) {
     return length - index - 1;
   }
-  index = amount.indexOf('.');
+  index = amount.indexOf(".");
   if (index !== -1) {
     return length - index - 1;
   }
@@ -20,24 +25,25 @@ const findDecimalPoint = (amount: string): number => {
 
 export const transformAmount = (decimals: number, amount: string): string => {
   if (!amount) {
-    return '0'.repeat(decimals);
+    return "0".repeat(decimals);
   }
   const addZeros = findDecimalPoint(amount);
-  const cleanedAmount = amount.replaceAll(',', '').replaceAll('.', '');
-  return cleanedAmount + '0'.repeat(Math.max(decimals - addZeros, 0));
+  const cleanedAmount = amount.replaceAll(",", "").replaceAll(".", "");
+  return cleanedAmount + "0".repeat(Math.max(decimals - addZeros, 0));
 };
 
-export const assertAmount = (amount?: string): string => (!amount ? '0' : amount);
+export const assertAmount = (amount?: string): string =>
+  !amount ? "0" : amount;
 
 export const convert2Normal = (
   decimals: number,
-  inputAmount: string,
+  inputAmount: string
 ): number => {
-  const amount = '0'.repeat(decimals + 4) + assertAmount(inputAmount);
+  const amount = "0".repeat(decimals + 4) + assertAmount(inputAmount);
   const pointer = amount.length - decimals;
   const decimalPointer = `${amount.slice(0, pointer)}.${amount.slice(
     pointer,
-    amount.length,
+    amount.length
   )}`;
   return parseFloat(decimalPointer);
 };
@@ -50,14 +56,15 @@ interface CalculateAmount {
 export const calculateAmount = ({
   decimals,
   amount,
-}: CalculateAmount): string => BigNumber.from(transformAmount(decimals, assertAmount(amount))).toString();
+}: CalculateAmount): string =>
+  BigNumber.from(transformAmount(decimals, assertAmount(amount))).toString();
 
 export const calculateAmountWithPercentage = (
   { amount: oldAmount, decimals }: CalculateAmount,
-  percentage: number,
+  percentage: number
 ): string => {
   if (!oldAmount) {
-    return '0';
+    return "0";
   }
   const amount = parseFloat(assertAmount(oldAmount)) * (1 - percentage / 100);
   return calculateAmount({ amount: amount.toString(), decimals });
@@ -65,7 +72,7 @@ export const calculateAmountWithPercentage = (
 
 export const minimumRecieveAmount = (
   { amount }: CalculateAmount,
-  percentage: number,
+  percentage: number
 ): number => (parseFloat(assertAmount(amount)) * (100 - percentage)) / 100;
 
 interface CalculateUsdAmount extends CalculateAmount {
@@ -76,14 +83,16 @@ export const calculateUsdAmount = ({
   price,
 }: CalculateUsdAmount): number => parseFloat(assertAmount(amount)) * price;
 
-export const calculateDeadline = (minutes: number): number => Date.now() + minutes * 60 * 1000;
+export const calculateDeadline = (minutes: number): number =>
+  Date.now() + minutes * 60 * 1000;
 
-export const calculateBalance = ({ balance, decimals }: Token): string => transformAmount(decimals, balance.toString());
+export const calculateBalance = ({ balance, decimals }: Token): string =>
+  transformAmount(decimals, balance.toString());
 
 export const calculatePoolSupply = (
   token1: TokenWithAmount,
   token2: TokenWithAmount,
-  pool?: Pool,
+  pool?: Pool
 ): number => {
   const amount1 = parseFloat(assertAmount(token1.amount));
   const amount2 = parseFloat(assertAmount(token2.amount));
@@ -97,34 +106,38 @@ export const calculatePoolSupply = (
 
   return Math.min(
     (amount1 * totalSupply) / reserve1,
-    (amount2 * totalSupply) / reserve2,
+    (amount2 * totalSupply) / reserve2
   );
 };
 
 export const removeSupply = (
   percentage: number,
   supply?: string,
-  decimals?: number,
-): number => (supply && decimals
-  ? (convert2Normal(decimals, supply) * percentage) / 100
-  : 0);
+  decimals?: number
+): number =>
+  supply && decimals
+    ? (convert2Normal(decimals, supply) * percentage) / 100
+    : 0;
 
 export const removePoolTokenShare = (
   percentage: number,
-  token?: Token,
-): string => (token
-  ? token.balance.mul(percentage).div(100).toString()
-  : '0');
-export const showRemovePoolTokenShare = (percentage: number, token?: Token): string => (token
-  ? convert2Normal(18, removePoolTokenShare(percentage, token)).toFixed(8)
-  : '0');
+  token?: Token
+): string => (token ? token.balance.mul(percentage).div(100).toString() : "0");
+export const showRemovePoolTokenShare = (
+  percentage: number,
+  token?: Token
+): string =>
+  token
+    ? convert2Normal(18, removePoolTokenShare(percentage, token)).toFixed(8)
+    : "0";
 
-export const removeUserPoolSupply = (percentage: number, pool?: Pool): number => removeSupply(percentage, pool?.userPoolBalance, 18);
+export const removeUserPoolSupply = (percentage: number, pool?: Pool): number =>
+  removeSupply(percentage, pool?.userPoolBalance, 18);
 
 export const convertAmount = (
   amount: string,
   fromPrice: number,
-  toPrice: number,
+  toPrice: number
 ): number => (parseFloat(assertAmount(amount)) / fromPrice) * toPrice;
 
 export const calculatePoolRatio = (pool?: Pool, first = true): number => {
@@ -158,24 +171,23 @@ interface ShowBalance extends ToBalance {
 }
 
 export const showBalance = (
-  {
-    decimals, balance, name, symbol,
-  }: ShowBalance,
-  decimalPoints = 4,
+  { decimals, balance, name, symbol }: ShowBalance,
+  decimalPoints = 4
 ): string => {
   if (!balance) {
-    return '';
+    return "";
   }
   const balanceStr = balance.toString();
-  if (balanceStr === '0') {
+  if (balanceStr === "0") {
     return `${balanceStr} ${symbol || name}`;
   }
   const headLength = Math.max(balanceStr.length - decimals, 0);
   const tailLength = Math.max(headLength + decimalPoints, 0);
-  const head = balanceStr.length < decimals ? '0' : balanceStr.slice(0, headLength);
+  const head =
+    balanceStr.length < decimals ? "0" : balanceStr.slice(0, headLength);
   let tail = balanceStr.slice(headLength, tailLength);
   if (tail.search(/[^0]+/gm) === -1) {
-    tail = '';
+    tail = "";
   }
   return tail.length
     ? `${head}.${tail} ${symbol || name}`
@@ -185,13 +197,16 @@ export const showBalance = (
 export const toBalance = ({ balance, decimals }: ToBalance): number => {
   const num = balance.toString();
   const diff = num.length - decimals;
-  const fullNum = diff <= 0 ? '0' : num.slice(0, diff);
+  const fullNum = diff <= 0 ? "0" : num.slice(0, diff);
   return parseFloat(`${fullNum}.${num.slice(diff, num.length)}`);
 };
 
-export const toUnits = ({ balance, decimals }: ToBalance): string => utils.formatUnits(balance.toString(), decimals);
+export const toUnits = ({ balance, decimals }: ToBalance): string =>
+  utils.formatUnits(balance.toString(), decimals);
 
-export const exponentNrSplit = (numberVal: string): { isExponent: boolean, split: string[] } => {
+export const exponentNrSplit = (
+  numberVal: string
+): { isExponent: boolean; split: string[] } => {
   const split = numberVal.split(/[eE]/);
   return {
     isExponent: split.length === 2,
@@ -205,19 +220,19 @@ export const noExponents = (valueNr: string): string => {
   if (!isExponent) {
     return valueNr;
   }
-  z = '';
-  sign = valueNr.slice(0, 1) === '-' ? '-' : '';
-  str = data[0].replace('.', '');
-  expVal = data[1].startsWith('+') ? data[1].substring(1) : data[1];
+  z = "";
+  sign = valueNr.slice(0, 1) === "-" ? "-" : "";
+  str = data[0].replace(".", "");
+  expVal = data[1].startsWith("+") ? data[1].substring(1) : data[1];
   mag = Number(expVal) + 1;
   if (mag <= 0) {
     z = `${sign}0.`;
     while (!(mag >= 0)) {
-      z += '0';
+      z += "0";
       mag += 1;
     }
 
-    num = z + str.replace(/^-/, '');
+    num = z + str.replace(/^-/, "");
     return num;
   }
   if (str.length <= mag) {
@@ -230,21 +245,21 @@ export const noExponents = (valueNr: string): string => {
     return num;
   }
   leader = utils.parseEther(data[0]);
-  multiplier = BigNumber.from('10').pow(BigNumber.from(expVal));
+  multiplier = BigNumber.from("10").pow(BigNumber.from(expVal));
   res = leader.mul(multiplier).toString();
   return utils.formatEther(res).toString();
 };
 
 export const toDecimalPlaces = (
   value: string,
-  maxDecimalPlaces: number,
+  maxDecimalPlaces: number
 ): string => {
-  const decimalDelim = value.indexOf('.');
+  const decimalDelim = value.indexOf(".");
   const exponentSplit = exponentNrSplit(value);
   if (
-    !value
-    || (decimalDelim < 1 && !exponentSplit.isExponent)
-    || value.length - decimalDelim < maxDecimalPlaces
+    !value ||
+    (decimalDelim < 1 && !exponentSplit.isExponent) ||
+    value.length - decimalDelim < maxDecimalPlaces
   ) {
     return value;
   }
@@ -255,28 +270,35 @@ export const toDecimalPlaces = (
 };
 
 export const poolRatio = ({ token1, token2 }: Pool): number => {
-  if(!(token1 as Token).decimals || !(token2 as Token).decimals){
-    console.warn('getInputAmount pool param does not have Token types');
+  if (!(token1 as Token).decimals || !(token2 as Token).decimals) {
+    console.warn("getInputAmount pool param does not have Token types");
     return 0;
   }
   return toBalance(token2 as Token) / toBalance(token1 as Token);
 };
 
-export const ensureAmount = (token: TokenWithAmount): void => ensure(
-  BigNumber.from(calculateAmount(token)).lte(token.balance),
-  `Insufficient ${token.name} balance`,
-);
+export const ensureAmount = (token: TokenWithAmount): void =>
+  ensure(
+    BigNumber.from(calculateAmount(token)).lte(token.balance),
+    `Insufficient ${token.name} balance`
+  );
 
 export const getOutputAmount = (token: TokenWithAmount, pool: Pool): number => {
-  if(!(pool.token1 as Token).decimals || !(pool.token2 as Token).decimals){
-    console.warn('getOutputAmount pool param does not have Token types');
+  if (!(pool.token1 as Token).decimals || !(pool.token2 as Token).decimals) {
+    console.warn("getOutputAmount pool param does not have Token types");
     return 0;
   }
 
   const inputAmount = parseFloat(assertAmount(token.amount)) * 997;
 
-  const inputReserve = convert2Normal((pool.token1 as Token).decimals, pool.reserve1);
-  const outputReserve = convert2Normal((pool.token2 as Token).decimals, pool.reserve2);
+  const inputReserve = convert2Normal(
+    (pool.token1 as Token).decimals,
+    pool.reserve1
+  );
+  const outputReserve = convert2Normal(
+    (pool.token2 as Token).decimals,
+    pool.reserve2
+  );
 
   const numerator = inputAmount * outputReserve;
   const denominator = inputReserve * 1000 + inputAmount;
@@ -285,14 +307,20 @@ export const getOutputAmount = (token: TokenWithAmount, pool: Pool): number => {
 };
 
 export const getInputAmount = (token: TokenWithAmount, pool: Pool): number => {
-  if(!(pool.token1 as Token).decimals || !(pool.token2 as Token).decimals){
-    console.warn('getInputAmount pool param does not have Token types');
+  if (!(pool.token1 as Token).decimals || !(pool.token2 as Token).decimals) {
+    console.warn("getInputAmount pool param does not have Token types");
     return 0;
   }
   const outputAmount = parseFloat(assertAmount(token.amount));
 
-  const inputReserve = convert2Normal((pool.token1 as Token).decimals, pool.reserve1);
-  const outputReserve = convert2Normal((pool.token2 as Token).decimals, pool.reserve2);
+  const inputReserve = convert2Normal(
+    (pool.token1 as Token).decimals,
+    pool.reserve1
+  );
+  const outputReserve = convert2Normal(
+    (pool.token2 as Token).decimals,
+    pool.reserve2
+  );
 
   const numerator = inputReserve * outputAmount * 1000;
   const denominator = (outputReserve - outputAmount) * 997;
@@ -302,7 +330,7 @@ export const getInputAmount = (token: TokenWithAmount, pool: Pool): number => {
 
 export const calculateImpactPercentage = (
   sell: TokenWithAmount,
-  buy: TokenWithAmount,
+  buy: TokenWithAmount
 ): number => {
   const buyUsd = calculateUsdAmount(buy);
   const sellUsd = calculateUsdAmount(sell);
@@ -316,7 +344,7 @@ export const calculateImpactPercentage = (
 
 export const getHashSumLastNr = (address: string): number => {
   const summ = address
-    .split('')
+    .split("")
     .reduce((sum, ch) => {
       const nr = parseInt(ch, 10);
       if (!Number.isNaN(nr)) {
@@ -330,40 +358,45 @@ export const getHashSumLastNr = (address: string): number => {
 };
 
 export const toHumanAmount = (amount: string): string => {
-  const head = amount.slice(0, amount.indexOf('.'));
-  const amo = amount.replace('.', '');
+  const head = amount.slice(0, amount.indexOf("."));
+  const amo = amount.replace(".", "");
 
   if (head.length > 9) {
-    return `${amo.slice(0, head.length - 9)}.${amo.slice(head.length - 9, head.length - 9 + 2)} B`;
+    return `${amo.slice(0, head.length - 9)}.${amo.slice(
+      head.length - 9,
+      head.length - 9 + 2
+    )} B`;
   }
   if (head.length > 6) {
-    return `${amo.slice(0, head.length - 6)}.${amo.slice(head.length - 6, head.length - 6 + 2)} M`;
+    return `${amo.slice(0, head.length - 6)}.${amo.slice(
+      head.length - 6,
+      head.length - 6 + 2
+    )} M`;
   }
   if (head.length > 3) {
-    return `${amo.slice(0, head.length - 3)}.${amo.slice(head.length - 3, head.length - 3 + 2)} k`;
+    return `${amo.slice(0, head.length - 3)}.${amo.slice(
+      head.length - 3,
+      head.length - 3 + 2
+    )} k`;
   }
   return amount.slice(0, head.length + 4);
 };
 
 export const formatAmount = (amount: number, decimals: number): string => {
-  let amo = amount.toLocaleString('fullwide', { useGrouping: false });
-  if (amo.indexOf('.') !== -1) {
-    amo = amo.substring(0, amo.indexOf('.'));
+  let amo = amount.toLocaleString("fullwide", { useGrouping: false });
+  if (amo.indexOf(".") !== -1) {
+    amo = amo.substring(0, amo.indexOf("."));
   }
-  if (amo.indexOf(',') !== -1) {
-    amo = amo.substring(0, amo.indexOf(','));
+  if (amo.indexOf(",") !== -1) {
+    amo = amo.substring(0, amo.indexOf(","));
   }
-  return toHumanAmount(
-    utils.formatUnits(
-      amo,
-      decimals,
-    ),
-  );
+  return toHumanAmount(utils.formatUnits(amo, decimals));
 };
-export const mean = (arr: number[]): number => arr.reduce((acc, v) => acc + v) / arr.length;
+export const mean = (arr: number[]): number =>
+  arr.reduce((acc, v) => acc + v) / arr.length;
 export const variance = (arr: number[]): number => {
   const avg = mean(arr);
-  const squareDiffs = arr.map((v) => {
+  const squareDiffs = arr.map(v => {
     const diff = avg - v;
     return diff * diff;
   });
@@ -371,32 +404,53 @@ export const variance = (arr: number[]): number => {
 };
 export const std = (arr: number[]): number => Math.sqrt(variance(arr));
 
-export const checkMinExistentialReefAmount = (token: TokenWithAmount, reefBalance: BigNumber): {valid: boolean, message?: string, maxTransfer: BigNumber} => {
+export const checkMinExistentialReefAmount = (
+  token: TokenWithAmount,
+  reefBalance: BigNumber
+): { valid: boolean; message?: string; maxTransfer: BigNumber } => {
   const nativeReefTransfer = isNativeTransfer(token);
   const FIXED_TX_FEE = nativeReefTransfer ? 2 : 3;
-  const minAmountBesidesTx = (nativeReefTransfer ? MIN_NATIVE_TX_BALANCE : MIN_EVM_TX_BALANCE);
-  const reservedTxMin = calculateAmount({ decimals: REEF_TOKEN.decimals, amount: (minAmountBesidesTx + FIXED_TX_FEE).toString() });
+  const minAmountBesidesTx = nativeReefTransfer
+    ? MIN_NATIVE_TX_BALANCE
+    : MIN_EVM_TX_BALANCE;
+  const reservedTxMin = calculateAmount({
+    decimals: REEF_TOKEN.decimals,
+    amount: (minAmountBesidesTx + FIXED_TX_FEE).toString(),
+  });
   const transferAmt = BigNumber.from(parseEther(assertAmount(token.amount)));
-  const requiredReefMin = nativeReefTransfer ? BigNumber.from(reservedTxMin).add(transferAmt) : BigNumber.from(reservedTxMin);
+  const requiredReefMin = nativeReefTransfer
+    ? BigNumber.from(reservedTxMin).add(transferAmt)
+    : BigNumber.from(reservedTxMin);
   const maxTransfer = reefBalance.sub(BigNumber.from(reservedTxMin));
   const valid = reefBalance.gte(requiredReefMin);
-  let message = '';
+  let message = "";
   if (!valid) {
-    message = `${toReefBalanceDisplay(BigNumber.from(reservedTxMin))} balance needed to call EVM transaction. Token transfer fee ~2.5 REEF.`;
+    message = `${toReefBalanceDisplay(
+      BigNumber.from(reservedTxMin)
+    )} balance needed to call EVM transaction. Token transfer fee ~2.5 REEF.`;
 
     if (nativeReefTransfer) {
       const maxTransfer = reefBalance.sub(BigNumber.from(reservedTxMin));
-      message = `Maximum transfer amount is ~${toReefBalanceDisplay(maxTransfer)} to allow for fees.`;
+      message = `Maximum transfer amount is ~${toReefBalanceDisplay(
+        maxTransfer
+      )} to allow for fees.`;
     }
   }
   return { valid, message, maxTransfer };
 };
 
-export const ensureTokenAmount = (token: TokenWithAmount): void => ensure(
+export const ensureTokenAmount = (token: TokenWithAmount): void =>
+  ensure(
     BigNumber.from(calculateAmount(token)).lte(token.balance),
-    `Insufficient ${token.name} balance`,
-);
+    `Insufficient ${token.name} balance`
+  );
 
-export const ensureExistentialReefAmount = (token: TokenWithAmount, reefBalance: BigNumber): void => {
-  ensure(checkMinExistentialReefAmount(token, reefBalance).valid, 'Insufficient REEF balance.');
+export const ensureExistentialReefAmount = (
+  token: TokenWithAmount,
+  reefBalance: BigNumber
+): void => {
+  ensure(
+    checkMinExistentialReefAmount(token, reefBalance).valid,
+    "Insufficient REEF balance."
+  );
 };

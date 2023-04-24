@@ -1,62 +1,85 @@
-import {catchError, map, mergeScan, Observable, of, shareReplay, startWith, switchMap, withLatestFrom} from "rxjs";
-import {ReefAccount} from "../../account/accountModel";
-import {filter} from "rxjs/operators";
-import {replaceUpdatedSigners, updateSignersEvmBindings} from "./accountStateUtil";
-import {updateSignersSubj} from "./setAccounts";
-import {availableAddresses$} from "./availableAddresses";
-import {selectedProvider$} from "../providerState";
-import {Provider} from "@reef-defi/evm-provider";
-import {StatusDataObject, FeedbackStatusCode, toFeedbackDM} from "../model/statusDataObject";
+import {
+  catchError,
+  map,
+  mergeScan,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+  withLatestFrom,
+} from "rxjs";
+import { ReefAccount } from "../../account/accountModel";
+import { filter } from "rxjs/operators";
+import {
+  replaceUpdatedSigners,
+  updateSignersEvmBindings,
+} from "./accountStateUtil";
+import { updateSignersSubj } from "./setAccounts";
+import { availableAddresses$ } from "./availableAddresses";
+import { selectedProvider$ } from "../providerState";
+import { Provider } from "@reef-defi/evm-provider";
+import {
+  StatusDataObject,
+  FeedbackStatusCode,
+  toFeedbackDM,
+} from "../model/statusDataObject";
 
-export const accountsLocallyUpdatedData$: Observable<StatusDataObject<StatusDataObject<ReefAccount>[]>> = updateSignersSubj.pipe(
-    filter((reloadCtx: any) => !!reloadCtx.updateActions.length),
-    withLatestFrom(availableAddresses$, selectedProvider$),
-    mergeScan(
-        (
-            state: {
-                all: StatusDataObject<ReefAccount>[];
-                allUpdated: StatusDataObject<ReefAccount>[];
-                lastUpdated: StatusDataObject<ReefAccount>[];
-            },
-            [updateCtx, signersInjected, provider]: [any, ReefAccount[], Provider],
-        ): any => {
-            const allSignersLatestUpdates = replaceUpdatedSigners(
-                signersInjected.map(s=>toFeedbackDM(s, FeedbackStatusCode.COMPLETE_DATA)),
-                state.allUpdated,
-            );
-            return of(updateCtx.updateActions || [])
-                .pipe(
-                    switchMap((updateActions) => updateSignersEvmBindings(
-                        updateActions,
-                        provider,
-                        allSignersLatestUpdates
-                    )
-                        .then((lastUpdated) => ({
-                            all: replaceUpdatedSigners(
-                                allSignersLatestUpdates,
-                                lastUpdated,
-                                true,
-                            ),
-                            allUpdated: replaceUpdatedSigners(
-                                state.allUpdated,
-                                lastUpdated,
-                                true,
-                            ),
-                            lastUpdated,
-                        }))),
-                );
-        },
-        {
-            all: [],
-            allUpdated: [],
-            lastUpdated: [],
-        },
-    ),
-    filter((val: any) => !!val.lastUpdated.length),
-    map((val: any): any => val.all),
-    catchError(err => of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))),
-    startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
-    shareReplay(1)
+export const accountsLocallyUpdatedData$: Observable<
+  StatusDataObject<StatusDataObject<ReefAccount>[]>
+> = updateSignersSubj.pipe(
+  filter((reloadCtx: any) => !!reloadCtx.updateActions.length),
+  withLatestFrom(availableAddresses$, selectedProvider$),
+  mergeScan(
+    (
+      state: {
+        all: StatusDataObject<ReefAccount>[];
+        allUpdated: StatusDataObject<ReefAccount>[];
+        lastUpdated: StatusDataObject<ReefAccount>[];
+      },
+      [updateCtx, signersInjected, provider]: [any, ReefAccount[], Provider]
+    ): any => {
+      const allSignersLatestUpdates = replaceUpdatedSigners(
+        signersInjected.map(s =>
+          toFeedbackDM(s, FeedbackStatusCode.COMPLETE_DATA)
+        ),
+        state.allUpdated
+      );
+      return of(updateCtx.updateActions || []).pipe(
+        switchMap(updateActions =>
+          updateSignersEvmBindings(
+            updateActions,
+            provider,
+            allSignersLatestUpdates
+          ).then(lastUpdated => ({
+            all: replaceUpdatedSigners(
+              allSignersLatestUpdates,
+              lastUpdated,
+              true
+            ),
+            allUpdated: replaceUpdatedSigners(
+              state.allUpdated,
+              lastUpdated,
+              true
+            ),
+            lastUpdated,
+          }))
+        )
+      );
+    },
+    {
+      all: [],
+      allUpdated: [],
+      lastUpdated: [],
+    }
+  ),
+  filter((val: any) => !!val.lastUpdated.length),
+  map((val: any): any => val.all),
+  catchError(err =>
+    of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
+  ),
+  startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
+  shareReplay(1)
 );
 
 /*export const onTxUpdateResetSigners = (
