@@ -23,7 +23,12 @@ const fileName = {
 
 const formats = Object.keys(fileName) as Array<keyof typeof fileName>;
 
-module.exports = defineConfig({
+export default defineConfig({
+  optimizeDeps: {
+    include: [
+      '@reef-defi/evm-provider'
+    ]
+  },
   base: "./",
   build: {
     lib: {
@@ -33,7 +38,4 @@ module.exports = defineConfig({
       fileName: (format) => fileName[format],
     },
   },
-  test: {
-
-  }
 });

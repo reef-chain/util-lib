@@ -1,22 +1,31 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
     "target": "ESNext",
-    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
-    "strict": true,
-    "sourceMap": true,
+    "skipLibCheck": true,
+
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "isolatedModules": true,
     "noEmit": true,
+    "jsx": "react-jsx",
+
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "node"]
+    "noFallthroughCasesInSwitch": true,
+
+    "esModuleInterop": true,
+
+    "composite": true,
+    "allowSyntheticDefaultImports": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "@reef-defi/evm-provider": ["node_modules/@reef-defi/evm-provider/dist"]
+    },
   },
-  "include": ["src"],
-  "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
+  "include": ["src", "vite.config.ts"]
 }
