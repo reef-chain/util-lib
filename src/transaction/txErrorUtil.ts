@@ -1,8 +1,8 @@
 export enum TX_STATUS_ERROR_CODE {
-    ERROR_MIN_BALANCE_AFTER_TX='ERROR_MIN_BALANCE_AFTER_TX',
-    ERROR_BALANCE_TOO_LOW='ERROR_BALANCE_TOO_LOW',
-    ERROR_UNDEFINED='ERROR_UNDEFINED',
-    CANCELED='CANCELED',
+    ERROR_MIN_BALANCE_AFTER_TX = 'ERROR_MIN_BALANCE_AFTER_TX',
+    ERROR_BALANCE_TOO_LOW = 'ERROR_BALANCE_TOO_LOW',
+    ERROR_UNDEFINED = 'ERROR_UNDEFINED',
+    CANCELED = 'CANCELED',
 }
 
 export function toTxErrorCodeValue(e: { message: string } | string) {
@@ -20,7 +20,7 @@ export function toTxErrorCodeValue(e: { message: string } | string) {
         message = 'Balance too low.';
         code = TX_STATUS_ERROR_CODE.ERROR_BALANCE_TOO_LOW;
     }
-    if (message && (message==='_canceled' || message==='canceled')) {
+    if (message && (message === '_canceled' || message === 'canceled')) {
         message = 'Canceled';
         code = TX_STATUS_ERROR_CODE.CANCELED;
     }
@@ -31,5 +31,5 @@ export function toTxErrorCodeValue(e: { message: string } | string) {
     if (code === TX_STATUS_ERROR_CODE.ERROR_UNDEFINED) {
         message = `Transaction error: ${message}`;
     }
-    return {message, code};
+    return { message, code };
 }

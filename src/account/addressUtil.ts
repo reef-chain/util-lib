@@ -1,5 +1,5 @@
 
-import {Provider} from "@reef-defi/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 
 export const getEvmAddress = async (address: string, provider: Provider): Promise<string> => {
     if (address.length !== 48 || address[0] !== '5') {

@@ -15,7 +15,7 @@ jest.mock("./example", () => ({
 
 describe("getReefAccountSigner", () => {
   it("should call getAccountSigner with the correct parameters", async () => {
-    // Arrange
+    // arrage
     const address = "0x123abc";
     const source = "extension";
     const provider = {} as Provider;

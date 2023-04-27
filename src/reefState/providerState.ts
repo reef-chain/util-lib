@@ -1,6 +1,6 @@
-import {ReplaySubject, shareReplay, startWith} from 'rxjs';
-import {Provider} from '@reef-defi/evm-provider';
-import {Network} from "../network/network";
+import { Provider } from '@reef-defi/evm-provider';
+import { ReplaySubject, shareReplay, startWith } from 'rxjs';
+import { Network } from "../network/network";
 
 const providerSubj: ReplaySubject<Provider> = new ReplaySubject<Provider>(1);
 const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(1);

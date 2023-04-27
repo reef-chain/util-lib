@@ -1,7 +1,7 @@
+import type {Signer as InjectedSigningKey} from '@polkadot/api/types';
 import {UpdateDataCtx} from "../model/updateStateModel";
 import {ReefSigner} from "../../account/accountModel";
 import {ReplaySubject, Subject, BehaviorSubject} from "rxjs";
-import type {Signer as InjectedSigningKey} from '@polkadot/api/types';
 import type {InjectedAccountWithMeta} from '@polkadot/extension-inject/types';
 import {AccountJson} from '@reef-defi/extension-base/background/types';
 import {InjectedAccountWithMeta as InjectedAccountWithMetaReef} from "@reef-defi/extension-inject/types";

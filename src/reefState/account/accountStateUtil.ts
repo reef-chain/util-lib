@@ -1,7 +1,7 @@
+import {Provider} from "@reef-defi/evm-provider";
+import {getReefAccountSigner} from "../../account/accountSignerUtils";
 import {UpdateAction, UpdateDataType} from '../model/updateStateModel';
 import {ReefAccount} from '../../account/accountModel';
-import {getReefAccountSigner} from "../../account/accountSignerUtils";
-import {Provider} from "@reef-defi/evm-provider";
 import {StatusDataObject, FeedbackStatusCode, isFeedbackDM, toFeedbackDM} from "../model/statusDataObject";
 
 const getUpdAddresses = (

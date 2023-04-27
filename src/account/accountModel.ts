@@ -1,5 +1,5 @@
-import {BigNumber} from "ethers";
-import {Signer} from "@reef-defi/evm-provider";
+import { BigNumber } from "ethers";
+import { Signer } from "@reef-defi/evm-provider";
 import type { Signer as InjectedSigner } from '@polkadot/api/types';
 
 export interface AddressName {

@@ -1,12 +1,12 @@
-import {gql} from "@apollo/client";
-import {catchError, combineLatest, map, Observable, of, scan, shareReplay, startWith, switchMap} from "rxjs";
-import {apolloClientInstance$, EVM_ADDRESS_UPDATE_GQL, zenToRx} from "../../graphql";
-import {accountsWithUpdatedChainDataBalances$} from "./accountsWithUpdatedChainDataBalances";
-import {ReefAccount} from "../../account/accountModel";
-import {accountsLocallyUpdatedData$} from "./accountsLocallyUpdatedData";
-import {availableAddresses$} from "./availableAddresses";
-import {StatusDataObject, FeedbackStatusCode, isFeedbackDM, toFeedbackDM} from "../model/statusDataObject";
-import {getAddressesErrorFallback} from "./errorUtil";
+import { gql } from "@apollo/client";
+import { catchError, combineLatest, map, Observable, of, scan, shareReplay, startWith, switchMap } from "rxjs";
+import { apolloClientInstance$, EVM_ADDRESS_UPDATE_GQL, zenToRx } from "../../graphql";
+import { accountsWithUpdatedChainDataBalances$ } from "./accountsWithUpdatedChainDataBalances";
+import { ReefAccount } from "../../account/accountModel";
+import { accountsLocallyUpdatedData$ } from "./accountsLocallyUpdatedData";
+import { availableAddresses$ } from "./availableAddresses";
+import { StatusDataObject, FeedbackStatusCode, isFeedbackDM, toFeedbackDM } from "../model/statusDataObject";
+import { getAddressesErrorFallback } from "./errorUtil";
 
 // eslint-disable-next-line camelcase
 interface AccountEvmAddrData {
@@ -17,7 +17,7 @@ interface AccountEvmAddrData {
 }
 
 function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
-    return result.data.accounts.map(acc=>({address: acc.id, isEvmClaimed: !!acc.evmAddress, evm_address: acc.evmAddress} as AccountEvmAddrData));
+    return result.data.accounts.map(acc => ({ address: acc.id, isEvmClaimed: !!acc.evmAddress, evm_address: acc.evmAddress } as AccountEvmAddrData));
 }
 
 const indexedAccountValues$: Observable<StatusDataObject<AccountEvmAddrData[]>> = combineLatest([
@@ -30,7 +30,7 @@ const indexedAccountValues$: Observable<StatusDataObject<AccountEvmAddrData[]>> 
             : zenToRx(
                 apollo.subscribe({
                     query: EVM_ADDRESS_UPDATE_GQL,
-                    variables: {accountIds: signers.map((s: any) => s.address)},
+                    variables: { accountIds: signers.map((s: any) => s.address) },
                     fetchPolicy: 'network-only',
                 }),
             ))),
@@ -94,7 +94,7 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
                         let isEvmClaimedPropName = 'isEvmClaimed';
                         const resetEvmClaimedStat = signer.getStatusList().filter(stat => stat.propName != isEvmClaimedPropName);
                         updVal.getStatusList().forEach(updStat => {
-                            resetEvmClaimedStat.push({propName: isEvmClaimedPropName, code: updStat.code})
+                            resetEvmClaimedStat.push({ propName: isEvmClaimedPropName, code: updStat.code })
                         });
                         if (updVal.hasStatus(FeedbackStatusCode.COMPLETE_DATA)) {
                             signer.data.isEvmClaimed = !!updVal.data.isEvmClaimed;
