@@ -1,31 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-
+    "outDir": "dist",
+    "module": "esnext",
+    "declaration": true,
+    "target": "esnext",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
+    "noImplicitAny": false,
     "esModuleInterop": true,
-
-    "composite": true,
-    "allowSyntheticDefaultImports": true,
-
+    "moduleResolution": "node",
+    "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@reef-defi/evm-provider": ["node_modules/@reef-defi/evm-provider/dist"]
-    },
-  },
-  "include": ["src", "vite.config.ts"]
+      "crypto": [
+        "node_modules/crypto-browserify"
+      ]
+    }
+  }
 }

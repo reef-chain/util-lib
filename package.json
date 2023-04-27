@@ -1,51 +1,51 @@
 {
-  "name": "@reef/ts-project",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "name": "@reef-chain/util-lib",
+  "version": "0.9.3",
+  "description": "",
+  "private": false,
+  "source": "src/index.ts",
+  "module": "lib/index.mjs.js",
+  "typings": "lib/index.d.ts",
+  "main": "lib/index.js",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.esm.js"
+      "import": "./lib/index.mjs.js",
+      "default": "./lib/index.js"
     }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "ts-types": "tsc --emitDeclarationOnly --declarationMap --outDir ./lib",
+    "circular-dep": "dpdm --no-warning --no-tree ./src/index.ts ",
+    "circular-dep-test": "dpdm --no-warning --no-tree ./test/test-app-state.ts ",
+    "build": "vite build",
+    "start": "vite",
+    "test": "esbuild ./.test/test-app-state.ts --bundle --servedir=./.test/server --outdir=./.test/server/js --platform=browser --tsconfig=tsconfig.json --sourcemap"
   },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
   "devDependencies": {
     "dpdm": "^3.10.0",
     "esbuild": "*",
     "react": "17.0.2",
     "rimraf": "^3.0.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.7.4",
+    "vite": "^4.3.3"
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
+    "@ethersproject/abi": "^5.7.0",
     "@polkadot/extension-inject": "^0.44.6",
     "@reef-defi/evm-provider": "^1.0.9",
     "@reef-defi/extension-base": "^1.0.10",
     "@reef-defi/extension-dapp": "^1.0.16",
     "@reef-defi/extension-inject": "^1.0.16",
-    "@rollup/plugin-typescript": "^11.1.0",
-    "@types/react": "^18.0.28",
-    "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.57.1",
-    "@typescript-eslint/parser": "^5.57.1",
-    "@vitejs/plugin-react": "^4.0.0",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
     "crypto-browserify": "^3.12.0",
-    "eslint": "^8.38.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.3.4",
+    "ethers": "5.7.2",
     "graphql": "^16.6.0",
-    "graphql-ws": "^5.11.2",
-    "vite": "^4.3.2"
+    "graphql-ws": "^5.11.2"
   },
   "peerDependencies": {
     "rxjs": "^7.5.6"

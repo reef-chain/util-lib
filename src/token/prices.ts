@@ -1,6 +1,6 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from 'axios';
 
-export const PRICE_REEF_TOKEN_ID = "reef";
+export const PRICE_REEF_TOKEN_ID = 'reef';
 
 interface PriceRes {
   [currenty: string]: {
@@ -13,65 +13,56 @@ interface TokenPrices {
 }
 
 const coingeckoApi = axios.create({
-  baseURL: "https://api.coingecko.com/api/v3/",
+  baseURL: 'https://api.coingecko.com/api/v3/',
 });
 
 const explorerApi = axios.create({
-  baseURL: "https://api.reefscan.com",
+  baseURL: 'https://api.reefscan.com',
 });
 
-const getCoingeckoPrice = (tokenId: string): Promise<number> =>
-  coingeckoApi
+const getCoingeckoPrice = (tokenId: string):Promise<number> => coingeckoApi
     .get<void, AxiosResponse<PriceRes>>(
-      `/simple/price?ids=${tokenId}&vs_currencies=usd`
+      `/simple/price?ids=${tokenId}&vs_currencies=usd`,
     )
-    .then(res => res.data[tokenId].usd);
+    .then((res) => res.data[tokenId].usd);
 
 export const getTokenPrice = async (tokenId: string): Promise<number> => {
   if (tokenId === PRICE_REEF_TOKEN_ID) {
-    return explorerApi
-      .get<void, AxiosResponse<any>>("/price/reef")
-      .then(res => res.data.usd)
-      .catch(() => getCoingeckoPrice(tokenId));
+    return explorerApi.get<void, AxiosResponse<any>>(
+      '/price/reef',
+    ).then((res) => res.data.usd).catch(() => getCoingeckoPrice(tokenId));
   }
   return getCoingeckoPrice(tokenId);
 };
 
 export const getTokenListPrices = async (
-  tokenIds: string[]
-): Promise<TokenPrices> =>
-  coingeckoApi
-    .get<void, AxiosResponse<PriceRes>>(
-      `/simple/price?ids=${tokenIds.join(",")}&vs_currencies=usd`
-    )
-    .then(res =>
-      tokenIds.reduce((tknPrices: TokenPrices, currTknId) => {
-        if (res.data[currTknId]) {
-          // eslint-disable-next-line no-param-reassign
-          tknPrices[currTknId] = res.data[currTknId].usd;
-        }
-        return tknPrices;
-      }, {})
-    );
+  tokenIds: string[],
+): Promise<TokenPrices> => coingeckoApi
+  .get<void, AxiosResponse<PriceRes>>(
+    `/simple/price?ids=${tokenIds.join(',')}&vs_currencies=usd`,
+  )
+  .then((res) => tokenIds.reduce((tknPrices: TokenPrices, currTknId) => {
+    if (res.data[currTknId]) {
+      // eslint-disable-next-line no-param-reassign
+      tknPrices[currTknId] = res.data[currTknId].usd;
+    }
+    return tknPrices;
+  }, {}));
 
 export const getTokenEthAddressListPrices = async (
-  tokenAddressList: string[]
-): Promise<TokenPrices> =>
-  coingeckoApi
-    .get<void, AxiosResponse<PriceRes>>(
-      `/simple/price?contract_addresses=${tokenAddressList.join(
-        ","
-      )}&vs_currencies=usd`
-    )
-    .then(res =>
-      tokenAddressList.reduce((tknPrices: TokenPrices, currTknId) => {
-        if (res.data[currTknId]) {
-          // eslint-disable-next-line no-param-reassign
-          tknPrices[currTknId] = res.data[currTknId].usd;
-        }
-        return tknPrices;
-      }, {})
-    );
+  tokenAddressList: string[],
+): Promise<TokenPrices> => coingeckoApi
+  .get<void, AxiosResponse<PriceRes>>(
+    `/simple/price?contract_addresses=${tokenAddressList.join(
+      ',',
+    )}&vs_currencies=usd`,
+  )
+  .then((res) => tokenAddressList.reduce((tknPrices: TokenPrices, currTknId) => {
+    if (res.data[currTknId]) {
+      // eslint-disable-next-line no-param-reassign
+      tknPrices[currTknId] = res.data[currTknId].usd;
+    }
+    return tknPrices;
+  }, {}));
 
-export const retrieveReefCoingeckoPrice = async (): Promise<number> =>
-  getTokenPrice(PRICE_REEF_TOKEN_ID);
+export const retrieveReefCoingeckoPrice = async (): Promise<number> => getTokenPrice(PRICE_REEF_TOKEN_ID);

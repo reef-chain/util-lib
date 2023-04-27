@@ -1,2 +1,2 @@
-export { getEvmEvents$ } from "./evmEvents.rx";
-export { bindEvmAddress } from "./bindUtil";
+export {getEvmEvents$} from "./evmEvents.rx";
+export {bindEvmAddress} from "./bindUtil";
