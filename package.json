@@ -1,59 +1,60 @@
 {
   "name": "@reef-chain/util-lib",
-  "private": true,
-  "version": "0.0.1",
-  "main": "./dist/util-lib.cjs",
-  "module": "./dist/util-lib.mjs",
+  "version": "0.9.3",
+  "description": "",
+  "private": false,
+  "source": "src/index.ts",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
+  "main": "dist/index.js",
   "exports": {
     ".": {
-      "require": "./dist/util-lib.cjs",
-      "import": "./dist/util-lib.mjs"
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
     }
   },
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
-    "test": "vitest",
-    "test:coverage": "vitest --coverage",
-    "lint:scripts": "eslint . --ext .ts",
-    "format:scripts": "prettier . --write",
-    "format": "npm run format:scripts",
-    "prepare": "husky install && husky set .husky/pre-commit 'npx lint-staged' && git add .husky/pre-commit",
-    "uninstall-husky": "npm uninstall husky --no-save && git config --unset core.hooksPath && npx rimraf .husky",
-    "circular-dep-test": "dpdm --no-warning --no-tree ./test/test-app-state.ts "
+    "ts-types": "tsc --emitDeclarationOnly --declarationMap --outDir ./dist",
+    "circular-dep": "dpdm --no-warning --no-tree ./src/index.ts ",
+    "circular-dep-test": "dpdm --no-warning --no-tree ./test/test-app-state.ts ",
+    "build": "vite build",
+    "start": "vite",
+    "test": "esbuild ./.test/test-app-state.ts --bundle --servedir=./.test/server --outdir=./.test/server/js --platform=browser --tsconfig=tsconfig.json --sourcemap"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@apollo/client": "^3.7.13",
+    "@ethersproject/abi": "^5.7.0",
+    "@polkadot/extension-inject": "^0.44.6",
+    "@reef-defi/evm-provider": "^1.0.10",
+    "@reef-defi/extension-base": "^1.0.10",
+    "@reef-defi/extension-dapp": "^1.0.16",
+    "@reef-defi/extension-inject": "^1.0.16",
+    "dpdm": "^3.10.0",
+    "esbuild": "*",
+    "react": "17.0.2",
+    "rimraf": "^3.0.2",
+    "rxjs": "^7.8.1",
+    "typescript": "^4.7.4",
+    "vite": "^4.3.3"
   },
   "dependencies": {
-    "@apollo/client": "^3.6.9",
+    "@apollo/client": "^3.7.13",
+    "@ethersproject/abi": "^5.7.0",
     "@polkadot/extension-inject": "^0.44.6",
-    "@reef-defi/evm-provider": "^1.0.9",
+    "@reef-defi/evm-provider": "^1.0.10",
     "@reef-defi/extension-base": "^1.0.10",
     "@reef-defi/extension-dapp": "^1.0.16",
     "@reef-defi/extension-inject": "^1.0.16",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
+    "crypto-browserify": "^3.12.0",
+    "ethers": "5.7.2",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.2",
-    "react": "17.0.2"
-  },
-  "devDependencies": {
-    "@types/jsdom": "^20.0.1",
-    "@types/node": "^18.11.18",
-    "@typescript-eslint/eslint-plugin": "^5.48.2",
-    "@typescript-eslint/parser": "^5.48.2",
-    "@vitest/coverage-c8": "^0.29.8",
-    "dts-bundle-generator": "^7.1.0",
-    "eslint": "^8.32.0",
-    "eslint-config-prettier": "^8.6.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.1.0",
-    "postcss": "^8.4.21",
-    "postcss-scss": "^4.0.6",
-    "prettier": "^2.8.3",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
-    "vite": "^4.0.4",
-    "vitest": "^0.29.8"
+    "vite-tsconfig-paths": "^4.2.0"
   },
   "peerDependencies": {
     "rxjs": "^7.5.6"
@@ -62,5 +63,8 @@
     "@polkadot/util-crypto": "~7.9.2",
     "@polkadot/api": "6.4.2",
     "@polkadot/keyring": "~7.9.2"
+  },
+  "browser": {
+    "crypto": false
   }
 }

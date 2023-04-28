@@ -1,5 +1,5 @@
-import { Provider } from "@reef-defi/evm-provider";
-import { WsProvider } from "@polkadot/api";
+import { Provider } from '@reef-defi/evm-provider';
+import { WsProvider } from '@polkadot/api';
 
 export async function initProvider(providerUrl: string) {
   const newProvider = new Provider({
@@ -8,7 +8,7 @@ export async function initProvider(providerUrl: string) {
   try {
     await newProvider.api.isReadyOrError;
   } catch (e) {
-    console.log("Provider isReadyOrError ERROR=", e);
+    console.log('Provider isReadyOrError ERROR=', e);
     throw e;
   }
   return newProvider;
