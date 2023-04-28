@@ -14,12 +14,8 @@
     }
   },
   "scripts": {
-    "ts-types": "tsc --emitDeclarationOnly --declarationMap --outDir ./dist",
-    "circular-dep": "dpdm --no-warning --no-tree ./src/index.ts ",
-    "circular-dep-test": "dpdm --no-warning --no-tree ./test/test-app-state.ts ",
     "build": "vite build",
-    "start": "vite",
-    "test": "esbuild ./.test/test-app-state.ts --bundle --servedir=./.test/server --outdir=./.test/server/js --platform=browser --tsconfig=tsconfig.json --sourcemap"
+    "start": "vite"
   },
   "keywords": [],
   "author": "",
