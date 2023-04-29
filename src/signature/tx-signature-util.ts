@@ -103,6 +103,7 @@ export async function decodePayloadMethod(
     registry.register(types);
     // @ts-ignore
     registry.setChainProperties(
+      // @ts-ignore
       registry.createType("ChainProperties", {
         ss58Format: 42,
         tokenDecimals: 18,

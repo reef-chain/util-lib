@@ -59,15 +59,15 @@ export const initReefState = ({
       ),
       scan(
         (
-          state: { provider: Provider | undefined },
-          newVal: { provider: Provider; network }
+          state: { provider: Provider; network: Network },
+          newVal: { provider: Provider; network: Network }
         ) => {
           if (state.provider) {
             disconnectProvider(state.provider);
           }
           return { provider: newVal.provider, network: newVal.network };
         },
-        { provider: undefined }
+        { provider: {} as Provider, network: {} as Network }
       ),
       tap((p_n: { provider: Provider; network: Network }) => {
         setSelectedProvider(p_n.provider);

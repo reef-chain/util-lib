@@ -70,7 +70,7 @@ export function getEvmTransactionStatus$(
               }
             );
           })
-          .catch(err => {
+          .catch((err: any) => {
             console.log("transfer tx.wait ERROR=", err.message);
 
             observer.error(new TxStatusError(err.message, txIdent));
