@@ -16,7 +16,7 @@
     "noEmit": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "node"],
+    "types": ["vite/client", "node", "react"],
     "skipLibCheck": true,
     "baseUrl": "./",
     "noUnusedLocals": false,
