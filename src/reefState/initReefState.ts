@@ -38,12 +38,12 @@ export const initReefState = (
                 provider,
                 network,
             }))),
-        scan((state: { provider: Provider | undefined }, newVal: { provider: Provider, network }) => {
-            if (state.provider) {
-                disconnectProvider(state.provider);
-            }
-            return {provider: newVal.provider, network: newVal.network};
-        }, {provider: undefined}),
+        // scan((state: { provider: Provider | undefined }, newVal: { provider: Provider, network }) => {
+        //     if (state.provider) {
+        //         disconnectProvider(state.provider);
+        //     }
+        //     return {provider: newVal.provider, network: newVal.network};
+        // }, {provider: undefined}),
         tap((p_n: { provider: Provider, network: Network }) => {
             setSelectedProvider(p_n.provider);
         }),

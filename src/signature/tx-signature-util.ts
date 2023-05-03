@@ -86,16 +86,18 @@ export async function decodePayloadMethod(provider: Provider, methodDataEncoded:
         const metadata = new Metadata(registry, base64Decode(metaCalls || ''));
         registry.setMetadata(metadata, undefined, undefined);
 
-        method = registry.createType("Call", methodDataEncoded);
-        args = (method.toHuman() as { args: AnyJson }).args;
+        // method = registry.createType("Call", methodDataEncoded);
+        // args = (method.toHuman() as { args: AnyJson }).args;
     } catch (error) {
         console.log('decodeMethod: ERROR decoding method');
         return null;
     }
 
-    const info = method?.meta ? method.meta.docs.map((d) => d.toString().trim()).join(' ') : '';
-    const methodParams = method?.meta ? `(${method.meta.args.map(({ name }) => name).join(', ')})` : '';
-    const methodName = method ? `${method.section}.${method.method}${methodParams}` : '';
+    // const info = method?.meta ? method.meta.docs.map((d) => d.toString().trim()).join(' ') : '';
+    const info = '';
+    // const methodParams = method?.meta ? `(${method.meta.args.map(({ name }) => name).join(', ')})` : '';
+    const methodName = '';
+    // const methodName = method ? `${method.section}.${method.method}${methodParams}` : '';
 
     const decodedResponse = {
         methodName, args, info, vm: {}

@@ -1,5 +1,6 @@
 import { Provider } from '@reef-defi/evm-provider';
 import { WsProvider } from '@polkadot/api';
+import { Codec } from '@polkadot/types/types';
 
 export async function initProvider(providerUrl: string) {
   const newProvider = new Provider({
