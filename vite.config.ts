@@ -1,6 +1,6 @@
-/// <reference types="vitest" />
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import packageJson from "./package.json";
 
 const getPackageName = () => {
@@ -23,9 +23,18 @@ const fileName = {
 
 const formats = Object.keys(fileName) as Array<keyof typeof fileName>;
 
-module.exports = defineConfig({
-  base: "./",
+export default defineConfig({
+  resolve: {
+    alias: {
+      '@': '/src',
+      "@reef-defi/evm-provider": './node_modules/@reef-defi/evm-provider/index.js',
+    },
+  },
+  plugins: [tsconfigPaths()],
   build: {
+    outDir: 'dist',
+    sourcemap: true,
+    target: 'es2020',
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: getPackageNameCamelCase(),
@@ -33,7 +42,4 @@ module.exports = defineConfig({
       fileName: (format) => fileName[format],
     },
   },
-  test: {
-
-  }
 });

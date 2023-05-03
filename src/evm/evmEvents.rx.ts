@@ -1,13 +1,15 @@
-import { ApolloClient, gql, SubscriptionOptions } from "@apollo/client";
-import { utils } from "ethers";
-import { from, map, Observable, of, scan, shareReplay, switchMap } from "rxjs";
-import { apolloClientInstance$, zenToRx } from "../graphql/apollo";
+import { ApolloClient, gql, SubscriptionOptions } from '@apollo/client';
+import { utils } from 'ethers';
+import {
+  from, map, Observable, of, scan, shareReplay, switchMap,
+} from 'rxjs';
+import { apolloClientInstance$, zenToRx } from '../graphql/apollo';
 
 const getGqlContractEventsQuery = (
   contractAddress: string,
   methodSignature?: string | null,
   fromBlockId?: number,
-  toBlockId?: number
+  toBlockId?: number,
 ): SubscriptionOptions => {
   const EVM_EVENT_GQL = gql`
     query evmEvent(
@@ -50,22 +52,16 @@ const getGqlContractEventsQuery = (
       topic0: methodSignature
         ? { _eq: utils.keccak256(utils.toUtf8Bytes(methodSignature)) }
         : {},
-      blockId: toBlockId
-        ? { _gte: fromBlockId, _lte: toBlockId }
-        : { _eq: fromBlockId },
+      blockId: toBlockId ? { _gte: fromBlockId, _lte: toBlockId } : { _eq: fromBlockId },
     },
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   };
 };
 
 const getGqlLastFinalizedBlock = (): SubscriptionOptions => {
   const FINALISED_BLOCK_GQL = gql`
     subscription finalisedBlock {
-      block(
-        order_by: { id: desc }
-        limit: 1
-        where: { finalized: { _eq: true } }
-      ) {
+      block(order_by: {id: desc}, limit: 1, where: {finalized: {_eq: true}}) {
         id
       }
     }
@@ -73,101 +69,56 @@ const getGqlLastFinalizedBlock = (): SubscriptionOptions => {
   return {
     query: FINALISED_BLOCK_GQL,
     variables: {},
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   };
 };
 
-export function getEvmEvents$(
-  contractAddress: string,
-  methodSignature?: string,
-  fromBlockId?: number,
-  toBlockId?: number
-): Observable<{
-  fromBlockId: number;
-  toBlockId: number;
-  evmEvents: any[];
-} | null> {
+export function getEvmEvents$(contractAddress: string, methodSignature?: string, fromBlockId?: number, toBlockId?: number): Observable<{ fromBlockId:number, toBlockId:number, evmEvents:any[] }|null> {
   if (!contractAddress) {
-    console.warn("getEvmEvents$ expects contractAddress");
+    console.warn('getEvmEvents$ expects contractAddress');
     return of(null);
   }
   if (!fromBlockId) {
     return apolloClientInstance$.pipe(
-      switchMap(
-        (apolloClient: ApolloClient<any>) =>
-          zenToRx(apolloClient.subscribe(getGqlLastFinalizedBlock())).pipe(
-            scan(
-              (
-                state: {
-                  prevBlockId: number;
-                  fromBlockId: number;
-                  toBlockId: number;
-                },
-                res: any
-              ) => {
-                const block = res?.data?.block?.length
-                  ? res.data.block[0]
-                  : null;
-                if (!block) {
-                  console.warn("getEvmEvents$ NO FINALISED BLOCK RESULT", res);
-                  return state;
-                }
-                const newBlockId = block.id;
-                const diff = state.prevBlockId
-                  ? newBlockId - state.prevBlockId
-                  : 1;
-                let fromBlockId = newBlockId;
-                let toBlockId;
-                if (diff > 1 && state.prevBlockId) {
-                  toBlockId = newBlockId;
-                  fromBlockId = state.prevBlockId + 1;
-                }
-                return { prevBlockId: newBlockId, fromBlockId, toBlockId };
-              },
-              { prevBlockId: 0, fromBlockId: 0, toBlockId: 0 }
-            ),
-            switchMap(
-              (res: { fromBlockId: number; toBlockId: number | undefined }) =>
-                from(
-                  apolloClient?.query(
-                    getGqlContractEventsQuery(
-                      contractAddress,
-                      methodSignature,
-                      res.fromBlockId,
-                      res.toBlockId
-                    )
-                  )
-                ).pipe(
-                  map(events => ({
-                    fromBlockId: res.fromBlockId,
-                    toBlockId: res.toBlockId || res.fromBlockId,
-                    evmEvents: events.data.evm_event,
-                  }))
-                )
-            )
-          ) as Observable<any>
-      ),
-      shareReplay(1)
+      switchMap((apolloClient: ApolloClient<any>) => zenToRx(apolloClient.subscribe(getGqlLastFinalizedBlock())).pipe(
+        scan((state: { prevBlockId: number, fromBlockId: number, toBlockId: number }, res: any) => {
+          const block = res?.data?.block?.length ? res.data.block[0] : null;
+          if (!block) {
+            console.warn('getEvmEvents$ NO FINALISED BLOCK RESULT', res);
+            return state;
+          }
+          const newBlockId = block.id;
+          const diff = state.prevBlockId ? newBlockId - state.prevBlockId : 1;
+          let fromBlockId = newBlockId;
+          let toBlockId;
+          if (diff > 1 && state.prevBlockId) {
+            toBlockId = newBlockId;
+            fromBlockId = state.prevBlockId + 1;
+          }
+          return { prevBlockId: newBlockId, fromBlockId, toBlockId };
+        }, { prevBlockId: 0, fromBlockId: 0, toBlockId: 0 }),
+        switchMap((res: { fromBlockId: number, toBlockId: number | undefined }) => from(apolloClient?.query(
+          getGqlContractEventsQuery(contractAddress, methodSignature, res.fromBlockId, res.toBlockId),
+        )).pipe(
+          map((events) => ({
+            fromBlockId: res.fromBlockId,
+            toBlockId: res.toBlockId || res.fromBlockId,
+            evmEvents: events.data.evm_event,
+          })),
+        )),
+      ) as Observable<any>),
+      shareReplay(1),
     );
   }
   return apolloClientInstance$.pipe(
-    switchMap((apolloClient: ApolloClient<any>) =>
-      from(
-        apolloClient?.query(
-          getGqlContractEventsQuery(
-            contractAddress,
-            methodSignature,
-            fromBlockId,
-            toBlockId
-          )
-        )
-      )
-    ),
-    map(events => ({
+    switchMap((apolloClient: ApolloClient<any>) => from(apolloClient?.query(
+      getGqlContractEventsQuery(contractAddress, methodSignature, fromBlockId, toBlockId),
+    ))),
+    map((events) => ({
       fromBlockId,
       toBlockId: toBlockId || fromBlockId,
       evmEvents: events.data.evm_event,
     })),
-    shareReplay(1)
+    shareReplay(1),
   );
 }
