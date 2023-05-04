@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build-dts": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "lint:scripts": "eslint . --ext .ts",
@@ -20,15 +21,16 @@
     "format": "npm run format:scripts",
     "prepare": "husky install && husky set .husky/pre-commit 'npx lint-staged' && git add .husky/pre-commit",
     "uninstall-husky": "npm uninstall husky --no-save && git config --unset core.hooksPath && npx rimraf .husky",
-    "circular-dep-test": "dpdm --no-warning --no-tree ./test/test-app-state.ts "
+    "circular-dep-test": "dpdm --no-warning --no-tree ./src/index.ts "
   },
   "dependencies": {
     "@apollo/client": "^3.6.9",
     "@polkadot/extension-inject": "^0.44.6",
-    "@reef-defi/evm-provider": "^1.0.9",
+    "@reef-defi/evm-provider": "^1.0.10",
     "@reef-defi/extension-base": "^1.0.10",
     "@reef-defi/extension-dapp": "^1.0.16",
     "@reef-defi/extension-inject": "^1.0.16",
+    "@types/react": "^18.2.0",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
     "graphql": "^16.6.0",
@@ -41,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/parser": "^5.48.2",
     "@vitest/coverage-c8": "^0.29.8",
+    "dpdm": "^3.13.0",
     "dts-bundle-generator": "^7.1.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
@@ -51,7 +54,7 @@
     "postcss-scss": "^4.0.6",
     "prettier": "^2.8.3",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.4",
+    "typescript": "^4.2.4",
     "vite": "^4.0.4",
     "vitest": "^0.29.8"
   },

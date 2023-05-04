@@ -1,4 +1,5 @@
-export { initReefState, StateOptions } from "./initReefState";
+export { initReefState } from "./initReefState";
+export type { StateOptions } from "./initReefState";
 export {
   toInjectedAccountsWithMeta,
   accounts_status$,
@@ -35,8 +36,8 @@ export {
   FeedbackStatusCode,
   StatusDataObject,
   isFeedbackDM,
-  FeedbackStatus,
   findMinStatusCode,
   skipBeforeStatus$,
 } from "./model/statusDataObject";
+export type { FeedbackStatus } from "./model/statusDataObject";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
