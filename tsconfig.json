@@ -1,27 +1,26 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "declaration": true,
     "outDir": "dist",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
+    "module": "esnext",
+    "declaration": true,
+    "target": "esnext",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "strict": true,
-    "sourceMap": true,
-    "resolveJsonModule": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
-    "noEmit": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "node", "react"],
+    "moduleResolution": "node",
     "skipLibCheck": true,
+    "checkJs": false,
     "baseUrl": "./",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "paths": {
+      "crypto": [
+        "node_modules/crypto-browserify"
+      ]
+    }
   },
-  "include": ["src"],
-  "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
+  "include": ["src/**/*"],
+  "exclude": ["dist"]
 }

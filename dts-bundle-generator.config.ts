@@ -5,14 +5,12 @@ const getPackageName = () => {
   return packageJson.name.split("/")[1];
 };
 
-const config = {
+module.exports = {
   entries: [
     {
       filePath: "./src/index.ts",
       outFile: `./dist/${getPackageName()}.d.ts`,
-      noCheck: false,
+      noCheck: true,
     },
   ],
 };
-
-module.exports = config;
