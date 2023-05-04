@@ -100,7 +100,6 @@ export const calculateTokenPrice_sdo = (
   pools: StatusDataObject<Pool | null>[],
   reefPrice: StatusDataObject<number>
 ): StatusDataObject<number> => {
-  let ratio: number;
   if (token.address.toLowerCase() === REEF_ADDRESS.toLowerCase()) {
     return reefPrice;
   }
@@ -127,7 +126,7 @@ export const calculateTokenPrice_sdo = (
     reefTokenPool.data!,
     REEF_ADDRESS
   );
-  ratio = reefReserve / tokenReserve;
+  const ratio = reefReserve / tokenReserve;
   const priceVal = ratio * reefPrice.data;
   return toFeedbackDM(priceVal, FeedbackStatusCode.COMPLETE_DATA);
 };

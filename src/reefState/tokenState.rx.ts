@@ -9,6 +9,7 @@ import {
   shareReplay,
   startWith,
   switchMap,
+  tap,
   withLatestFrom,
 } from "rxjs";
 import { loadAvailablePools, toAvailablePools } from "./token/poolUtils";

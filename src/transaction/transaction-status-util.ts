@@ -78,6 +78,7 @@ export function getEvmTransactionStatus$(
       })
       .catch(parseAndRethrowErrorFromObserver(observer, txIdent));
   }).pipe(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     shareReplay(1)
   ) as Observable<TransactionStatusEvent>;

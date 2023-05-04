@@ -101,8 +101,10 @@ export async function decodePayloadMethod(
   try {
     const registry = new TypeRegistry();
     registry.register(types);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     registry.setChainProperties(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       registry.createType("ChainProperties", {
         ss58Format: 42,
@@ -111,6 +113,7 @@ export async function decodePayloadMethod(
       })
     );
     const metaCalls = base64Encode(api.runtimeMetadata.asCallsOnly.toU8a());
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const metadata = new Metadata(registry, base64Decode(metaCalls || ""));
     registry.setMetadata(metadata, undefined, undefined);

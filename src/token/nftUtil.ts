@@ -59,7 +59,9 @@ const resolveUriToUrl = (
     let replaceValue = nft.nftId;
     try {
       replaceValue = parseInt(nft.nftId, 10).toString(16).padStart(64, "0");
-    } catch (e) {}
+    } catch (e) {
+      console.log("Error resolveUriToUrl=", e);
+    }
     return uri.replace(idPlaceholder, replaceValue);
   }
   return uri;
