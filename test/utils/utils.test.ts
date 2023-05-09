@@ -127,7 +127,7 @@ describe("toAddressShortDisplay", () => {
 describe("shortAddress", () => {
   it("should return the first and last 5 characters of the address with ellipsis if the address is longer than 10 characters", () => {
     expect(shortAddress("0x1234567890abcdef1234567890abcdef12345678")).toBe(
-      "0x1234...5678"
+      "0x123...45678"
     );
   });
 

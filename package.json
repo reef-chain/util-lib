@@ -12,6 +12,7 @@
   },
   "scripts": {
     "dev": "vite --host",
+    "watch": "vite build --watch",
     "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "build-dts": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "test": "vitest",
