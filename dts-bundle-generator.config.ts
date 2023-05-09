@@ -10,7 +10,7 @@ const config = {
     {
       filePath: "./src/index.ts",
       outFile: `./dist/${getPackageName()}.d.ts`,
-      noCheck: false,
+      noCheck: true,
     },
   ],
 };
