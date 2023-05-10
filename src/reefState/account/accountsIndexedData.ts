@@ -148,7 +148,7 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
           sig => sig.data.address === updVal.data.address
         );
         if (signer) {
-          const isEvmClaimedPropName = "isEvmClaimed";
+          let isEvmClaimedPropName = "isEvmClaimed";
           const resetEvmClaimedStat = signer
             .getStatusList()
             .filter(stat => stat.propName != isEvmClaimedPropName);

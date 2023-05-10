@@ -1,5 +1,4 @@
-export { initReefState } from "./initReefState";
-export type { StateOptions } from "./initReefState";
+export { initReefState, StateOptions } from "./initReefState";
 export {
   toInjectedAccountsWithMeta,
   accounts_status$,
@@ -25,19 +24,20 @@ export {
   selectedTokenPrices_status$,
   selectedTransactionHistory_status$,
 } from "./tokenState.rx";
+export { setSelectedNetwork, selectedNetwork$ } from "./networkState";
 export {
-  setSelectedNetwork,
-  selectedNetwork$,
-  setSelectedProvider,
-  selectedProvider$,
   instantProvider$,
+  selectedProvider$,
+  selectedNetworkProvider$,
+  providerConnState$,
 } from "./providerState";
 export {
   FeedbackStatusCode,
   StatusDataObject,
   isFeedbackDM,
+  FeedbackStatus,
   findMinStatusCode,
   skipBeforeStatus$,
 } from "./model/statusDataObject";
-export type { FeedbackStatus } from "./model/statusDataObject";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
+export { reloadTokens } from "./token/reloadTokenState";

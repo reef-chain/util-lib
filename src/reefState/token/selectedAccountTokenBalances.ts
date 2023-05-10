@@ -144,6 +144,7 @@ const tokenBalancesWithContractDataCache_sdo =
         toTokensWithContractDataFn(tokenBalances)(tokenContractData)
       ),
       startWith(toTokensWithContractDataFn(tokenBalances)(state.contractData)),
+      // tap(v => console.log('tokenBalancesWithContractDataCache_sdo = ', v)),
       catchError(err => {
         console.log(
           "tokenBalancesWithContractDataCache_sdo ERROR=",
@@ -184,7 +185,7 @@ const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
 ) =>
   tokens.map(tkn => {
-    if (tkn.data.iconUrl) {
+    if (!!tkn.data.iconUrl) {
       return tkn;
     } else {
       tkn.data.iconUrl = getIconUrl(tkn.data.address);
@@ -208,10 +209,12 @@ export const replaceReefBalanceFromAccount = (
 };
 
 // noinspection TypeScriptValidateTypes
-export const loadAccountTokens_sdo = ([apollo, signer]: [
+export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
   ApolloClient<any>,
-  StatusDataObject<ReefAccount>
+  StatusDataObject<ReefAccount>,
+  any
 ]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
+  // TODO check the status of signer - could be loading?
   return !signer
     ? of(
         toFeedbackDM(
@@ -225,6 +228,7 @@ export const loadAccountTokens_sdo = ([apollo, signer]: [
           query: SIGNER_TOKENS_GQL,
           variables: { accountId: signer.data.address },
           fetchPolicy: "network-only",
+          errorPolicy: "all",
         })
       ).pipe(
         map((res: any): TokenBalance[] => {
@@ -256,7 +260,7 @@ export const loadAccountTokens_sdo = ([apollo, signer]: [
           toFeedbackDM(tkns, collectFeedbackDMStatus(tkns))
         ),
         catchError(err => {
-          console.log("loadAccountTokens ERROR=", err.message);
+          console.log("loadAccountTokens 1 ERROR=", err);
           return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
         }),
         shareReplay(1)

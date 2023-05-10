@@ -13,9 +13,9 @@ import {
 } from "./tokenModel";
 import { Pool } from "./pool";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
   findMinStatusCode,
+  StatusDataObject,
   toFeedbackDM,
 } from "../reefState/model/statusDataObject";
 import { ERC20 } from "./abi/ERC20";
@@ -97,14 +97,15 @@ const findReefTokenPool_sdo = (
 
 export const calculateTokenPrice_sdo = (
   token: Token | TokenBalance,
-  pools: StatusDataObject<Pool | null>[],
+  pools: StatusDataObject<StatusDataObject<Pool | null>[]>,
   reefPrice: StatusDataObject<number>
 ): StatusDataObject<number> => {
+  let ratio: number;
   if (token.address.toLowerCase() === REEF_ADDRESS.toLowerCase()) {
     return reefPrice;
   }
 
-  const reefTokenPool = findReefTokenPool_sdo(pools, REEF_ADDRESS, token);
+  const reefTokenPool = findReefTokenPool_sdo(pools.data, REEF_ADDRESS, token);
   const minStat = findMinStatusCode([reefTokenPool, reefPrice]);
 
   if (
@@ -112,6 +113,9 @@ export const calculateTokenPrice_sdo = (
     !reefTokenPool.data ||
     minStat < FeedbackStatusCode.COMPLETE_DATA
   ) {
+    if (pools.hasStatus(FeedbackStatusCode.LOADING)) {
+      return toFeedbackDM(0, FeedbackStatusCode.LOADING);
+    }
     if (!reefTokenPool || reefTokenPool.hasStatus(FeedbackStatusCode.ERROR)) {
       return toFeedbackDM(
         0,
@@ -126,7 +130,7 @@ export const calculateTokenPrice_sdo = (
     reefTokenPool.data!,
     REEF_ADDRESS
   );
-  const ratio = reefReserve / tokenReserve;
+  ratio = reefReserve / tokenReserve;
   const priceVal = ratio * reefPrice.data;
   return toFeedbackDM(priceVal, FeedbackStatusCode.COMPLETE_DATA);
 };

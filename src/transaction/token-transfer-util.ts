@@ -48,9 +48,9 @@ export function nativeTransfer$(
     txStage: TxStage.SIGNATURE_REQUEST,
   });
   provider.api.query.system.account(fromAddress).then(res => {
-    const fromBalance = res.data.free.toString();
+    let fromBalance = res.data.free.toString();
     if (BigNumber.from(amount).gte(fromBalance)) {
-      const error = new Error(TX_STATUS_ERROR_CODE.ERROR_BALANCE_TOO_LOW);
+      let error = new Error(TX_STATUS_ERROR_CODE.ERROR_BALANCE_TOO_LOW);
       status$.error({ error, txIdent });
       return;
     }

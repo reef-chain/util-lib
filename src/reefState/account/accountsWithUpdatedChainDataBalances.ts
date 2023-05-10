@@ -15,7 +15,6 @@ import {
   switchMap,
   tap,
 } from "rxjs";
-import { selectedProvider$, instantProvider$ } from "../providerState";
 import { Provider } from "@reef-defi/evm-provider";
 import { ReefAccount } from "../../account/accountModel";
 import { BigNumber } from "ethers";
@@ -27,6 +26,7 @@ import {
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
+import { instantProvider$ } from "../providerState";
 
 const getUpdatedAccountChainBalances$ = (
   providerAndSigners: [Provider | undefined, ReefAccount[]]
@@ -38,9 +38,9 @@ const getUpdatedAccountChainBalances$ = (
 
   return of(providerAndSigners).pipe(
     switchMap((provAndSigs: [Provider | undefined, ReefAccount[]]) => {
-      const provider = provAndSigs[0];
+      let provider = provAndSigs[0];
       if (!provider) {
-        const signers = provAndSigs[1];
+        let signers = provAndSigs[1];
         return merge(of(signers), NEVER).pipe(
           map(sgs =>
             toFeedbackDM(

@@ -85,7 +85,7 @@ export const updateSignersEvmBindings = (
       async (
         sig: ReefAccount
       ): Promise<StatusDataObject<ReefAccount> | boolean> => {
-        const signer = await getReefAccountSigner(sig, provider);
+        let signer = await getReefAccountSigner(sig, provider);
         if (!signer) {
           return toFeedbackDM(
             sig as ReefAccount,

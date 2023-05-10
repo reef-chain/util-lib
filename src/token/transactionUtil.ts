@@ -53,7 +53,7 @@ export const handleErr = (
 ): void => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const { message, code } = toTxErrorCodeValue(e);
+  let { message, code } = toTxErrorCodeValue(e);
   txHandler({
     txIdent,
     txHash,

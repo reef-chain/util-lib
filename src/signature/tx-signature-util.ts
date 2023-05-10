@@ -81,7 +81,7 @@ export async function decodePayloadMethod(
   provider: Provider,
   methodDataEncoded: string,
   abi?: string | readonly (string | Fragment | JsonFragment)[],
-  sentValue = "0",
+  sentValue: string = "0",
   types?: any
 ): Promise<DecodedMethodData | null> {
   const api = provider.api;
@@ -101,11 +101,8 @@ export async function decodePayloadMethod(
   try {
     const registry = new TypeRegistry();
     registry.register(types);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     registry.setChainProperties(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       registry.createType("ChainProperties", {
         ss58Format: 42,
         tokenDecimals: 18,
@@ -113,7 +110,6 @@ export async function decodePayloadMethod(
       })
     );
     const metaCalls = base64Encode(api.runtimeMetadata.asCallsOnly.toU8a());
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const metadata = new Metadata(registry, base64Decode(metaCalls || ""));
     registry.setMetadata(metadata, undefined, undefined);
@@ -142,7 +138,7 @@ export async function decodePayloadMethod(
     vm: {},
   };
 
-  const isEvm = methodName.startsWith("evm.call");
+  let isEvm = methodName.startsWith("evm.call");
 
   if (isEvm) {
     const contractAddress = args[0];

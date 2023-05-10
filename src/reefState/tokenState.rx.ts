@@ -1,6 +1,7 @@
 import {
   catchError,
   combineLatest,
+  debounceTime,
   from,
   map,
   mergeWith,
@@ -8,8 +9,10 @@ import {
   of,
   shareReplay,
   startWith,
+  Subject,
   switchMap,
   tap,
+  throttleTime,
   withLatestFrom,
 } from "rxjs";
 import { loadAvailablePools, toAvailablePools } from "./token/poolUtils";
@@ -28,7 +31,7 @@ import {
 } from "./token/selectedAccountTokenBalances";
 import { apolloClientInstance$ } from "../graphql";
 import { selectedAccount_status$ } from "./account/selectedAccount";
-import { selectedNetwork$, selectedProvider$ } from "./providerState";
+import { selectedNetwork$ } from "./networkState";
 import { AvailablePool, Pool } from "../token/pool";
 import { selectedAccountAddressChange$ } from "./account/selectedAccountAddressChange";
 import { Network } from "../network/network";
@@ -48,10 +51,13 @@ import { toTokensWithPrice_sdo } from "./token/tokenUtil";
 import { getReefswapNetworkConfig } from "../network/dex";
 import { filter } from "rxjs/operators";
 import { BigNumber } from "ethers";
+import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
+import { forceReloadTokens$ } from "./token/reloadTokenState";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
   selectedAccountAddressChange$,
+  forceReloadTokens$,
 ]).pipe(shareReplay(1));
 
 const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
@@ -65,56 +71,71 @@ const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
 
 export const selectedTokenBalances_status$: Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
-> = combineLatest([apolloClientInstance$, selectedAccountAddressChange$]).pipe(
-  switchMap(loadAccountTokens_sdo),
-  // withLatestFrom(selectedAccount_status$),
-  // map(setReefBalanceFromAccount),
-  switchMap(
-    (tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>) => {
-      return combineLatest([of(tkns), selectedAccountReefBalance$]).pipe(
-        map(arrVal => replaceReefBalanceFromAccount(arrVal[0], arrVal[1]))
-      );
-    }
-  ),
+> = combineLatest([
+  apolloClientInstance$,
+  selectedAccountAddressChange$,
+  forceReloadTokens$,
+]).pipe(
+  switchMap(vals => {
+    return loadAccountTokens_sdo(vals).pipe(
+      switchMap(
+        (tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>) => {
+          return combineLatest([of(tkns), selectedAccountReefBalance$]).pipe(
+            map(arrVal => replaceReefBalanceFromAccount(arrVal[0], arrVal[1]))
+          );
+        }
+      ),
+      catchError((err: any) => {
+        console.log("ERROR0 selectedTokenBalances_status$=", err);
+        return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+      })
+    );
+  }),
   mergeWith(
     reloadingValues$.pipe(
       map(() => toFeedbackDM([], FeedbackStatusCode.LOADING))
     )
   ),
-  catchError((err: any) =>
-    of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
-  ),
+  catchError((err: any) => {
+    console.log("ERROR1 selectedTokenBalances_status$=", err.message);
+    return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+  }),
   shareReplay(1)
 );
 
-// TODO combine  selectedNetwork$ and selectedProvider$
 export const selectedPools_status$: Observable<
   StatusDataObject<StatusDataObject<Pool | null>[]>
 > = combineLatest([
   selectedTokenBalances_status$,
-  selectedNetwork$,
+  selectedNetworkProvider$,
   selectedAccountAddressChange$,
-  selectedProvider$,
 ]).pipe(
   switchMap(
     (
       valArr: [
         StatusDataObject<StatusDataObject<Token | TokenBalance>[]>,
-        Network,
-        StatusDataObject<ReefAccount>,
-        Provider
+        { provider: Provider; network: Network },
+        StatusDataObject<ReefAccount>
       ]
     ) => {
-      const [tkns, network, signer, provider] = valArr;
+      let [tkns, networkProvider, signer] = valArr;
       if (!signer) {
-        return of(toFeedbackDM([], FeedbackStatusCode.MISSING_INPUT_VALUES));
+        return of(
+          toFeedbackDM(
+            [],
+            FeedbackStatusCode.MISSING_INPUT_VALUES,
+            "No pools signer"
+          )
+        );
       }
-      return from(getReefAccountSigner(signer.data, provider)).pipe(
+      return from(
+        getReefAccountSigner(signer.data, networkProvider.provider)
+      ).pipe(
         switchMap((sig: Signer | undefined) =>
           fetchPools$(
             tkns.data,
             sig as Signer,
-            getReefswapNetworkConfig(network).factoryAddress
+            getReefswapNetworkConfig(networkProvider.network).factoryAddress
           ).pipe(
             map((poolsArr: StatusDataObject<Pool | null>[]) =>
               toFeedbackDM(
@@ -151,9 +172,10 @@ export const selectedTokenPrices_status$: Observable<
       map(() => toFeedbackDM([], FeedbackStatusCode.LOADING))
     )
   ),
-  catchError(err =>
-    of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
-  ),
+  catchError(err => {
+    console.log("ERROR selectedTokenPrices_status$", err.message);
+    return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+  }),
   shareReplay(1)
 );
 
@@ -172,7 +194,11 @@ export const availableReefPools_status$: Observable<
 
 export const selectedNFTs_status$: Observable<
   StatusDataObject<StatusDataObject<NFT>[]>
-> = combineLatest([apolloClientInstance$, selectedAccountAddressChange$]).pipe(
+> = combineLatest([
+  apolloClientInstance$,
+  selectedAccountAddressChange$,
+  forceReloadTokens$,
+]).pipe(
   switchMap(v => loadSignerNfts(v)),
   mergeWith(
     reloadingValues$.pipe(
@@ -182,6 +208,7 @@ export const selectedNFTs_status$: Observable<
   catchError(err =>
     of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
   ),
+  // tap((v)=>{console.log('lib 1NFTsssss =',v)}),
   shareReplay(1)
 );
 
@@ -193,6 +220,7 @@ export const selectedTransactionHistory_status$: Observable<
   selectedAccountAddressChange$,
   selectedNetwork$,
   selectedProvider$,
+  forceReloadTokens$,
 ]).pipe(
   switchMap(loadTransferHistory),
   map(vArr =>

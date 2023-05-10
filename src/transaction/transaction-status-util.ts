@@ -11,7 +11,7 @@ export function parseAndRethrowErrorFromObserver(
 ) {
   return err => {
     const parsedErr = toTxErrorCodeValue(err);
-    const reError =
+    let reError =
       !!parsedErr.code && parsedErr.code != TX_STATUS_ERROR_CODE.ERROR_UNDEFINED
         ? new Error(parsedErr.code)
         : err;
@@ -70,7 +70,7 @@ export function getEvmTransactionStatus$(
               }
             );
           })
-          .catch((err: any) => {
+          .catch(err => {
             console.log("transfer tx.wait ERROR=", err.message);
 
             observer.error(new TxStatusError(err.message, txIdent));
@@ -78,7 +78,6 @@ export function getEvmTransactionStatus$(
       })
       .catch(parseAndRethrowErrorFromObserver(observer, txIdent));
   }).pipe(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     shareReplay(1)
   ) as Observable<TransactionStatusEvent>;
