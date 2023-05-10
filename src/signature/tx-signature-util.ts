@@ -81,7 +81,7 @@ export async function decodePayloadMethod(
   provider: Provider,
   methodDataEncoded: string,
   abi?: string | readonly (string | Fragment | JsonFragment)[],
-  sentValue: string = "0",
+  sentValue = "0",
   types?: any
 ): Promise<DecodedMethodData | null> {
   const api = provider.api;
@@ -101,8 +101,8 @@ export async function decodePayloadMethod(
   try {
     const registry = new TypeRegistry();
     registry.register(types);
-    // @ts-ignore
     registry.setChainProperties(
+      // @ts-ignore
       registry.createType("ChainProperties", {
         ss58Format: 42,
         tokenDecimals: 18,
@@ -138,7 +138,7 @@ export async function decodePayloadMethod(
     vm: {},
   };
 
-  let isEvm = methodName.startsWith("evm.call");
+  const isEvm = methodName.startsWith("evm.call");
 
   if (isEvm) {
     const contractAddress = args[0];

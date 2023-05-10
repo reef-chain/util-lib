@@ -1,20 +1,22 @@
-export {
-  NFT,
+export type {
   TokenBalance,
   Token,
   TokenWithAmount,
-  REEF_ADDRESS,
-  REEF_TOKEN,
-  ContractType,
+  NFT,
   NFTMetadata,
   TransferExtrinsic,
   TokenTransfer,
   BasicToken,
-  EMPTY_ADDRESS,
+  TokenState,
   ERC721ContractData,
   ERC1155ContractData,
   TokenPrices,
-  TokenState,
+} from "./tokenModel";
+export {
+  REEF_ADDRESS,
+  REEF_TOKEN,
+  ContractType,
+  EMPTY_ADDRESS,
 } from "./tokenModel";
 export { isNativeAddress } from "./tokenUtil";
 export { getTokenPrice } from "./tokenUtil";
