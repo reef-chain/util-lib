@@ -54,9 +54,10 @@ const parseTokenHolderArray = (resArr: VerifiedNft[]): NFT[] =>
     }
   );
 
-export const loadSignerNfts = ([apollo, signer]: [
+export const loadSignerNfts = ([apollo, signer, forceReload]: [
   any,
-  StatusDataObject<ReefAccount>
+  StatusDataObject<ReefAccount>,
+  boolean
 ]): Observable<StatusDataObject<StatusDataObject<NFT>[]>> =>
   !signer || !apollo
     ? of(
@@ -89,9 +90,6 @@ export const loadSignerNfts = ([apollo, signer]: [
         // TODO handle SDO- map((res: VerifiedNft[]|FeedbackDataModel<NFT[]>) => isFeedbackDM(res)?res:parseTokenHolderArray(res)),
         switchMap((nftArr: NFT[]) =>
           combineLatest([of(nftArr), instantProvider$]).pipe(
-            // TODO remove ts-ignore
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             switchMap(
               (
                 nftsAndProvider: [(NFT | null)[] | NFT[], Provider | undefined]

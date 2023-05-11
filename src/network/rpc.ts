@@ -46,9 +46,7 @@ export const getREEF20Contract = async (
         values,
       };
     }
-  } catch (err) {
-    return null;
-  }
+  } catch (err) {}
   return null;
 };
 

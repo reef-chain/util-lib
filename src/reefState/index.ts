@@ -25,12 +25,12 @@ export {
   selectedTokenPrices_status$,
   selectedTransactionHistory_status$,
 } from "./tokenState.rx";
+export { setSelectedNetwork, selectedNetwork$ } from "./networkState";
 export {
-  setSelectedNetwork,
-  selectedNetwork$,
-  setSelectedProvider,
-  selectedProvider$,
   instantProvider$,
+  selectedProvider$,
+  selectedNetworkProvider$,
+  providerConnState$,
 } from "./providerState";
 export {
   FeedbackStatusCode,
@@ -41,3 +41,4 @@ export {
 } from "./model/statusDataObject";
 export type { FeedbackStatus } from "./model/statusDataObject";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
+export { reloadTokens } from "./token/reloadTokenState";

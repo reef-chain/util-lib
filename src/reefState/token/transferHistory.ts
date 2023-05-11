@@ -175,11 +175,18 @@ const toTokenTransfers = (
             catchError(err => of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message)))
         );*/
 
-export const loadTransferHistory = ([apollo, account, network, provider]: [
+export const loadTransferHistory = ([
+  apollo,
+  account,
+  network,
+  provider,
+  forceReload,
+]: [
   ApolloClient<any>,
   StatusDataObject<ReefAccount>,
   Network,
-  Provider
+  Provider,
+  boolean
 ]): Observable<TokenTransfer[]> =>
   !account
     ? of([])

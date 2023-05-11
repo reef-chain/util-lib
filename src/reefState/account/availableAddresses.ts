@@ -30,7 +30,7 @@ export const availableAddresses$: Observable<ReefAccount[]> =
             source = REEF_EXTENSION_IDENT;
             console.log("No extension source set for account=", a);
           }
-          const meta = (a as InjectedAccountWithMeta).meta
+          let meta = (a as InjectedAccountWithMeta).meta
             ? (a as InjectedAccountWithMeta).meta
             : { source };
 

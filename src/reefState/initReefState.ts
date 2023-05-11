@@ -1,19 +1,5 @@
-import {
-  selectedNetwork$,
-  setSelectedNetwork,
-  setSelectedProvider,
-} from "./providerState";
-import {
-  catchError,
-  defer,
-  finalize,
-  Observable,
-  of,
-  scan,
-  switchMap,
-  tap,
-} from "rxjs";
-import { Provider } from "@reef-defi/evm-provider";
+import { selectedNetwork$, setSelectedNetwork } from "./networkState";
+import { catchError, of, tap } from "rxjs";
 import { AVAILABLE_NETWORKS, Network } from "../network/network";
 import { accountsJsonSigningKeySubj, setAccounts } from "./account/setAccounts";
 import { setNftIpfsResolverFn } from "./token/nftUtils";
@@ -25,7 +11,6 @@ import { Signer as InjectedSigningKey } from "@polkadot/api/types";
 import { ipfsUrlResolverFn } from "../token/nftUtil";
 import { getGQLUrls } from "../graphql/gqlUtil";
 import { apolloClientSubj, setApolloUrls } from "../graphql/apollo";
-import { disconnectProvider, initProvider } from "../network";
 
 export interface StateOptions {
   network?: Network;
@@ -51,36 +36,38 @@ export const initReefState = ({
 }: StateOptions): destroyConnection => {
   const subscription = selectedNetwork$
     .pipe(
-      switchMap(network =>
-        initProvider(network.rpcUrl).then(provider => ({
-          provider,
-          network,
-        }))
-      ),
-      scan(
-        (
-          state: { provider: Provider; network: Network },
-          newVal: { provider: Provider; network: Network }
-        ) => {
-          if (state.provider) {
-            disconnectProvider(state.provider);
-          }
-          return { provider: newVal.provider, network: newVal.network };
-        },
-        { provider: {} as Provider, network: {} as Network }
-      ),
-      tap((p_n: { provider: Provider; network: Network }) => {
-        setSelectedProvider(p_n.provider);
+      tap(network => {
+        initApolloClient(network, client);
       }),
-      tap(p_n => {
-        initApolloClient(p_n.network, client);
-      }),
-      finalizeWithValue(p_n => (p_n ? disconnectProvider(p_n.provider) : null)),
       catchError(err => {
-        console.log("initReefState ERROR=", err.message);
+        console.log("initReefState kill$ ERROR=", err.message);
         return of(null);
       })
     )
+    /*const subscription = selectedNetwork$.pipe(
+        switchMap((network) => initProvider(network.rpcUrl)
+            .then((provider) => ({
+                provider,
+                network,
+            }))),
+        scan((state: { provider: Provider | undefined }, newVal: { provider: Provider, network }) => {
+            if (state.provider) {
+                disconnectProvider(state.provider);
+            }
+            return {provider: newVal.provider, network: newVal.network};
+        }, {provider: undefined}),
+        tap((p_n: { provider: Provider, network: Network }) => {
+            setSelectedProvider(p_n.provider);
+        }),
+        tap((p_n) => {
+            initApolloClient(p_n.network, client);
+        }),
+        finalizeWithValue(((p_n) => p_n?disconnectProvider(p_n.provider):null)),
+        catchError((err) => {
+            console.log('initReefState kill$ ERROR=', err.message);
+            return of(null);
+        }),
+    )*/
     .subscribe({
       error: e => {
         console.log("initReefState ERR=", e);
@@ -97,17 +84,6 @@ export const initReefState = ({
   }
   return () => subscription.unsubscribe();
 };
-
-function finalizeWithValue<T>(callback: (value: T) => void) {
-  return (source: Observable<T>) =>
-    defer(() => {
-      let lastValue: T;
-      return source.pipe(
-        tap(value => (lastValue = value)),
-        finalize(() => callback(lastValue))
-      );
-    });
-}
 
 function initApolloClient(
   selectedNetwork?: Network,
