@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "0.10.2",
+  "version": "0.10.3",
   "main": "./dist/util-lib.cjs",
   "module": "./dist/util-lib.mjs",
   "exports": {
@@ -10,6 +10,10 @@
       "import": "./dist/util-lib.mjs"
     }
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "dev": "vite --host",
     "watch": "vite build --watch",
