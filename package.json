@@ -14,6 +14,7 @@
   "scripts": {
     "build-dts": "vite build & dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "build": "vite build",
+    "test": "esbuild ./.test/test-app-state.ts --bundle --servedir=./.test/server --outdir=./.test/server/js --platform=browser --tsconfig=tsconfig.json --sourcemap",
     "start": "vite"
   },
   "dependencies": {
