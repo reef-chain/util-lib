@@ -43,9 +43,16 @@ async function getContractAbi(
       mergeMap(apollo => fetchContractAbi$(apollo, contractAddress)),
       map(res => {
         if (res[0] && res[0]["REEFERC20"]) {
-          res = res[0]["REEFERC20"];
+          res = res[0];
         }
-        return res;
+        let abiArr: any[] = [];
+        res.forEach(ercDefinitionsObj => {
+          Object.keys(ercDefinitionsObj).forEach(ercKey => {
+            const ercDefinitionsObjAbi = ercDefinitionsObj[ercKey];
+            abiArr = abiArr.concat(ercDefinitionsObjAbi);
+          });
+        });
+        return abiArr;
       }),
       take(1)
     )
@@ -143,18 +150,22 @@ export async function decodePayloadMethod(
   if (isEvm) {
     const contractAddress = args[0];
     let decodedData;
-
-    if (!abi) {
+    if (!abi || !abi.length) {
       abi = await getContractAbi(contractAddress);
     }
 
-    if (abi && !!args) {
+    if (abi && abi.length && !!args) {
       const methodArgs = args[1];
-      const iface = new ethers.utils.Interface(abi);
-      decodedData = iface.parseTransaction({
-        data: methodArgs,
-        value: sentValue,
-      });
+      try {
+        console.log("ABI can have duplicate member warnings");
+        const iface = new ethers.utils.Interface(abi);
+        decodedData = iface.parseTransaction({
+          data: methodArgs,
+          value: sentValue,
+        });
+      } catch (e) {
+        /* empty */
+      }
     }
     decodedResponse.vm["evm"] = {
       contractAddress,

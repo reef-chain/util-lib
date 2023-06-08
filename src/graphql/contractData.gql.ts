@@ -9,8 +9,8 @@ export const CONTRACT_DATA_GQL = gql`
   }
 `;
 export const CONTRACT_ABI_GQL = gql`
-  subscription contract_data_query($address: String!) {
-    verifiedContracts(where: { id_eq: $address }, limit: 1) {
+  query contract_data_query($address: String!) {
+    verifiedContracts(where: { id_containsInsensitive: $address }, limit: 1) {
       id
       compiledData
     }
