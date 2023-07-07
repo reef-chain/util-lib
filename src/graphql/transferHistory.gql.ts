@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from "@apollo/client/core";
 
 export const TRANSFER_HISTORY_GQL = gql`
   subscription query($accountId: String!) {

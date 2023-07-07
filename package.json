@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "0.10.6",
+  "version": "0.10.7",
   "main": "./dist/util-lib.cjs",
   "module": "./dist/util-lib.mjs",
   "exports": {
@@ -40,6 +40,7 @@
     "bignumber.js": "^9.1.0",
     "graphql": "^16.6.0",
     "graphql-ws": "^5.11.2",
+    "pusher-js": "^8.2.0",
     "react": "17.0.2"
   },
   "devDependencies": {

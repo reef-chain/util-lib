@@ -3,3 +3,5 @@ export type { Networks, Network, NetworkName } from "./network";
 export { initProvider, disconnectProvider } from "./providerUtil";
 export { getReefswapNetworkConfig } from "./dex";
 export type { DexProtocolv2 } from "./dex";
+export type { LatestAddressUpdates } from "./latestBlock";
+export { blockAccountTokenUpdates$, blockContractEvents$ } from "./latestBlock";
