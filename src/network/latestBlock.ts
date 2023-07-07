@@ -40,7 +40,7 @@ interface PusherLatestBlock extends LatestBlock {
   updatedContracts: string[];
 }
 
-interface LatestAddressUpdates extends LatestBlock {
+export interface LatestAddressUpdates extends LatestBlock {
   addresses: string[];
 }
 
