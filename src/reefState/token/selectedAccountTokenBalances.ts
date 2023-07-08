@@ -8,7 +8,6 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
-  defer,
   from,
   map,
   mergeScan,
@@ -17,15 +16,13 @@ import {
   shareReplay,
   startWith,
   take,
-  tap,
 } from "rxjs";
 import { CONTRACT_DATA_GQL, zenToRx } from "../../graphql";
-import { SIGNER_TOKENS_GQL } from "../../graphql/signerTokens.gql";
 import {
   collectFeedbackDMStatus,
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { ApolloClient } from "@apollo/client";
@@ -33,6 +30,9 @@ import { ReefAccount } from "../../account/accountModel";
 import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
 import { reefTokenWithAmount } from "../../token";
+import { graphqlRequest } from "../../graphql/queryRequest";
+import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
+import axios, { AxiosInstance } from "axios";
 
 // eslint-disable-next-line camelcase
 const fetchTokensData = (
@@ -185,7 +185,7 @@ const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
 ) =>
   tokens.map(tkn => {
-    if (!!tkn.data.iconUrl) {
+    if (tkn.data.iconUrl) {
       return tkn;
     } else {
       tkn.data.iconUrl = getIconUrl(tkn.data.address);
@@ -208,12 +208,42 @@ export const replaceReefBalanceFromAccount = (
   return tokens;
 };
 
+export function queryGql$(
+  client: ApolloClient<any> | AxiosInstance,
+  queryObj: { query: string; variables: any }
+) {
+  /*if (client instanceof ApolloClient) {
+    return zenToRx(
+      client.subscribe({
+        query: gql(queryObj.query),
+        variables: queryObj.variables,
+        fetchPolicy: "network-only",
+        errorPolicy: "all",
+      })
+    );
+  }*/
+  // apollo: ApolloClient<any>,
+  // signer: StatusDataObject<ReefAccount>
+  /**/
+
+  return from(
+    graphqlRequest(client as AxiosInstance, queryObj).then(res => res.data)
+  );
+}
+
 // noinspection TypeScriptValidateTypes
 export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
   ApolloClient<any>,
   StatusDataObject<ReefAccount>,
   any
 ]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
+  // TODO move httpClient in place of apollo|httpClient so both could be used - remove apollo for now but so it's future compatible
+
+  // TODO replace apollo with http in other methods
+  const httpClient = axios.create({
+    baseURL: "https://squid.subsquid.io/reef-explorer-testnet/graphql",
+  });
+
   // TODO check the status of signer - could be loading?
   return !signer
     ? of(
@@ -223,14 +253,8 @@ export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
           "Signer not set"
         )
       )
-    : zenToRx(
-        apollo.subscribe({
-          query: SIGNER_TOKENS_GQL,
-          variables: { accountId: signer.data.address },
-          fetchPolicy: "network-only",
-          errorPolicy: "all",
-        })
-      ).pipe(
+    : // can also be apollo subscription
+      queryGql$(httpClient, getSignerTokensQuery(signer.data.address)).pipe(
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(
