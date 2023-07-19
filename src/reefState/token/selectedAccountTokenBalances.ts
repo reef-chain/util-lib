@@ -30,9 +30,10 @@ import { ReefAccount } from "../../account/accountModel";
 import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
 import { reefTokenWithAmount } from "../../token";
-import { graphqlRequest } from "../../graphql/queryRequest";
 import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
 import axios, { AxiosInstance } from "axios";
+import {graphqlRequest} from "../../graphql/gqlUtil";
+import {httpClientInstance$} from "../../graphql/httpClient";
 
 // eslint-disable-next-line camelcase
 const fetchTokensData = (
@@ -209,7 +210,7 @@ export const replaceReefBalanceFromAccount = (
 };
 
 export function queryGql$(
-  client: ApolloClient<any> | AxiosInstance,
+  client: AxiosInstance,
   queryObj: { query: string; variables: any }
 ) {
   /*if (client instanceof ApolloClient) {
@@ -239,7 +240,7 @@ export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
 ]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
   // TODO move httpClient in place of apollo|httpClient so both could be used - remove apollo for now but so it's future compatible
 
-  // TODO replace apollo with http in other methods
+  .. replace apollo with httpClientInstance$
   const httpClient = axios.create({
     baseURL: "https://squid.subsquid.io/reef-explorer-testnet/graphql",
   });

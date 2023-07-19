@@ -9,8 +9,8 @@ import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
 import { Signer as InjectedSigningKey } from "@polkadot/api/types";
 import { ipfsUrlResolverFn } from "../token/nftUtil";
-import { getGQLUrls } from "../graphql/gqlUtil";
-import { apolloClientSubj, setApolloUrls } from "../graphql/apollo";
+import {getGQLUrls, setGraphQlUrls} from "../graphql/gqlUtil";
+import { apolloClientSubj } from "../graphql/apollo";
 
 export interface StateOptions {
   network?: Network;
@@ -93,7 +93,7 @@ function initApolloClient(
     if (!client) {
       const gqlUrls = getGQLUrls(selectedNetwork);
       if (gqlUrls) {
-        setApolloUrls(gqlUrls);
+        setGraphQlUrls(gqlUrls);
       }
     } else {
       apolloClientSubj.next(client);

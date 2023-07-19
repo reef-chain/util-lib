@@ -1,40 +1,21 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-  split,
-} from "@apollo/client";
-import {
-  distinctUntilChanged,
-  map,
-  merge,
-  Observable,
-  ReplaySubject,
-  shareReplay,
-  Subject,
-} from "rxjs";
-import { getMainDefinition } from "@apollo/client/utilities";
-import { Observable as ZenObservable } from "zen-observable-ts";
-import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
-import { createClient } from "graphql-ws";
-import { onError } from "@apollo/client/link/error";
-import { RetryLink } from "@apollo/client/link/retry";
-import {
-  getCollectedWsStateValue$,
-  WsConnectionState,
-} from "../reefState/ws-connection-state";
+import {ApolloClient, ApolloLink, HttpLink, InMemoryCache, split,} from "@apollo/client";
+import {distinctUntilChanged, map, merge, Observable, ReplaySubject, shareReplay, Subject,} from "rxjs";
+import {getMainDefinition} from "@apollo/client/utilities";
+import {Observable as ZenObservable} from "zen-observable-ts";
+import {GraphQLWsLink} from "@apollo/client/link/subscriptions";
+import {createClient} from "graphql-ws";
+import {onError} from "@apollo/client/link/error";
+import {RetryLink} from "@apollo/client/link/retry";
+import {getCollectedWsStateValue$, WsConnectionState,} from "../reefState/ws-connection-state";
 
-const apolloUrlsSubj = new ReplaySubject<{ ws: string; http: string }>(1);
+import {graphQlUrlsSubj} from "./gqlUtil";
+
 export const apolloClientSubj = new ReplaySubject<ApolloClient<any>>(1);
 const apolloWsConnStateSubj = new Subject<WsConnectionState>();
 export const apolloClientWsConnState$ = getCollectedWsStateValue$(
   apolloWsConnStateSubj
 );
 
-export const setApolloUrls = (urls: { ws: string; http: string }): void => {
-  apolloUrlsSubj.next(urls);
-};
 const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors)
@@ -52,7 +33,7 @@ const errorLink = onError(
 
 const retryLink = new RetryLink();
 
-const splitLink$ = apolloUrlsSubj.pipe(
+const splitLink$ = graphQlUrlsSubj.pipe(
   map((urls: { ws: string; http: string }) => {
     const httpLink = new HttpLink({
       uri: urls.http,
