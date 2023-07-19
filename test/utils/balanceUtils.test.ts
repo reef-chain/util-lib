@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { formatDisplayBalance } from "./../../src/utils/balanceUtils";
+import { formatDisplayBalance } from "../../src/utils/balanceUtils";
 import { describe, it, expect } from "vitest";
 
 describe("formatDisplayBalance", () => {
