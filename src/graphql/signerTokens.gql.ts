@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const SIGNER_TOKENS_GQL = gql`
+/*export const SIGNER_TOKENS_GQL = gql`
   subscription tokens_query($accountId: String!) {
     tokenHolders(
       where: {
@@ -20,7 +20,7 @@ export const SIGNER_TOKENS_GQL = gql`
       balance
     }
   }
-`;
+`;*/
 export const SIGNER_TOKENS_QUERY = `
   query tokens_query($accountId: String!) {
     tokenHolders(

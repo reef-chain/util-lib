@@ -7,7 +7,7 @@ import { base64Decode, base64Encode } from "@reef-defi/util-crypto";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { Fragment, JsonFragment } from "@ethersproject/abi";
 import { getContractTypeAbi, REEF_ADDRESS, Token } from "../token";
-import { apolloClientInstance$, CONTRACT_DATA_GQL, zenToRx } from "../graphql";
+import { apolloClientInstance$, zenToRx } from "../graphql";
 import {
   catchError,
   firstValueFrom,

@@ -54,6 +54,7 @@ import { BigNumber } from "ethers";
 import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
 import { forceReloadTokens$ } from "./token/reloadTokenState";
 import { blockAccountTokenUpdates$ } from "../network";
+import { httpClientInstance$ } from "../graphql/httpClient";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
@@ -73,12 +74,12 @@ const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
 export const selectedTokenBalances_status$: Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
   forceReloadTokens$,
 ]).pipe(
   switchMap(vals => {
-    const [apollo, signer, forceReload] = vals;
+    const [httpClient, signer, forceReload] = vals;
     blockAccountTokenUpdates$([signer.data.address]).pipe(startWith(true));
     return loadAccountTokens_sdo(vals).pipe(
       switchMap(

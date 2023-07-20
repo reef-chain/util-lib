@@ -18,7 +18,7 @@ export const getGQLUrls = (
 };
 export const graphqlRequest = (
   httpClient: AxiosInstance,
-  queryObj: { query: string; variables: never }
+  queryObj: { query: string; variables: any }
 ) => {
   const graphql = JSON.stringify(queryObj);
 
