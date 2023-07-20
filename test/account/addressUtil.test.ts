@@ -30,4 +30,12 @@ describe("availableAddresses", () => {
     const res = await getEvmAddress(keyringPair.address, provider);
     expect(res).toEqual("0x6d58ad955bdff99121ec07d2a4e96829f5f04746");
   });
+  it("should throw error if evm doesn't exist", async () => {
+    await expect(
+      getEvmAddress(
+        "5GQaLP6ap6JW4MbS22gVXLnUJxiVxCZzPA88cQfPSRZCYRNF",
+        provider
+      )
+    ).rejects.toThrow("EVM address does not exist");
+  });
 });
