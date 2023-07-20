@@ -6,7 +6,7 @@ import { Keyring as ReefKeyring } from "@reef-defi/keyring";
 import { cryptoWaitReady } from "@reef-defi/util-crypto";
 import { Provider, Signer } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network/providerUtil";
-import { MnemonicSigner } from "./test";
+import { MnemonicSigner } from "../testUtils/mnemonic-signer";
 
 describe("bindEvmAddress", () => {
   let provider: Provider;
