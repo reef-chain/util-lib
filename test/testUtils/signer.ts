@@ -1,7 +1,7 @@
 import { Provider, Signer } from "@reef-defi/evm-provider";
 import { MnemonicSigner } from "./mnemonic-signer";
 
-export const getSigner = async (
+export const getSigner = (
   provider: Provider,
   address: string,
   mnemonic?: string
