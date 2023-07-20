@@ -5,7 +5,6 @@ import { cryptoWaitReady } from "@reef-defi/util-crypto";
 import { KeyringPair } from "@reef-defi/keyring/types";
 import { Provider } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network/providerUtil";
-import { getReefAccountSigner } from "../../src/account/accountSignerUtils";
 import { getEvmAddress } from "../../src/account/addressUtil";
 
 describe("availableAddresses", () => {
