@@ -31,6 +31,8 @@ const apolloWsConnStateSubj = new Subject<WsConnectionState>();
 export const apolloClientWsConnState$ = getCollectedWsStateValue$(
   apolloWsConnStateSubj
 );
+import fetch from "cross-fetch";
+import WebSocket from "ws";
 
 export const setApolloUrls = (urls: { ws: string; http: string }): void => {
   apolloUrlsSubj.next(urls);
@@ -56,9 +58,11 @@ const splitLink$ = apolloUrlsSubj.pipe(
   map((urls: { ws: string; http: string }) => {
     const httpLink = new HttpLink({
       uri: urls.http,
+      fetch,
     });
     let wsClient = createClient({
       url: urls.ws,
+      webSocketImpl: WebSocket,
     });
     wsClient.on("error", e => {
       console.log("GQL WS ERROR", e);

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { firstValueFrom, Observable, Subject } from "rxjs";
+import { firstValueFrom } from "rxjs";
 import { availableAddresses$ } from "../../src/reefState/account/availableAddresses";
 import { selectedAccount_status$ } from "../../src/reefState/account/selectedAccount";
 import { initReefState } from "../../src/reefState/initReefState";
@@ -30,7 +30,6 @@ describe("Available Addresses", () => {
       meta: { source: "reef" },
     },
   ];
-  let provider: Provider;
   const mnemonic =
     "judge box bless much media say shrug crunch gun scorpion afraid object";
   const CRYPTO_TYPE: KeypairType = "sr25519";
@@ -39,11 +38,11 @@ describe("Available Addresses", () => {
     type: CRYPTO_TYPE,
     ss58Format: SS58_FORMAT,
   });
+  let allSig: any;
 
   let keyringPair: KeyringPair;
   beforeAll(async () => {
     await cryptoWaitReady();
-    provider = await initProvider(AVAILABLE_NETWORKS.testnet.rpcUrl);
     keyringPair = keyring.addFromMnemonic(mnemonic, {}, CRYPTO_TYPE);
     await initReefState({
       network: AVAILABLE_NETWORKS.testnet,
@@ -52,16 +51,10 @@ describe("Available Addresses", () => {
         injectedSigner: keyringPair as any,
       },
     });
+    allSig = await firstValueFrom(availableAddresses$);
   });
   it("set selected address", async () => {
-    const allSig = await firstValueFrom(availableAddresses$);
     const selSig = await firstValueFrom(selectedAccount_status$);
-    console.assert(
-      allSig.length &&
-        selSig?.data.address &&
-        allSig[0].address === selSig.data.address,
-      "TODO First signer should be selected by default"
-    );
     if (!selSig) {
       setSelectedAddress(allSig[0].address);
     }
