@@ -41,7 +41,7 @@ describe("get tokens", () => {
     expect(res.data.length).greaterThan(0);
   });
 
-  it.only("should return token prices", async () => {
+  it("should return token prices", async () => {
     const res = await firstValueFrom(
       selectedTokenPrices_status$.pipe(
         skipWhile(value => {
