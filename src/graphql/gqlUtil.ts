@@ -1,6 +1,7 @@
 import { Network } from "../network/network";
-import { ReplaySubject } from "rxjs";
+import { map, ReplaySubject, shareReplay } from "rxjs";
 import { AxiosInstance } from "axios";
+import { selectedNetwork$ } from "../reefState/networkState";
 
 export const getGQLUrls = (
   network: Network
@@ -26,9 +27,14 @@ export const graphqlRequest = (
     headers: { "Content-Type": "application/json" },
   });
 };
-export const graphQlUrlsSubj = new ReplaySubject<{ ws: string; http: string }>(
+/*export const graphQlUrlsSubj = new ReplaySubject<{ ws: string; http: string }>(
   1
-);
-export const setGraphQlUrls = (urls: { ws: string; http: string }): void => {
+);*/
+/*export const setGraphQlUrls = (urls: { ws: string; http: string }): void => {
   graphQlUrlsSubj.next(urls);
-};
+};*/
+
+export const graphQlUrls$ = selectedNetwork$.pipe(
+  map(getGQLUrls),
+  shareReplay(1)
+);

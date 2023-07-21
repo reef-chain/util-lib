@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  blockAccountTokenUpdates$,
+  getLatestBlockTokenUpdates$,
   _getBlockAccountTokenUpdates$,
 } from "../../src/network/latestBlock";
 import { firstValueFrom, Observable, Subject } from "rxjs";

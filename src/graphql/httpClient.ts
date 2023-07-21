@@ -1,14 +1,20 @@
 import { map, merge, Observable, shareReplay } from "rxjs";
 import axios, { AxiosInstance } from "axios";
-import { graphQlUrlsSubj } from "./gqlUtil";
+import { graphQlUrls$ } from "./gqlUtil";
+import { filter } from "rxjs/operators";
 
 export const httpClientInstance$: Observable<AxiosInstance> = merge(
-  graphQlUrlsSubj
+  graphQlUrls$
 ).pipe(
   map(urls =>
-    axios.create({
-      baseURL: urls.http,
-    })
+    urls
+      ? axios.create({
+          baseURL: urls.http,
+        })
+      : undefined
   ),
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  filter(v => !!v),
   shareReplay(1)
-);
+) as Observable<AxiosInstance>;

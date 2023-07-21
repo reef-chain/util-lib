@@ -1,62 +1,58 @@
-import { describe, it } from "vitest";
-import { loadAccountTokens_sdo } from "../../src/reefState/token/selectedAccountTokenBalances";
-import axios from "axios";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   FeedbackStatusCode,
+  initReefState,
   selectedTokenBalances_status$,
+  selectedTokenPrices_status$,
 } from "../../src/reefState";
-import { firstValueFrom, skipWhile } from "rxjs";
+import { firstValueFrom, skip, skipWhile, tap } from "rxjs";
+import { AVAILABLE_NETWORKS } from "../../src/network";
+import { REEF_ADDRESS } from "../../src/token";
 
 describe("get tokens", () => {
-  it.only("should return tokens", async () => {
-    const httpClient = axios.create({
-      baseURL: "https://squid.subsquid.io/reef-explorer-testnet/graphql",
+  const signingKey = {};
+  beforeAll(async () => {
+    initReefState({
+      network: AVAILABLE_NETWORKS.testnet,
+      jsonAccounts: {
+        accounts: [
+          {
+            address: "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP",
+            isSelected: true,
+          },
+        ],
+        injectedSigner: signingKey,
+      },
     });
+  });
 
-    /*const res = await firstValueFrom(
-      queryGql$(
-        httpClient,
-        getSignerTokensQuery("5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN")
+  it("should return token balances", async () => {
+    const res = await firstValueFrom(
+      selectedTokenBalances_status$.pipe(
+        skipWhile(
+          value =>
+            !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA) ||
+            value.getStatusList().length != 1
+        )
       )
     );
-    console.log("PPPPw1222", res.data);*/
+    expect(res.getStatusList().length).toBe(1);
+    expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    expect(res.data.length).greaterThan(0);
+  });
 
-    /*const reee = await firstValueFrom(
-      loadAccountTokens_sdo([
-        httpClient,
-        {
-          data: { address: "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN" },
-        } as any,
-        false,
-      ])
-    );
-console.log('RRRRR', reee.data.length)*/
-
-    /*return new Promise(resolve => {
-      let c=0
-      loadAccountTokens_sdo([
-        httpClient,
-        {
-          data: { address: "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN" },
-        } as any,
-        false,
-      ]).subscribe(t=> {
-          console.log('TTT222', t.getStatusList().length, ' c=',++c)
-          // resolve()
+  it.only("should return token prices", async () => {
+    const res = await firstValueFrom(
+      selectedTokenPrices_status$.pipe(
+        skipWhile(value => {
+          const reef = value.data.find(v => v.data.address === REEF_ADDRESS);
+          return reef ? !reef.data.price : true;
         })
-    });*/
-
-    const reee = await firstValueFrom(
-      loadAccountTokens_sdo([
-        httpClient,
-        {
-          data: { address: "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN" },
-        } as any,
-        false,
-      ]).pipe(skipWhile(value => value.getStatusList().length > 1))
+      )
     );
-    console.log("RRR", reee.getStatusList());
-
-    // ... test selectedTokenBalances_status$
-  }, 10000);
+    expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    const reef = res.data.find(v => v.data.address === REEF_ADDRESS);
+    expect(reef?.data.price).greaterThan(0);
+    expect(res.data.length).greaterThan(0);
+  }, 100000);
 });

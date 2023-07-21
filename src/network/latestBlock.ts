@@ -86,10 +86,10 @@ export const _getBlockAccountTokenUpdates$ = (
     filter(v => v != null && !!v.addresses.length)
   );
 
-export const blockAccountTokenUpdates$ = (filterAccountAddresses: string[]) =>
+export const getLatestBlockTokenUpdates$ = (filterAccountAddresses: string[]) =>
   _getBlockAccountTokenUpdates$(filterAccountAddresses, latestBlockUpdates$);
 
-export const blockContractEvents$ = (
+export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
 ): Observable<string[]> =>
   latestBlockUpdates$.pipe(

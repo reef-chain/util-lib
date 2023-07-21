@@ -53,7 +53,7 @@ import { filter } from "rxjs/operators";
 import { BigNumber } from "ethers";
 import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
 import { forceReloadTokens$ } from "./token/reloadTokenState";
-import { blockAccountTokenUpdates$ } from "../network";
+import { getLatestBlockTokenUpdates$ } from "../network";
 import { httpClientInstance$ } from "../graphql/httpClient";
 
 const reloadingValues$ = combineLatest([
@@ -80,7 +80,7 @@ export const selectedTokenBalances_status$: Observable<
 ]).pipe(
   switchMap(vals => {
     const [httpClient, signer, forceReload] = vals;
-    blockAccountTokenUpdates$([signer.data.address]).pipe(startWith(true));
+    getLatestBlockTokenUpdates$([signer.data.address]).pipe(startWith(true));
     return loadAccountTokens_sdo(vals).pipe(
       switchMap(
         (tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>) => {

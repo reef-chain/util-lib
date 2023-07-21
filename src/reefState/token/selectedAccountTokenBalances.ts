@@ -131,7 +131,6 @@ const tokenBalancesWithContractDataCache_sdo =
     const missingCacheContractDataAddresses = tokenBalances
       .filter(tb => !state.contractData.some(cd => cd.address === tb.address))
       .map(tb => tb.address);
-    console.log("MMM", !!missingCacheContractDataAddresses.length);
     const contractData$ = missingCacheContractDataAddresses.length
       ? fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
           map(newTokens => {
