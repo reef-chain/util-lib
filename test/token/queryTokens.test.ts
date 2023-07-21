@@ -54,5 +54,5 @@ describe("get tokens", () => {
     const reef = res.data.find(v => v.data.address === REEF_ADDRESS);
     expect(reef?.data.price).greaterThan(0);
     expect(res.data.length).greaterThan(0);
-  }, 100000);
+  }, 20000);
 });
