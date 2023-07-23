@@ -25,7 +25,6 @@ export const reloadTokens = () => {
 };
 const forceTokenValuesReloadSubj = new Subject<boolean>();
 export const forceReload$ = forceTokenValuesReloadSubj.pipe(
-  // mergeWith(selectedAccountBalanceUpdate$),
   // combineLatestWith(apolloClientWsConnState$, providerConnState$),
   // debounceTime(3000),
   startWith(true)
