@@ -46,6 +46,7 @@ function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
   );
 }
 
+// TODO get binded accounts from pusher's latest block
 const indexedAccountValues$: Observable<
   StatusDataObject<AccountEvmAddrData[]>
 > = combineLatest([apolloClientInstance$, availableAddresses$]).pipe(

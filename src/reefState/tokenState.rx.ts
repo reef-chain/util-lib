@@ -52,14 +52,19 @@ import { getReefswapNetworkConfig } from "../network/dex";
 import { filter } from "rxjs/operators";
 import { BigNumber } from "ethers";
 import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
-import { forceReloadTokens$ } from "./token/reloadTokenState";
+import {
+  forceReload$,
+  selectedAccountAnyBalanceUpdate$,
+  selectedAccountFtBalanceUpdate$,
+  selectedAccountNftBalanceUpdate$,
+} from "./token/reloadTokenState";
 import { getLatestBlockTokenUpdates$ } from "../network";
 import { httpClientInstance$ } from "../graphql/httpClient";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
 ]).pipe(shareReplay(1));
 
 const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
@@ -76,10 +81,11 @@ export const selectedTokenBalances_status$: Observable<
 > = combineLatest([
   httpClientInstance$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountFtBalanceUpdate$,
 ]).pipe(
   switchMap(vals => {
-    const [httpClient, signer, forceReload] = vals;
+    const [httpClient, signer, forceReload, _] = vals;
     getLatestBlockTokenUpdates$([signer.data.address]).pipe(startWith(true));
     return loadAccountTokens_sdo(vals).pipe(
       switchMap(
@@ -183,9 +189,9 @@ export const selectedTokenPrices_status$: Observable<
   shareReplay(1)
 );
 
-export const availableReefPools_status$: Observable<
+/*export const availableReefPools_status$: Observable<
   StatusDataObject<AvailablePool[]>
-> = combineLatest([apolloClientInstance$, selectedProvider$]).pipe(
+> = combineLatest([httpClientInstance$, selectedProvider$]).pipe(
   switchMap(loadAvailablePools),
   map(toAvailablePools),
   map(pools => toFeedbackDM(pools, FeedbackStatusCode.COMPLETE_DATA)),
@@ -194,14 +200,15 @@ export const availableReefPools_status$: Observable<
   ),
   startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
   shareReplay(1)
-);
+);*/
 
 export const selectedNFTs_status$: Observable<
   StatusDataObject<StatusDataObject<NFT>[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountNftBalanceUpdate$,
 ]).pipe(
   switchMap(v => loadSignerNfts(v)),
   mergeWith(
@@ -224,7 +231,8 @@ export const selectedTransactionHistory_status$: Observable<
   selectedAccountAddressChange$,
   selectedNetwork$,
   selectedProvider$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountAnyBalanceUpdate$,
 ]).pipe(
   switchMap(loadTransferHistory),
   map(vArr =>

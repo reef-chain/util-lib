@@ -15,7 +15,7 @@ import { Provider } from "@reef-defi/evm-provider";
 import { disconnectProvider, initProvider, Network } from "../network";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";
-import { forceReloadTokens$ } from "./token/reloadTokenState";
+import { forceReload$ } from "./token/reloadTokenState";
 import {
   getCollectedWsStateValue$,
   WsConnectionState,
@@ -29,7 +29,7 @@ export const selectedNetworkProvider$: Observable<{
   provider: Provider;
   network: Network;
 }> = selectedNetwork$.pipe(
-  combineLatestWith(forceReloadTokens$),
+  combineLatestWith(forceReload$),
   mergeScan(
     (
       pr_url: {

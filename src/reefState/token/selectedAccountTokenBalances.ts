@@ -217,11 +217,14 @@ export const queryGql$ = (
   from(graphqlRequest(client as AxiosInstance, queryObj).then(res => res.data));
 
 // noinspection TypeScriptValidateTypes
-export const loadAccountTokens_sdo = ([httpClient, signer, forceReload]: [
-  AxiosInstance,
-  StatusDataObject<ReefAccount>,
-  any
-]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
+export const loadAccountTokens_sdo = ([
+  httpClient,
+  signer,
+  forceReloadj,
+  tokensUpdated,
+]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
+  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+> => {
   // TODO move httpClient in place of httpClient|httpClient so both could be used - remove httpClient for now but so it's future compatible
 
   //.. replace httpClient with httpClientInstance$

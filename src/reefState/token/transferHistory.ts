@@ -181,11 +181,13 @@ export const loadTransferHistory = ([
   network,
   provider,
   forceReload,
+  anyBalanceUpdate,
 ]: [
   ApolloClient<any>,
   StatusDataObject<ReefAccount>,
   Network,
   Provider,
+  boolean,
   boolean
 ]): Observable<TokenTransfer[]> =>
   !account

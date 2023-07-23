@@ -4,10 +4,9 @@ import { Metadata, TypeRegistry } from "@polkadot/types";
 import type { AnyJson } from "@polkadot/types/types";
 import type { Call } from "@polkadot/types/interfaces";
 import { base64Decode, base64Encode } from "@reef-defi/util-crypto";
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Fragment, JsonFragment } from "@ethersproject/abi";
-import { getContractTypeAbi, REEF_ADDRESS, Token } from "../token";
-import { apolloClientInstance$, zenToRx } from "../graphql";
+import { REEF_ADDRESS } from "../token";
 import {
   catchError,
   firstValueFrom,
@@ -17,8 +16,10 @@ import {
   of,
   take,
 } from "rxjs";
-import { CONTRACT_ABI_GQL } from "../graphql/contractData.gql";
+import { getContractAbiQuery } from "../graphql/contractData.gql";
 import { ERC20 } from "../token/abi/ERC20";
+import { httpClientInstance$ } from "../graphql/httpClient";
+import { queryGql$ } from "../reefState/token/selectedAccountTokenBalances";
 
 export interface DecodedMethodData {
   methodName: string;
@@ -32,15 +33,13 @@ export interface DecodedMethodData {
   };
 }
 
-async function getContractAbi(
-  contractAddress: string
-): Promise<any[] | string> {
+export async function getContractAbi(contractAddress: string): Promise<any[]> {
   if (contractAddress === REEF_ADDRESS) {
-    return Promise.resolve(ERC20.toString());
+    return Promise.resolve(ERC20 as any[]);
   }
   return firstValueFrom(
-    apolloClientInstance$.pipe(
-      mergeMap(apollo => fetchContractAbi$(apollo, contractAddress)),
+    httpClientInstance$.pipe(
+      mergeMap(httpClient => fetchContractAbi$(httpClient, contractAddress)),
       map(res => {
         if (res[0] && res[0]["REEFERC20"]) {
           res = res[0];
@@ -60,16 +59,17 @@ async function getContractAbi(
 }
 
 function fetchContractAbi$(
-  apollo: any,
+  httpClient: any,
   contractAddress: string
 ): Observable<any | null> {
-  return zenToRx(
-    apollo.subscribe({
+  /*return zenToRx(
+    httpClient.subscribe({
       query: CONTRACT_ABI_GQL,
       variables: { address: contractAddress },
       fetchPolicy: "network-only",
     })
-  ).pipe(
+  )*/
+  return queryGql$(httpClient, getContractAbiQuery(contractAddress)).pipe(
     take(1),
     map((verContracts: any) =>
       verContracts.data.verifiedContracts.map(

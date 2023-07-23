@@ -1,15 +1,4 @@
-import { gql } from "@apollo/client";
-import { SIGNER_TOKENS_QUERY } from "./signerTokens.gql";
-
-/*export const CONTRACT_DATA_GQL = gql`
-  subscription contract_data_query($addresses: [String!]!) {
-    verifiedContracts(where: { id_in: $addresses }, limit: 300) {
-      id
-      contractData
-    }
-  }
-`;*/
-export const CONTRACT_DATA_QUERY = `
+const CONTRACT_DATA_QUERY = `
   query contract_data_query($addresses: [String!]!) {
     verifiedContracts(where: { id_in: $addresses }, limit: 300) {
       id
@@ -25,7 +14,7 @@ export const getContractDataQuery = (addresses: string[]) => {
   };
 };
 
-export const CONTRACT_ABI_GQL = gql`
+const CONTRACT_ABI_QUERY = `
   query contract_data_query($address: String!) {
     verifiedContracts(where: { id_containsInsensitive: $address }, limit: 1) {
       id
@@ -33,3 +22,10 @@ export const CONTRACT_ABI_GQL = gql`
     }
   }
 `;
+
+export const getContractAbiQuery = (address: string) => {
+  return {
+    query: CONTRACT_ABI_QUERY,
+    variables: { address },
+  };
+};

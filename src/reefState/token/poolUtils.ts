@@ -1,17 +1,18 @@
 // TODO when network changes signer changes as well? this could make 2 requests unnecessary - check
-import { zenToRx } from "../../graphql";
-import { AVAILABLE_REEF_POOLS_GQL } from "../../graphql/availablePools.gql";
+import { getAvailablePoolsQuery } from "../../graphql/availablePools.gql";
 import { REEF_ADDRESS } from "../../token/tokenModel";
 import { Observable } from "rxjs";
+import { queryGql$ } from "./selectedAccountTokenBalances";
 
-export const loadAvailablePools = ([apollo, provider]): Observable<any> =>
-  zenToRx(
+export const loadAvailablePools = ([httpClient, provider]): Observable<any> =>
+  /*zenToRx(
     apollo.subscribe({
       query: AVAILABLE_REEF_POOLS_GQL,
       variables: { hasTokenAddress: REEF_ADDRESS },
       fetchPolicy: "network-only",
     })
-  );
+  )*/
+  queryGql$(httpClient, getAvailablePoolsQuery(REEF_ADDRESS));
 
 export const toAvailablePools = ({ data: { verified_pool: pools } }) =>
   pools.map(pool => ({

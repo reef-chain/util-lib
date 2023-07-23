@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const AVAILABLE_REEF_POOLS_GQL = gql`
-  subscription pools_query($hasTokenAddress: String!) {
+const AVAILABLE_POOLS_QUERY = `
+  query pools_query($hasTokenAddress: String!) {
     verified_pool(
       where: {
         _or: [
@@ -45,3 +45,10 @@ export const AVAILABLE_REEF_POOLS_GQL = gql`
     }
   }
 `;
+
+export const getAvailablePoolsQuery = (withTokenAddress: string) => {
+  return {
+    query: AVAILABLE_POOLS_QUERY,
+    variables: { hasTokenAddress: withTokenAddress },
+  };
+};

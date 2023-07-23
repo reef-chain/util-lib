@@ -9,20 +9,21 @@ import {
 } from "rxjs";
 import { BigNumber } from "ethers";
 import { ContractType, NFT } from "../../token/tokenModel";
-import { zenToRx } from "../../graphql";
 import { ipfsUrlResolverFn, resolveNftImageLinks$ } from "../../token/nftUtil";
 import { ReefAccount } from "../../account/accountModel";
 import {
   collectFeedbackDMStatus,
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
-import { SIGNER_NFTS_GQL } from "../../graphql/signerNfts.gql";
+import { getSignerNftsQuery } from "../../graphql/signerNfts.gql";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
 import { Provider } from "@reef-defi/evm-provider";
 import { instantProvider$ } from "../providerState";
+import { queryGql$ } from "./selectedAccountTokenBalances";
+import { AxiosInstance } from "axios";
 
 export let _NFT_IPFS_RESOLVER_FN: ipfsUrlResolverFn | undefined;
 export const setNftIpfsResolverFn = (val?: ipfsUrlResolverFn) => {
@@ -54,12 +55,18 @@ const parseTokenHolderArray = (resArr: VerifiedNft[]): NFT[] =>
     }
   );
 
-export const loadSignerNfts = ([apollo, signer, forceReload]: [
-  any,
+export const loadSignerNfts = ([
+  httpClient,
+  signer,
+  forceReload,
+  nftBalanceUpdated,
+]: [
+  AxiosInstance,
   StatusDataObject<ReefAccount>,
+  boolean,
   boolean
 ]): Observable<StatusDataObject<StatusDataObject<NFT>[]>> =>
-  !signer || !apollo
+  !signer || !httpClient
     ? of(
         toFeedbackDM(
           [],
@@ -67,16 +74,18 @@ export const loadSignerNfts = ([apollo, signer, forceReload]: [
           "Signer not set"
         )
       )
-    : zenToRx(
-        apollo.subscribe({
+    : /*zenToRx(
+        httpClient.subscribe({
           query: SIGNER_NFTS_GQL,
           variables: {
             accountId: (signer.data as ReefAccount).address,
           },
           fetchPolicy: "network-only",
         })
-      ).pipe(
+      )*/
+      queryGql$(httpClient, getSignerNftsQuery(signer.data.address)).pipe(
         map((res: any) => {
+          console.log("rrr", res);
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders as VerifiedNft[];
           }
