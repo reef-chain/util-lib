@@ -1,23 +1,34 @@
-import { map, merge, mergeWith, startWith, Subject, switchMap } from "rxjs";
+import {
+  map,
+  merge,
+  mergeWith,
+  share,
+  shareReplay,
+  startWith,
+  Subject,
+  switchMap,
+} from "rxjs";
 import { getLatestBlockTokenUpdates$ } from "../../network";
 import { selectedAccountAddressChange$ } from "../account/selectedAccountAddressChange";
 
 export const selectedAccountFtBalanceUpdate$ =
   selectedAccountAddressChange$.pipe(
     switchMap(addr => getLatestBlockTokenUpdates$([addr.data.address])),
-    map(() => true)
+    map(() => true),
+    share()
   );
 
 export const selectedAccountNftBalanceUpdate$ =
   selectedAccountAddressChange$.pipe(
     switchMap(addr => getLatestBlockTokenUpdates$([addr.data.address])),
-    map(() => true)
+    map(() => true),
+    share()
   );
 
 export const selectedAccountAnyBalanceUpdate$ = merge(
   selectedAccountFtBalanceUpdate$,
   selectedAccountNftBalanceUpdate$
-);
+).pipe(share());
 
 export const reloadTokens = () => {
   forceTokenValuesReloadSubj.next(true);

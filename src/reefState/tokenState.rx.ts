@@ -82,7 +82,7 @@ export const selectedTokenBalances_status$: Observable<
   httpClientInstance$,
   selectedAccountAddressChange$,
   forceReload$,
-  selectedAccountFtBalanceUpdate$,
+  selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
     const [httpClient, signer, forceReload, _] = vals;
@@ -208,7 +208,7 @@ export const selectedNFTs_status$: Observable<
   httpClientInstance$,
   selectedAccountAddressChange$,
   forceReload$,
-  selectedAccountNftBalanceUpdate$,
+  selectedAccountNftBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(v => loadSignerNfts(v)),
   mergeWith(
@@ -219,7 +219,6 @@ export const selectedNFTs_status$: Observable<
   catchError(err =>
     of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
   ),
-  // tap((v)=>{console.log('lib 1NFTsssss =',v)}),
   shareReplay(1)
 );
 
@@ -232,7 +231,7 @@ export const selectedTransactionHistory_status$: Observable<
   selectedNetwork$,
   selectedProvider$,
   forceReload$,
-  selectedAccountAnyBalanceUpdate$,
+  selectedAccountAnyBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(loadTransferHistory),
   map(vArr =>
