@@ -5,8 +5,9 @@ import {
   selectedNFTs_status$,
   selectedTokenBalances_status$,
   selectedTokenPrices_status$,
+  selectedTransactionHistory_status$,
 } from "../../src/reefState";
-import { firstValueFrom, skip, skipWhile, tap } from "rxjs";
+import { firstValueFrom, skipWhile, tap } from "rxjs";
 import { AVAILABLE_NETWORKS } from "../../src/network";
 import { REEF_ADDRESS } from "../../src/token";
 
@@ -61,7 +62,21 @@ describe("get tokens", () => {
   it("should return nfts", async () => {
     const res = await firstValueFrom(
       selectedNFTs_status$.pipe(
-        tap(v => console.log("NNN", v)),
+        skipWhile(
+          value =>
+            !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA) ||
+            value.getStatusList().length != 1
+        )
+      )
+    );
+    expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    expect(res.data.length).greaterThan(0);
+  }, 20000);
+
+  it("should return history", async () => {
+    const res = await firstValueFrom(
+      selectedTransactionHistory_status$.pipe(
+        tap(v => console.log("NNNvv", v)),
         skipWhile(
           value =>
             !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA) ||

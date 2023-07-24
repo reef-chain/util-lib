@@ -1,7 +1,6 @@
 import {
   catchError,
   combineLatest,
-  debounceTime,
   from,
   map,
   mergeWith,
@@ -9,13 +8,8 @@ import {
   of,
   shareReplay,
   startWith,
-  Subject,
   switchMap,
-  tap,
-  throttleTime,
-  withLatestFrom,
 } from "rxjs";
-import { loadAvailablePools, toAvailablePools } from "./token/poolUtils";
 import {
   NFT,
   Token,
@@ -27,20 +21,18 @@ import { reefPrice$ } from "../token/reefPrice";
 import {
   loadAccountTokens_sdo,
   replaceReefBalanceFromAccount,
-  setReefBalanceFromAccount,
 } from "./token/selectedAccountTokenBalances";
-import { apolloClientInstance$ } from "../graphql";
 import { selectedAccount_status$ } from "./account/selectedAccount";
 import { selectedNetwork$ } from "./networkState";
-import { AvailablePool, Pool } from "../token/pool";
+import { Pool } from "../token/pool";
 import { selectedAccountAddressChange$ } from "./account/selectedAccountAddressChange";
 import { Network } from "../network/network";
 import { ReefAccount } from "../account/accountModel";
 import { fetchPools$ } from "../pools/pools";
 import {
   collectFeedbackDMStatus,
-  StatusDataObject,
   FeedbackStatusCode,
+  StatusDataObject,
   toFeedbackDM,
 } from "./model/statusDataObject";
 import { loadSignerNfts } from "./token/nftUtils";
@@ -128,7 +120,7 @@ export const selectedPools_status$: Observable<
         StatusDataObject<ReefAccount>
       ]
     ) => {
-      let [tkns, networkProvider, signer] = valArr;
+      const [tkns, networkProvider, signer] = valArr;
       if (!signer) {
         return of(
           toFeedbackDM(
@@ -226,7 +218,7 @@ export const selectedNFTs_status$: Observable<
 export const selectedTransactionHistory_status$: Observable<
   StatusDataObject<TokenTransfer[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
   selectedNetwork$,
   selectedProvider$,

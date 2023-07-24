@@ -85,7 +85,6 @@ export const loadSignerNfts = ([
       )*/
       queryGql$(httpClient, getSignerNftsQuery(signer.data.address)).pipe(
         map((res: any) => {
-          console.log("rrr", res);
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders as VerifiedNft[];
           }

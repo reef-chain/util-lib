@@ -1,13 +1,4 @@
-import {
-  map,
-  merge,
-  mergeWith,
-  share,
-  shareReplay,
-  startWith,
-  Subject,
-  switchMap,
-} from "rxjs";
+import { map, merge, share, startWith, Subject, switchMap } from "rxjs";
 import { getLatestBlockTokenUpdates$ } from "../../network";
 import { selectedAccountAddressChange$ } from "../account/selectedAccountAddressChange";
 
