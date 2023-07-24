@@ -1,12 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   getLatestBlockTokenUpdates$,
   _getBlockAccountTokenUpdates$,
 } from "../../src/network/latestBlock";
 import { firstValueFrom, Observable, Subject } from "rxjs";
+import { initReefState, selectedNetwork$ } from "../../src/reefState";
+import { AVAILABLE_NETWORKS } from "../../src/network";
 
-describe("Latest block functions", () => {
-  it("should get latest block", async () => {
+describe("Latest block", () => {
+  beforeAll(async () => {
+    initReefState({
+      network: AVAILABLE_NETWORKS.testnet,
+      jsonAccounts: {
+        accounts: [
+          {
+            address: "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN",
+            // address: "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP",
+            isSelected: true,
+          },
+        ],
+        injectedSigner: {},
+      },
+    });
+  });
+
+  it("check correct data format", async () => {
     const pusherLatestBlockSubj = new Subject();
     setTimeout(function () {
       pusherLatestBlockSubj.next({
@@ -26,11 +44,11 @@ describe("Latest block functions", () => {
       });
     }, 1000);
     const latestBlock$ = _getBlockAccountTokenUpdates$(
+      pusherLatestBlockSubj.asObservable() as Observable<any>,
       [
         "0x7Ca7886e0b851e6458770BC1d85Feb6A5307b9a2",
         "0xfb730ec3f38aB358AafA2EdD3fB2C17a5337dD7C",
-      ],
-      pusherLatestBlockSubj.asObservable() as Observable<any>
+      ]
     );
     const block = await firstValueFrom(latestBlock$);
     expect(block).toBeDefined();
@@ -58,8 +76,8 @@ describe("Latest block functions", () => {
       });
     }, 3000);
     const latestBlock1$ = _getBlockAccountTokenUpdates$(
-      ["0x7Ca7886e0b851e6458770BC1d85Feb6A5307b9a2"],
-      pusherLatestBlockSubj1.asObservable() as Observable<any>
+      pusherLatestBlockSubj1.asObservable() as Observable<any>,
+      ["0x7Ca7886e0b851e6458770BC1d85Feb6A5307b9a2"]
     );
 
     const block1 = await firstValueFrom(latestBlock1$);
@@ -84,11 +102,18 @@ describe("Latest block functions", () => {
       });
     }, 1000);
     const latestBlock2$ = _getBlockAccountTokenUpdates$(
-      [""],
-      pusherLatestBlockSubj2.asObservable() as Observable<any>
+      pusherLatestBlockSubj2.asObservable() as Observable<any>,
+      [""]
     );
 
     const block2 = await firstValueFrom(latestBlock2$);
     expect(block2.addresses.length).toBe(4);
   });
+
+  it("should get latest latest data", async ctx => {
+    const network = await firstValueFrom(selectedNetwork$);
+    expect(network).toBeTruthy();
+    const block = await firstValueFrom(getLatestBlockTokenUpdates$([]));
+    expect(block.blockHeight).toBeGreaterThan(0);
+  }, 30000);
 });

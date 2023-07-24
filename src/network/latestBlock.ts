@@ -1,9 +1,20 @@
 import Pusher from "pusher-js";
-import { from, map, Observable, shareReplay, switchMap, tap } from "rxjs";
+import {
+  combineLatest,
+  from,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+  tap,
+} from "rxjs";
 import { filter } from "rxjs/operators";
+import { selectedNetwork$ } from "../reefState";
+import { AVAILABLE_NETWORKS, Network } from "./network";
 
 const PUSHER_KEY = "fc5ad78eb31981de6c67";
 const APP_CLUSTER = "eu";
+const INDEXED_BLOCK_CHANNEL_NAME = "reef-chain";
 let pusherClient;
 let block$: Observable<PusherLatestBlock>;
 
@@ -44,11 +55,18 @@ export interface LatestAddressUpdates extends LatestBlock {
   addresses: string[];
 }
 
-const latestBlockUpdates$ = from(getPusher()).pipe(
-  switchMap((pusher: Pusher) => {
+const latestBlockUpdates$ = combineLatest([
+  from(getPusher()),
+  selectedNetwork$,
+]).pipe(
+  switchMap(([pusher, network]: [Pusher, Network]) => {
     return new Observable<PusherLatestBlock>(obs => {
-      const channel = pusher.subscribe("reef-chain");
-      channel.bind("block-finalised", data => {
+      const channelEvent =
+        network.rpcUrl === AVAILABLE_NETWORKS.mainnet.rpcUrl
+          ? "block-finalised"
+          : "block-finalised-testnet";
+      const channel = pusher.subscribe(INDEXED_BLOCK_CHANNEL_NAME);
+      channel.bind(channelEvent, data => {
         obs.next(data);
       });
 
@@ -61,8 +79,8 @@ const latestBlockUpdates$ = from(getPusher()).pipe(
 );
 
 export const _getBlockAccountTokenUpdates$ = (
-  filterAccountAddresses: string[],
-  latestBlockUpdates: Observable<PusherLatestBlock>
+  latestBlockUpdates: Observable<PusherLatestBlock>,
+  filterAccountAddresses?: string[]
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates.pipe(
     map((blockUpdates: PusherLatestBlock) => {
@@ -83,11 +101,17 @@ export const _getBlockAccountTokenUpdates$ = (
       );
       return { ...blockUpdates, addresses: filtered } as LatestAddressUpdates;
     }),
-    filter(v => v != null && !!v.addresses.length)
+    filter(
+      v =>
+        (filterAccountAddresses && v != null && !!v.addresses.length) ||
+        !filterAccountAddresses ||
+        !filterAccountAddresses?.length
+    )
   );
 
-export const getLatestBlockTokenUpdates$ = (filterAccountAddresses: string[]) =>
-  _getBlockAccountTokenUpdates$(filterAccountAddresses, latestBlockUpdates$);
+export const getLatestBlockTokenUpdates$ = (
+  filterAccountAddresses?: string[]
+) => _getBlockAccountTokenUpdates$(latestBlockUpdates$, filterAccountAddresses);
 
 export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
