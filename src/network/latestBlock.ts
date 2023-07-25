@@ -6,7 +6,6 @@ import {
   Observable,
   shareReplay,
   switchMap,
-  tap,
 } from "rxjs";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "../reefState";
@@ -17,6 +16,18 @@ const APP_CLUSTER = "eu";
 const INDEXED_BLOCK_CHANNEL_NAME = "reef-chain";
 let pusherClient;
 let block$: Observable<PusherLatestBlock>;
+
+export const enum AccountIndexedTransactionType {
+  REEF20_TRANSFER,
+  REEF_NFT_TRANSFER,
+  REEF_BIND_TX,
+}
+
+const allIndexedTransactions = [
+  AccountIndexedTransactionType.REEF_BIND_TX,
+  AccountIndexedTransactionType.REEF_NFT_TRANSFER,
+  AccountIndexedTransactionType.REEF20_TRANSFER,
+];
 
 const getPusher = async () => {
   if (!pusherClient) {
@@ -45,9 +56,13 @@ interface LatestBlock {
   blockId: string;
 }
 
-interface PusherLatestBlock extends LatestBlock {
-  updatedEvmAccounts: string[];
-  updatedNativeAccounts: string[];
+export interface PusherLatestBlock extends LatestBlock {
+  updatedAccounts: {
+    REEF20Transfers: string[];
+    REEF721Transfers: string[];
+    REEF1155Transfers: string[];
+    boundEvm: string[];
+  };
   updatedContracts: string[];
 }
 
@@ -75,17 +90,60 @@ const latestBlockUpdates$ = combineLatest([
       };
     });
   }),
+
   shareReplay(1)
 );
 
-export const _getBlockAccountTokenUpdates$ = (
+const getUpdatedAccounts = (
+  blockUpdates: PusherLatestBlock,
+  filterTransactionType?: AccountIndexedTransactionType
+) => {
+  switch (filterTransactionType) {
+    case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
+      return Array.from(
+        new Set(
+          blockUpdates.updatedAccounts.REEF1155Transfers.concat(
+            blockUpdates.updatedAccounts.REEF721Transfers
+          )
+        )
+      );
+    case AccountIndexedTransactionType.REEF20_TRANSFER:
+      return blockUpdates.updatedAccounts.REEF20Transfers;
+    case AccountIndexedTransactionType.REEF_BIND_TX:
+      return blockUpdates.updatedAccounts.boundEvm;
+  }
+  const allUpdated = Object.keys(blockUpdates.updatedAccounts).reduce(
+    (mergedArr: string[], key: string) => {
+      return mergedArr.concat(blockUpdates.updatedAccounts[key]);
+    },
+    []
+  );
+  return Array.from(new Set(allUpdated));
+};
+
+const getNftUpdatedAccounts = (blockUpdates: PusherLatestBlock): string[] => {
+  return Array.from(
+    new Set(
+      blockUpdates.updatedAccounts.REEF1155Transfers.concat(
+        blockUpdates.updatedAccounts.REEF721Transfers
+      )
+    )
+  );
+};
+
+export const _getBlockAccountTransactionUpdates$ = (
   latestBlockUpdates: Observable<PusherLatestBlock>,
-  filterAccountAddresses?: string[]
+  filterAccountAddresses?: string[],
+  filterTransactionType: AccountIndexedTransactionType[] = allIndexedTransactions
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates.pipe(
     map((blockUpdates: PusherLatestBlock) => {
-      const allUpdatedAccounts = blockUpdates.updatedEvmAccounts.concat(
-        blockUpdates.updatedNativeAccounts
+      const allUpdatedAccounts = Array.from(
+        new Set(
+          filterTransactionType?.reduce((accs: string[], curr) => {
+            return accs.concat(getUpdatedAccounts(blockUpdates, curr));
+          }, [])
+        )
       );
       if (
         !filterAccountAddresses ||
@@ -96,6 +154,10 @@ export const _getBlockAccountTokenUpdates$ = (
           addresses: allUpdatedAccounts,
         } as LatestAddressUpdates;
       }
+      if (filterAccountAddresses.some(addr => addr.startsWith("0x"))) {
+        console.warn("@reef-chain/util-lib // Only filter by native address.");
+      }
+
       const filtered = allUpdatedAccounts.filter(addr =>
         filterAccountAddresses.some(a => addr.trim() === a.trim())
       );
@@ -110,8 +172,14 @@ export const _getBlockAccountTokenUpdates$ = (
   );
 
 export const getLatestBlockTokenUpdates$ = (
-  filterAccountAddresses?: string[]
-) => _getBlockAccountTokenUpdates$(latestBlockUpdates$, filterAccountAddresses);
+  filterAccountAddresses?: string[],
+  filterTransactionType?: AccountIndexedTransactionType[]
+) =>
+  _getBlockAccountTransactionUpdates$(
+    latestBlockUpdates$,
+    filterAccountAddresses,
+    filterTransactionType
+  );
 
 export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
