@@ -29,7 +29,6 @@
     "circular-dep-test": "dpdm --no-warning --no-tree ./src/index.ts "
   },
   "dependencies": {
-    "@apollo/client": "^3.6.9",
     "@polkadot/extension-inject": "^0.44.6",
     "@reef-defi/evm-provider": "^1.0.10",
     "@reef-defi/extension-base": "^1.0.10",
@@ -38,8 +37,6 @@
     "@types/react": "17.0.2",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
-    "graphql": "^16.6.0",
-    "graphql-ws": "^5.11.2",
     "pusher-js": "^8.2.0",
     "react": "17.0.2"
   },

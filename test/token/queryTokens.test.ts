@@ -1,15 +1,17 @@
 import { beforeAll, describe, expect, it } from "vitest";
+import { initReefState } from "../../src/reefState/initReefState";
 import {
-  FeedbackStatusCode,
-  initReefState,
   selectedNFTs_status$,
   selectedTokenBalances_status$,
   selectedTokenPrices_status$,
   selectedTransactionHistory_status$,
-} from "../../src/reefState";
-import { firstValueFrom, skipWhile, tap } from "rxjs";
-import { AVAILABLE_NETWORKS } from "../../src/network";
-import { REEF_ADDRESS } from "../../src/token";
+} from "../../src/reefState/tokenState.rx";
+import { FeedbackStatusCode } from "../../src/reefState/model/statusDataObject";
+import { firstValueFrom, skip, skipWhile, tap } from "rxjs";
+import { AVAILABLE_NETWORKS } from "../../src/network/network";
+import { REEF_ADDRESS } from "../../src/token/tokenModel";
+import { httpClientInstance$ } from "../../src/graphql/httpClient";
+import { accountsWithUpdatedIndexedData$ } from "../../src/reefState/account/accountsIndexedData";
 
 describe("get tokens", () => {
   const signingKey = {};
@@ -27,6 +29,21 @@ describe("get tokens", () => {
         injectedSigner: signingKey,
       },
     });
+  });
+
+  it.only("req", async () => {
+    const httpClient = await firstValueFrom(httpClientInstance$);
+    const addresses = ["5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN"];
+    // const vv = await firstValueFrom(indexedAccountValues$.pipe(
+    //     tap(v=>console.log('val=',v)),
+    //     skip(9)));
+    const vv = await firstValueFrom(
+      accountsWithUpdatedIndexedData$.pipe(
+        // tap(v => console.log("val=", v)),
+        skip(3)
+      )
+    );
+    // console.log('val=',vv);
   });
 
   it("should return ft balances", async () => {

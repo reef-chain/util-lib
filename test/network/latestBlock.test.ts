@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import {
-  getLatestBlockTokenUpdates$,
+  getLatestBlockAccountUpdates$,
   _getBlockAccountTransactionUpdates$,
   PusherLatestBlock,
   AccountIndexedTransactionType,
@@ -184,8 +184,7 @@ describe("Latest block", () => {
   it("should get latest latest data", async ctx => {
     const network = await firstValueFrom(selectedNetwork$);
     expect(network).toBeTruthy();
-    const block = await firstValueFrom(getLatestBlockTokenUpdates$([]));
-    console.log("BBBB", block);
+    const block = await firstValueFrom(getLatestBlockAccountUpdates$([]));
     expect(block.blockHeight).toBeGreaterThan(0);
   }, 30000);
 });

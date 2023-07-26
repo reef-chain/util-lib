@@ -13,20 +13,24 @@ import {
   startWith,
   Subject,
   switchMap,
-  tap,
 } from "rxjs";
+import {
+  instantProvider$,
+  selectedNetworkProvider$,
+  selectedProvider$,
+} from "../providerState";
 import { Provider } from "@reef-defi/evm-provider";
 import { ReefAccount } from "../../account/accountModel";
 import { BigNumber } from "ethers";
 import { availableAddresses$ } from "./availableAddresses";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
-import { instantProvider$ } from "../providerState";
+import { selectedNetwork$ } from "../networkState";
 
 const getUpdatedAccountChainBalances$ = (
   providerAndSigners: [Provider | undefined, ReefAccount[]]
@@ -35,12 +39,12 @@ const getUpdatedAccountChainBalances$ = (
   | { balances: any; signers: ReefAccount[] }
 > => {
   const signers: ReefAccount[] = providerAndSigners[1];
-
+  console.log("valEEEE=", providerAndSigners);
   return of(providerAndSigners).pipe(
     switchMap((provAndSigs: [Provider | undefined, ReefAccount[]]) => {
-      let provider = provAndSigs[0];
+      const provider = provAndSigs[0];
       if (!provider) {
-        let signers = provAndSigs[1];
+        const signers = provAndSigs[1];
         return merge(of(signers), NEVER).pipe(
           map(sgs =>
             toFeedbackDM(
@@ -148,10 +152,24 @@ const getUpdatedAccountChainBalances$ = (
   );
 };
 
+console.log(
+  "val0000888=",
+  !!instantProvider$,
+  !!selectedProvider$,
+  !!selectedNetworkProvider$,
+  !!selectedNetwork$
+);
 export const accountsWithUpdatedChainDataBalances$: Observable<
   StatusDataObject<StatusDataObject<ReefAccount>[]>
 > = combineLatest([instantProvider$, availableAddresses$]).pipe(
-  switchMap(getUpdatedAccountChainBalances$),
+  catchError(err => {
+    console.log("valoooooo=", err.message);
+    return getAddressesErrorFallback(err, "Error chain balance=", "balance");
+  }),
+  switchMap(([provider, acc]) => {
+    // console.log("valuuuuu=", provider, acc);
+    return getUpdatedAccountChainBalances$(provider, acc);
+  }),
   map(
     (
       balancesAndSigners:

@@ -50,8 +50,9 @@ import {
   selectedAccountFtBalanceUpdate$,
   selectedAccountNftBalanceUpdate$,
 } from "./token/reloadTokenState";
-import { getLatestBlockTokenUpdates$ } from "../network";
+import { getLatestBlockAccountUpdates$ } from "../network";
 import { httpClientInstance$ } from "../graphql/httpClient";
+import { AccountIndexedTransactionType } from "../network/latestBlock";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
@@ -78,15 +79,33 @@ export const selectedTokenBalances_status$: Observable<
 ]).pipe(
   switchMap(vals => {
     const [httpClient, signer, forceReload, _] = vals;
-    getLatestBlockTokenUpdates$([signer.data.address]).pipe(startWith(true));
-    return loadAccountTokens_sdo(vals).pipe(
-      switchMap(
-        (tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>) => {
-          return combineLatest([of(tkns), selectedAccountReefBalance$]).pipe(
-            map(arrVal => replaceReefBalanceFromAccount(arrVal[0], arrVal[1]))
-          );
-        }
-      ),
+    return getLatestBlockAccountUpdates$(
+      [signer.data.address],
+      [AccountIndexedTransactionType.REEF20_TRANSFER]
+    ).pipe(
+      startWith(true),
+      switchMap(_ => {
+        return loadAccountTokens_sdo(vals).pipe(
+          switchMap(
+            (
+              tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+            ) => {
+              return combineLatest([
+                of(tkns),
+                selectedAccountReefBalance$,
+              ]).pipe(
+                map(arrVal =>
+                  replaceReefBalanceFromAccount(arrVal[0], arrVal[1])
+                )
+              );
+            }
+          ),
+          catchError((err: any) => {
+            console.log("ERROR2 selectedTokenBalances_status$=", err);
+            return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+          })
+        );
+      }),
       catchError((err: any) => {
         console.log("ERROR0 selectedTokenBalances_status$=", err);
         return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));

@@ -225,13 +225,6 @@ export const loadAccountTokens_sdo = ([
 ]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > => {
-  // TODO move httpClient in place of httpClient|httpClient so both could be used - remove httpClient for now but so it's future compatible
-
-  //.. replace httpClient with httpClientInstance$
-  /*const httpClient = axios.create({
-    baseURL: "https://squid.subsquid.io/reef-explorer-testnet/graphql",
-  });*/
-
   // TODO check the status of signer - could be loading?
   return !signer
     ? of(

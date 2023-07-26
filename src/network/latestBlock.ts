@@ -1,20 +1,23 @@
 import Pusher from "pusher-js";
 import {
+  catchError,
   combineLatest,
   from,
   map,
+  NEVER,
   Observable,
+  of,
   shareReplay,
   switchMap,
 } from "rxjs";
 import { filter } from "rxjs/operators";
-import { selectedNetwork$ } from "../reefState";
+import { selectedNetwork$ } from "../reefState/networkState";
 import { AVAILABLE_NETWORKS, Network } from "./network";
 
 const PUSHER_KEY = "fc5ad78eb31981de6c67";
 const APP_CLUSTER = "eu";
 const INDEXED_BLOCK_CHANNEL_NAME = "reef-chain";
-let pusherClient;
+let pusherClient: Pusher;
 let block$: Observable<PusherLatestBlock>;
 
 export const enum AccountIndexedTransactionType {
@@ -29,25 +32,27 @@ const allIndexedTransactions = [
   AccountIndexedTransactionType.REEF20_TRANSFER,
 ];
 
-const getPusher = async () => {
+const getPusher = (): Promise<Pusher> => {
   if (!pusherClient) {
-    pusherClient = new Pusher(PUSHER_KEY, {
-      cluster: APP_CLUSTER,
-    });
+    return new Promise((resolve, reject) => {
+      pusherClient = new Pusher(PUSHER_KEY, {
+        cluster: APP_CLUSTER,
+      });
+      pusherClient.connection.bind("error", function (err) {
+        if (err.error.data.code === 4004) {
+          console.log("Pusher Service Over limit!");
+          return;
+        }
+        console.log("Pusher Service ERR", err);
+        reject("Pusher connect error=" + err?.error?.message);
+      });
 
-    pusherClient.connection.bind("error", function (err) {
-      if (err.error.data.code === 4004) {
-        console.log("Pusher Service Over limit!");
-      }
-    });
-    const connectedPromise = new Promise(resolve => {
       pusherClient.connection.bind("connected", v => {
-        resolve(true);
+        resolve(pusherClient);
       });
     });
-    await connectedPromise;
   }
-  return pusherClient;
+  return Promise.resolve(pusherClient);
 };
 
 interface LatestBlock {
@@ -132,11 +137,11 @@ const getNftUpdatedAccounts = (blockUpdates: PusherLatestBlock): string[] => {
 };
 
 export const _getBlockAccountTransactionUpdates$ = (
-  latestBlockUpdates: Observable<PusherLatestBlock>,
+  latestBlockUpdates$: Observable<PusherLatestBlock>,
   filterAccountAddresses?: string[],
   filterTransactionType: AccountIndexedTransactionType[] = allIndexedTransactions
 ): Observable<LatestAddressUpdates> =>
-  latestBlockUpdates.pipe(
+  latestBlockUpdates$.pipe(
     map((blockUpdates: PusherLatestBlock) => {
       const allUpdatedAccounts = Array.from(
         new Set(
@@ -168,10 +173,14 @@ export const _getBlockAccountTransactionUpdates$ = (
         (filterAccountAddresses && v != null && !!v.addresses.length) ||
         !filterAccountAddresses ||
         !filterAccountAddresses?.length
-    )
+    ),
+    catchError(err => {
+      console.log("_getBlockAccountTransactionUpdates$ err=", err.message);
+      return of(null);
+    })
   );
 
-export const getLatestBlockTokenUpdates$ = (
+export const getLatestBlockAccountUpdates$ = (
   filterAccountAddresses?: string[],
   filterTransactionType?: AccountIndexedTransactionType[]
 ) =>
@@ -179,19 +188,33 @@ export const getLatestBlockTokenUpdates$ = (
     latestBlockUpdates$,
     filterAccountAddresses,
     filterTransactionType
+  ).pipe(
+    catchError(err => {
+      console.log("getLatestBlockAccountUpdates$ err=", err.message);
+      return of(null);
+    })
   );
 
 export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
-): Observable<string[]> =>
+): Observable<LatestAddressUpdates> =>
   latestBlockUpdates$.pipe(
-    map((blockUpdates: PusherLatestBlock): string[] => {
+    map((blockUpdates: PusherLatestBlock) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {
         return blockUpdates.updatedContracts;
       }
-      return blockUpdates.updatedContracts.filter(addr =>
+      const updatedContracts = blockUpdates.updatedContracts.filter(addr =>
         filterContractAddresses.some(a => addr.trim() === a.trim())
       );
+      if (!updatedContracts.length) {
+        return null;
+      }
+      return {
+        ...blockUpdates,
+        addresses: updatedContracts,
+      } as LatestAddressUpdates;
     }),
-    filter(v => v != null && !!v.length)
-  );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    filter(v => !!v)
+  ) as Observable<LatestAddressUpdates>;

@@ -1,7 +1,6 @@
-import { map, merge, Observable, shareReplay } from "rxjs";
+import { map, merge, Observable, shareReplay, filter } from "rxjs";
 import axios, { AxiosInstance } from "axios";
 import { graphQlUrls$ } from "./gqlUtil";
-import { filter } from "rxjs/operators";
 
 export const httpClientInstance$: Observable<AxiosInstance> = merge(
   graphQlUrls$
