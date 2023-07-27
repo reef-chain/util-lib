@@ -33,7 +33,7 @@ describe("get tokens", () => {
     });
   });
 
-  it.only("req", async () => {
+  it("test account indexed data", async () => {
     const res = await firstValueFrom(
       accountsWithUpdatedIndexedData$.pipe(
         skipWhile(
@@ -43,6 +43,7 @@ describe("get tokens", () => {
         )
       )
     );
+    console.log("acc=", res.data[0].data);
     console.log(
       "balance =",
       res.data[0].data.balance?.div(BigNumber.from(10).pow(18)).toString()
@@ -52,6 +53,7 @@ describe("get tokens", () => {
     expect(res.data.length).greaterThan(0);
     expect(res.data[0].data.address).toEqual(selectedAddress);
     expect(res.data[0].data.balance?.gt("0")).toBeTruthy();
+    expect(res.data[0].data.isEvmClaimed).toBeDefined();
   });
 
   it("should return ft balances", async () => {
