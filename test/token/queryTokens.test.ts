@@ -7,10 +7,9 @@ import {
   selectedTransactionHistory_status$,
 } from "../../src/reefState/tokenState.rx";
 import { FeedbackStatusCode } from "../../src/reefState/model/statusDataObject";
-import { firstValueFrom, skip, skipWhile, tap } from "rxjs";
+import { firstValueFrom, skipWhile, tap } from "rxjs";
 import { AVAILABLE_NETWORKS } from "../../src/network/network";
 import { REEF_ADDRESS } from "../../src/token/tokenModel";
-import { httpClientInstance$ } from "../../src/graphql/httpClient";
 import { accountsWithUpdatedIndexedData$ } from "../../src/reefState/account/accountsIndexedData";
 import { BigNumber } from "ethers";
 
