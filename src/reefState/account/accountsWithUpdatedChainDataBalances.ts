@@ -14,11 +14,7 @@ import {
   Subject,
   switchMap,
 } from "rxjs";
-import {
-  instantProvider$,
-  selectedNetworkProvider$,
-  selectedProvider$,
-} from "../providerState";
+import { instantProvider$ } from "../providerState";
 import { Provider } from "@reef-defi/evm-provider";
 import { ReefAccount } from "../../account/accountModel";
 import { BigNumber } from "ethers";
@@ -30,7 +26,6 @@ import {
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
-import { selectedNetwork$ } from "../networkState";
 
 const getUpdatedAccountChainBalances$ = (
   providerAndSigners: [Provider | undefined, ReefAccount[]]
@@ -39,7 +34,6 @@ const getUpdatedAccountChainBalances$ = (
   | { balances: any; signers: ReefAccount[] }
 > => {
   const signers: ReefAccount[] = providerAndSigners[1];
-  console.log("valEEEE=", providerAndSigners);
   return of(providerAndSigners).pipe(
     switchMap((provAndSigs: [Provider | undefined, ReefAccount[]]) => {
       const provider = provAndSigs[0];
@@ -152,24 +146,10 @@ const getUpdatedAccountChainBalances$ = (
   );
 };
 
-console.log(
-  "val0000888=",
-  !!instantProvider$,
-  !!selectedProvider$,
-  !!selectedNetworkProvider$,
-  !!selectedNetwork$
-);
 export const accountsWithUpdatedChainDataBalances$: Observable<
   StatusDataObject<StatusDataObject<ReefAccount>[]>
 > = combineLatest([instantProvider$, availableAddresses$]).pipe(
-  catchError(err => {
-    console.log("valoooooo=", err.message);
-    return getAddressesErrorFallback(err, "Error chain balance=", "balance");
-  }),
-  switchMap(([provider, acc]) => {
-    // console.log("valuuuuu=", provider, acc);
-    return getUpdatedAccountChainBalances$(provider, acc);
-  }),
+  switchMap(provider_accs => getUpdatedAccountChainBalances$(provider_accs)),
   map(
     (
       balancesAndSigners:

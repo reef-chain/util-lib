@@ -45,7 +45,6 @@ import { filter } from "rxjs/operators";
 import { BigNumber } from "ethers";
 import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
 import {
-  forceReload$,
   selectedAccountAnyBalanceUpdate$,
   selectedAccountFtBalanceUpdate$,
   selectedAccountNftBalanceUpdate$,
@@ -53,6 +52,7 @@ import {
 import { getLatestBlockAccountUpdates$ } from "../network";
 import { httpClientInstance$ } from "../graphql/httpClient";
 import { AccountIndexedTransactionType } from "../network/latestBlock";
+import { forceReload$ } from "./token/force-reload-tokens";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,

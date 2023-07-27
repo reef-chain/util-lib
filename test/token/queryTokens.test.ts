@@ -12,7 +12,9 @@ import { AVAILABLE_NETWORKS } from "../../src/network/network";
 import { REEF_ADDRESS } from "../../src/token/tokenModel";
 import { httpClientInstance$ } from "../../src/graphql/httpClient";
 import { accountsWithUpdatedIndexedData$ } from "../../src/reefState/account/accountsIndexedData";
+import { BigNumber } from "ethers";
 
+const selectedAddress = "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN";
 describe("get tokens", () => {
   const signingKey = {};
   beforeAll(async () => {
@@ -21,7 +23,7 @@ describe("get tokens", () => {
       jsonAccounts: {
         accounts: [
           {
-            address: "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN",
+            address: selectedAddress,
             // address: "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP",
             isSelected: true,
           },
@@ -32,18 +34,24 @@ describe("get tokens", () => {
   });
 
   it.only("req", async () => {
-    const httpClient = await firstValueFrom(httpClientInstance$);
-    const addresses = ["5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN"];
-    // const vv = await firstValueFrom(indexedAccountValues$.pipe(
-    //     tap(v=>console.log('val=',v)),
-    //     skip(9)));
-    const vv = await firstValueFrom(
+    const res = await firstValueFrom(
       accountsWithUpdatedIndexedData$.pipe(
-        // tap(v => console.log("val=", v)),
-        skip(3)
+        skipWhile(
+          value =>
+            !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA) ||
+            value.getStatusList().length != 1
+        )
       )
     );
-    // console.log('val=',vv);
+    console.log(
+      "balance =",
+      res.data[0].data.balance?.div(BigNumber.from(10).pow(18)).toString()
+    );
+    expect(res.getStatusList().length).toBe(1);
+    expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    expect(res.data.length).greaterThan(0);
+    expect(res.data[0].data.address).toEqual(selectedAddress);
+    expect(res.data[0].data.balance?.gt("0")).toBeTruthy();
   });
 
   it("should return ft balances", async () => {

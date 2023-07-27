@@ -15,12 +15,12 @@ import { Provider } from "@reef-defi/evm-provider";
 import { disconnectProvider, initProvider } from "../network/providerUtil";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";
-import { forceReload$ } from "./token/reloadTokenState";
 import {
   getCollectedWsStateValue$,
   WsConnectionState,
 } from "./ws-connection-state";
 import { Network } from "../network/network";
+import { forceReload$ } from "./token/force-reload-tokens";
 
 const providerConnStateSubj = new Subject<WsConnectionState>();
 export const providerConnState$: Observable<WsConnectionState> =
@@ -107,8 +107,6 @@ export const instantProvider$ = selectedProvider$.pipe(
   startWith(undefined),
   shareReplay(1)
 );
-console.log("ppppp=", instantProvider$);
-// export const setSelectedProvider = (provider: Provider): void => providerSubj.next(provider);
 
 function finalizeWithValue<T>(callback: (value: T) => void) {
   return (source: Observable<T>) =>

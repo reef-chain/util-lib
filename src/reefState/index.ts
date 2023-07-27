@@ -41,4 +41,5 @@ export {
 } from "./model/statusDataObject";
 export type { FeedbackStatus } from "./model/statusDataObject";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
-export { reloadTokens } from "./token/reloadTokenState";
+
+export { reloadTokens } from "./token/force-reload-tokens";

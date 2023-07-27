@@ -19,7 +19,8 @@ import {
   FeedbackStatusCode,
   toFeedbackDM,
 } from "../reefState/model/statusDataObject";
-import { forceReload$ } from "../reefState/token/reloadTokenState";
+
+import { forceReload$ } from "../reefState/token/force-reload-tokens";
 /*
 export const reefPrice$: Observable<number> = timer(0, 60000).pipe(
     switchMap(retrieveReefCoingeckoPrice),

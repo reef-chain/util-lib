@@ -28,11 +28,11 @@ import {
 import { ReefAccount } from "../../account/accountModel";
 import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
-import { reefTokenWithAmount } from "../../token";
 import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
 import { AxiosInstance } from "axios";
 import { graphqlRequest } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
+import { reefTokenWithAmount } from "src/token/tokenUtil";
 
 // eslint-disable-next-line camelcase
 export const fetchTokensData = (

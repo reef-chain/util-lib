@@ -1,4 +1,4 @@
-import { map, share, startWith, Subject, switchMap } from "rxjs";
+import { map, share, switchMap } from "rxjs";
 import { getLatestBlockAccountUpdates$ } from "../../network";
 import { selectedAccountAddressChange$ } from "../account/selectedAccountAddressChange";
 import { AccountIndexedTransactionType } from "../../network/latestBlock";
@@ -41,14 +41,3 @@ export const selectedAccountAnyBalanceUpdate$ =
     map(() => true),
     share()
   );
-
-export const reloadTokens = () => {
-  forceTokenValuesReloadSubj.next(true);
-  console.log("force lib reload tokens");
-};
-const forceTokenValuesReloadSubj = new Subject<boolean>();
-export const forceReload$ = forceTokenValuesReloadSubj.pipe(
-  // combineLatestWith(apolloClientWsConnState$, providerConnState$),
-  // debounceTime(3000),
-  startWith(true)
-);
