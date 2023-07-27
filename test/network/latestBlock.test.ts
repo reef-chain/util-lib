@@ -5,7 +5,7 @@ import {
   PusherLatestBlock,
   AccountIndexedTransactionType,
 } from "../../src/network/latestBlock";
-import { firstValueFrom, Observable, Subject } from "rxjs";
+import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
 import { AVAILABLE_NETWORKS } from "../../src/network";
 import PusherIntegration from "pusher-js/types/spec/javascripts/helpers/pusher_integration_class";
@@ -13,7 +13,7 @@ import PusherIntegration from "pusher-js/types/spec/javascripts/helpers/pusher_i
 describe("Latest block", () => {
   beforeAll(async () => {
     initReefState({
-      network: AVAILABLE_NETWORKS.testnet,
+      network: AVAILABLE_NETWORKS.mainnet,
       jsonAccounts: {
         accounts: [
           {
@@ -186,5 +186,17 @@ describe("Latest block", () => {
     expect(network).toBeTruthy();
     const block = await firstValueFrom(getLatestBlockAccountUpdates$([]));
     expect(block.blockHeight).toBeGreaterThan(0);
-  }, 30000);
+  }, 10000);
+
+  it.skip("should get token update", async ctx => {
+    const block = await firstValueFrom(
+      getLatestBlockAccountUpdates$(
+        [],
+        [AccountIndexedTransactionType.REEF20_TRANSFER]
+      ).pipe(
+        tap(v => console.log("val=", v)),
+        skip(100)
+      )
+    );
+  }, 100000);
 });

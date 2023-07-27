@@ -126,15 +126,38 @@ const getUpdatedAccounts = (
   return Array.from(new Set(allUpdated));
 };
 
-const getNftUpdatedAccounts = (blockUpdates: PusherLatestBlock): string[] => {
-  return Array.from(
-    new Set(
-      blockUpdates.updatedAccounts.REEF1155Transfers.concat(
-        blockUpdates.updatedAccounts.REEF721Transfers
-      )
-    )
-  );
-};
+function hasTransactionForTypes(
+  blockUpdates: PusherLatestBlock,
+  filterTransactionType: AccountIndexedTransactionType[]
+) {
+  if (!filterTransactionType.length) {
+    return true;
+  }
+
+  return filterTransactionType.some(tt => {
+    switch (tt) {
+      case AccountIndexedTransactionType.REEF20_TRANSFER:
+        if (blockUpdates.updatedAccounts.REEF20Transfers.length) {
+          return true;
+        }
+        break;
+      case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
+        if (
+          blockUpdates.updatedAccounts.REEF721Transfers.length ||
+          blockUpdates.updatedAccounts.REEF1155Transfers.length
+        ) {
+          return true;
+        }
+        break;
+      case AccountIndexedTransactionType.REEF_BIND_TX:
+        if (blockUpdates.updatedAccounts.boundEvm.length) {
+          return true;
+        }
+        break;
+    }
+    return false;
+  });
+}
 
 export const _getBlockAccountTransactionUpdates$ = (
   latestBlockUpdates$: Observable<PusherLatestBlock>,
@@ -143,6 +166,10 @@ export const _getBlockAccountTransactionUpdates$ = (
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates$.pipe(
     map((blockUpdates: PusherLatestBlock) => {
+      if (filterAccountAddresses.some(addr => addr.startsWith("0x"))) {
+        console.warn("@reef-chain/util-lib // Only filter by native address.");
+      }
+
       const allUpdatedAccounts = Array.from(
         new Set(
           filterTransactionType?.reduce((accs: string[], curr) => {
@@ -159,9 +186,6 @@ export const _getBlockAccountTransactionUpdates$ = (
           addresses: allUpdatedAccounts,
         } as LatestAddressUpdates;
       }
-      if (filterAccountAddresses.some(addr => addr.startsWith("0x"))) {
-        console.warn("@reef-chain/util-lib // Only filter by native address.");
-      }
 
       const filtered = allUpdatedAccounts.filter(addr =>
         filterAccountAddresses.some(a => addr.trim() === a.trim())
@@ -173,6 +197,9 @@ export const _getBlockAccountTransactionUpdates$ = (
         (filterAccountAddresses && v != null && !!v.addresses.length) ||
         !filterAccountAddresses ||
         !filterAccountAddresses?.length
+    ),
+    filter((value: PusherLatestBlock) =>
+      hasTransactionForTypes(value, filterTransactionType)
     ),
     catchError(err => {
       console.log("_getBlockAccountTransactionUpdates$ err=", err.message);
