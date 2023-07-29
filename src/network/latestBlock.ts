@@ -166,7 +166,10 @@ export const _getBlockAccountTransactionUpdates$ = (
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates$.pipe(
     map((blockUpdates: PusherLatestBlock) => {
-      if (filterAccountAddresses.some(addr => addr.startsWith("0x"))) {
+      if (
+        filterAccountAddresses &&
+        filterAccountAddresses.some(addr => addr.startsWith("0x"))
+      ) {
         console.warn("@reef-chain/util-lib // Only filter by native address.");
       }
 
@@ -198,14 +201,17 @@ export const _getBlockAccountTransactionUpdates$ = (
         !filterAccountAddresses ||
         !filterAccountAddresses?.length
     ),
-    filter((value: PusherLatestBlock) =>
-      hasTransactionForTypes(value, filterTransactionType)
+    filter(value =>
+      hasTransactionForTypes(
+        value as unknown as PusherLatestBlock,
+        filterTransactionType
+      )
     ),
     catchError(err => {
       console.log("_getBlockAccountTransactionUpdates$ err=", err.message);
       return of(null);
     })
-  );
+  ) as Observable<LatestAddressUpdates>;
 
 export const getLatestBlockAccountUpdates$ = (
   filterAccountAddresses?: string[],

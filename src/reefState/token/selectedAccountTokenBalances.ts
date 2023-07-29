@@ -32,7 +32,7 @@ import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
 import { AxiosInstance } from "axios";
 import { graphqlRequest } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
-import { reefTokenWithAmount } from "src/token/tokenUtil";
+import { reefTokenWithAmount } from "../../token/tokenUtil";
 
 // eslint-disable-next-line camelcase
 export const fetchTokensData = (
