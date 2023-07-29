@@ -4,8 +4,8 @@ import { map, Observable, of, shareReplay, switchMap } from "rxjs";
 import { getLatestBlockContractEvents$ } from "../network";
 import { httpClientInstance$ } from "../graphql/httpClient";
 import { AxiosInstance } from "axios";
-import { queryGql$ } from "../reefState/token/selectedAccountTokenBalances";
 import { filter } from "rxjs/operators";
+import { queryGql$ } from "../graphql/gqlUtil";
 
 const getGqlContractEventsQuery = (
   contractAddress: string,

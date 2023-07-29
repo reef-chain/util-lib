@@ -1,5 +1,5 @@
 import { Network } from "../network/network";
-import { map, ReplaySubject, shareReplay } from "rxjs";
+import { from, map, shareReplay } from "rxjs";
 import { AxiosInstance } from "axios";
 import { selectedNetwork$ } from "../reefState/networkState";
 
@@ -38,3 +38,8 @@ export const graphQlUrls$ = selectedNetwork$.pipe(
   map(getGQLUrls),
   shareReplay(1)
 );
+export const queryGql$ = (
+  client: AxiosInstance,
+  queryObj: { query: string; variables: any }
+) =>
+  from(graphqlRequest(client as AxiosInstance, queryObj).then(res => res.data));

@@ -8,7 +8,6 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
-  from,
   map,
   mergeScan,
   Observable,
@@ -16,7 +15,6 @@ import {
   shareReplay,
   startWith,
   take,
-  tap,
 } from "rxjs";
 import {
   collectFeedbackDMStatus,
@@ -30,7 +28,7 @@ import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
 import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
 import { AxiosInstance } from "axios";
-import { graphqlRequest } from "../../graphql/gqlUtil";
+import { queryGql$ } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
 import { reefTokenWithAmount } from "../../token/tokenUtil";
 
@@ -209,12 +207,6 @@ export const replaceReefBalanceFromAccount = (
   }
   return tokens;
 };
-
-export const queryGql$ = (
-  client: AxiosInstance,
-  queryObj: { query: string; variables: any }
-) =>
-  from(graphqlRequest(client as AxiosInstance, queryObj).then(res => res.data));
 
 // noinspection TypeScriptValidateTypes
 export const loadAccountTokens_sdo = ([

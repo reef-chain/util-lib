@@ -2,7 +2,8 @@
 import { getAvailablePoolsQuery } from "../../graphql/availablePools.gql";
 import { REEF_ADDRESS } from "../../token/tokenModel";
 import { Observable } from "rxjs";
-import { queryGql$ } from "./selectedAccountTokenBalances";
+
+import { queryGql$ } from "../../graphql/gqlUtil";
 
 export const loadAvailablePools = ([httpClient, provider]): Observable<any> =>
   /*zenToRx(

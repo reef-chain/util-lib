@@ -22,8 +22,8 @@ import { getSignerNftsQuery } from "../../graphql/signerNfts.gql";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
 import { Provider } from "@reef-defi/evm-provider";
 import { instantProvider$ } from "../providerState";
-import { queryGql$ } from "./selectedAccountTokenBalances";
 import { AxiosInstance } from "axios";
+import { queryGql$ } from "../../graphql/gqlUtil";
 
 export let _NFT_IPFS_RESOLVER_FN: ipfsUrlResolverFn | undefined;
 export const setNftIpfsResolverFn = (val?: ipfsUrlResolverFn) => {

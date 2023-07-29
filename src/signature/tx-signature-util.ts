@@ -19,7 +19,8 @@ import {
 import { getContractAbiQuery } from "../graphql/contractData.gql";
 import { ERC20 } from "../token/abi/ERC20";
 import { httpClientInstance$ } from "../graphql/httpClient";
-import { queryGql$ } from "../reefState/token/selectedAccountTokenBalances";
+
+import { queryGql$ } from "../graphql/gqlUtil";
 
 export interface DecodedMethodData {
   methodName: string;

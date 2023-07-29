@@ -25,8 +25,8 @@ import {
   AccountIndexedTransactionType,
   getLatestBlockAccountUpdates$,
 } from "../../network/latestBlock";
-import { queryGql$ } from "../token/selectedAccountTokenBalances";
 import { getEvmAddressQuery } from "../../graphql/accounts.gql";
+import { queryGql$ } from "../../graphql/gqlUtil";
 
 // eslint-disable-next-line camelcase
 interface AccountEvmAddrData {

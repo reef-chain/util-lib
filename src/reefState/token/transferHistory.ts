@@ -17,8 +17,8 @@ import { toPlainString } from "./tokenUtil";
 import { _NFT_IPFS_RESOLVER_FN } from "./nftUtils";
 import { getIconUrl } from "../../token/getIconUrl";
 import { getExtrinsicUrl } from "../../token/transactionUtil";
-import { queryGql$ } from "./selectedAccountTokenBalances";
 import { AxiosInstance } from "axios";
+import { queryGql$ } from "../../graphql/gqlUtil";
 
 const resolveTransferHistoryNfts = (
   tokens: (Token | NFT)[],
