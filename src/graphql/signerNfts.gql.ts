@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
-export const SIGNER_NFTS_GQL = gql`
-  subscription query($accountId: String) {
+const SIGNER_NFTS_QUERY = `
+  query signer_nfts($accountId: String) {
     tokenHolders(
       orderBy: balance_DESC
       limit: 199
@@ -24,6 +24,14 @@ export const SIGNER_NFTS_GQL = gql`
     }
   }
 `;
+
+export const getSignerNftsQuery = (accountId: string) => {
+  return {
+    query: SIGNER_NFTS_QUERY,
+    variables: { accountId },
+  };
+};
+
 /*
 export const SIGNER_NFTS_GQL = gql`
   subscription query($accountId: String) {

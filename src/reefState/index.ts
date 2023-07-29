@@ -19,7 +19,7 @@ export { selectedAccountAddressChange$ } from "./account/selectedAccountAddressC
 export { setSelectedAddress, setAccounts } from "./account/setAccounts";
 export {
   selectedTokenBalances_status$,
-  availableReefPools_status$,
+  // availableReefPools_status$,
   selectedNFTs_status$,
   selectedPools_status$,
   selectedTokenPrices_status$,
@@ -41,4 +41,5 @@ export {
 } from "./model/statusDataObject";
 export type { FeedbackStatus } from "./model/statusDataObject";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
-export { reloadTokens } from "./token/reloadTokenState";
+
+export { reloadTokens } from "./token/force-reload-tokens";

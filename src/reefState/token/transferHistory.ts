@@ -1,4 +1,3 @@
-import { ApolloClient } from "@apollo/client";
 import {
   ContractType,
   NFT,
@@ -10,8 +9,7 @@ import { from, map, Observable, of, switchMap } from "rxjs";
 import { resolveNftImageLinks } from "../../token/nftUtil";
 import { BigNumber } from "ethers";
 import { Network } from "../../network/network";
-import { zenToRx } from "../../graphql";
-import { TRANSFER_HISTORY_GQL } from "../../graphql/transferHistory.gql";
+import { getSignerHistoryQuery } from "../../graphql/transferHistory.gql";
 import { StatusDataObject } from "../model/statusDataObject";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
 import { Provider, Signer } from "@reef-defi/evm-provider";
@@ -19,6 +17,8 @@ import { toPlainString } from "./tokenUtil";
 import { _NFT_IPFS_RESOLVER_FN } from "./nftUtils";
 import { getIconUrl } from "../../token/getIconUrl";
 import { getExtrinsicUrl } from "../../token/transactionUtil";
+import { queryGql$ } from "./selectedAccountTokenBalances";
+import { AxiosInstance } from "axios";
 
 const resolveTransferHistoryNfts = (
   tokens: (Token | NFT)[],
@@ -176,27 +176,23 @@ const toTokenTransfers = (
         );*/
 
 export const loadTransferHistory = ([
-  apollo,
+  httpClient,
   account,
   network,
   provider,
   forceReload,
+  anyBalanceUpdate,
 ]: [
-  ApolloClient<any>,
+  AxiosInstance,
   StatusDataObject<ReefAccount>,
   Network,
   Provider,
+  boolean,
   boolean
 ]): Observable<TokenTransfer[]> =>
   !account
     ? of([])
-    : zenToRx(
-        apollo.subscribe({
-          query: TRANSFER_HISTORY_GQL,
-          variables: { accountId: account.data.address },
-          fetchPolicy: "network-only",
-        })
-      ).pipe(
+    : queryGql$(httpClient, getSignerHistoryQuery(account.data.address)).pipe(
         map((res: any) => {
           if (res?.data?.transfers) {
             return res.data.transfers;

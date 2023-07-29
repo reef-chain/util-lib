@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import {
   catchError,
   combineLatest,
@@ -10,22 +9,24 @@ import {
   startWith,
   switchMap,
 } from "rxjs";
-import {
-  apolloClientInstance$,
-  EVM_ADDRESS_UPDATE_GQL,
-  zenToRx,
-} from "../../graphql";
 import { accountsWithUpdatedChainDataBalances$ } from "./accountsWithUpdatedChainDataBalances";
 import { ReefAccount } from "../../account/accountModel";
 import { accountsLocallyUpdatedData$ } from "./accountsLocallyUpdatedData";
 import { availableAddresses$ } from "./availableAddresses";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
+import { httpClientInstance$ } from "../../graphql/httpClient";
+import {
+  AccountIndexedTransactionType,
+  getLatestBlockAccountUpdates$,
+} from "../../network/latestBlock";
+import { queryGql$ } from "../token/selectedAccountTokenBalances";
+import { getEvmAddressQuery } from "../../graphql/accounts.gql";
 
 // eslint-disable-next-line camelcase
 interface AccountEvmAddrData {
@@ -48,24 +49,25 @@ function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
 
 const indexedAccountValues$: Observable<
   StatusDataObject<AccountEvmAddrData[]>
-> = combineLatest([apolloClientInstance$, availableAddresses$]).pipe(
-  switchMap(([apollo, signers]) =>
-    !signers
-      ? of(
-          toFeedbackDM(
-            [],
-            FeedbackStatusCode.MISSING_INPUT_VALUES,
-            "Signer not set"
-          )
+> = combineLatest([httpClientInstance$, availableAddresses$]).pipe(
+  switchMap(([httpClient, signers]) => {
+    if (!signers) {
+      return of(
+        toFeedbackDM(
+          [],
+          FeedbackStatusCode.MISSING_INPUT_VALUES,
+          "Signer not set"
         )
-      : zenToRx(
-          apollo.subscribe({
-            query: EVM_ADDRESS_UPDATE_GQL,
-            variables: { accountIds: signers.map((s: any) => s.address) },
-            fetchPolicy: "network-only",
-          })
-        )
-  ),
+      );
+    }
+    const addresses = signers.map((s: any) => s.address);
+    return getLatestBlockAccountUpdates$(addresses, [
+      AccountIndexedTransactionType.REEF_BIND_TX,
+    ]).pipe(
+      startWith(true),
+      switchMap(_ => queryGql$(httpClient, getEvmAddressQuery(addresses)))
+    );
+  }),
   map((result: any): StatusDataObject<AccountEvmAddrData[]> => {
     if (result?.data?.accounts) {
       return toFeedbackDM(
@@ -79,9 +81,10 @@ const indexedAccountValues$: Observable<
     }
     throw new Error("No result from EVM_ADDRESS_UPDATE_GQL");
   }),
-  catchError(err =>
-    of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
-  ),
+  catchError(err => {
+    console.log("ERROR indexedAccountValues$=", err.message);
+    return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+  }),
   startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
   shareReplay(1)
 );
@@ -148,7 +151,7 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
           sig => sig.data.address === updVal.data.address
         );
         if (signer) {
-          let isEvmClaimedPropName = "isEvmClaimed";
+          const isEvmClaimedPropName = "isEvmClaimed";
           const resetEvmClaimedStat = signer
             .getStatusList()
             .filter(stat => stat.propName != isEvmClaimedPropName);
