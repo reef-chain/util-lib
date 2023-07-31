@@ -46,6 +46,7 @@ module.exports = defineConfig({
     }
   },
   test: {
-    testTimeout: 20000
+    testTimeout: 20000,
+    hookTimeout:100000,
   }
 });
