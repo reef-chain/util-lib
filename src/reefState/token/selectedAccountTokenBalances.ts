@@ -8,8 +8,6 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
-  defer,
-  from,
   map,
   mergeScan,
   Observable,
@@ -17,27 +15,26 @@ import {
   shareReplay,
   startWith,
   take,
-  tap,
 } from "rxjs";
-import { CONTRACT_DATA_GQL, zenToRx } from "../../graphql";
-import { SIGNER_TOKENS_GQL } from "../../graphql/signerTokens.gql";
 import {
   collectFeedbackDMStatus,
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
-import { ApolloClient } from "@apollo/client";
 import { ReefAccount } from "../../account/accountModel";
 import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
-import { reefTokenWithAmount } from "../../token";
+import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
+import { AxiosInstance } from "axios";
+import { queryGql$ } from "../../graphql/gqlUtil";
+import { getContractDataQuery } from "../../graphql/contractData.gql";
+import { reefTokenWithAmount } from "../../token/tokenUtil";
 
 // eslint-disable-next-line camelcase
-const fetchTokensData = (
-  // apollo: ApolloClient<any>,
-  apollo: any,
+export const fetchTokensData = (
+  httpClient: any,
   missingCacheContractDataAddresses: string[]
 ): Observable<Token[]> => {
   const distinctAddr = missingCacheContractDataAddresses.reduce(
@@ -49,16 +46,18 @@ const fetchTokensData = (
     },
     []
   );
-  return zenToRx(
+  /*return zenToRx(
     apollo.subscribe({
       query: CONTRACT_DATA_GQL,
       variables: { addresses: distinctAddr },
       fetchPolicy: "network-only",
     })
-  ).pipe(
+  )*/
+
+  return queryGql$(httpClient, getContractDataQuery(distinctAddr)).pipe(
     take(1),
-    map((verContracts: any) =>
-      verContracts.data.verifiedContracts.map(
+    map((verContracts: any) => {
+      return verContracts.data.verifiedContracts.map(
         // eslint-disable-next-line camelcase
         (vContract: { id: string; contractData: any }) => {
           return {
@@ -70,8 +69,9 @@ const fetchTokensData = (
             balance: BigNumber.from(0),
           } as Token;
         }
-      )
-    ),
+      );
+    }),
+    shareReplay(1),
     catchError(err => {
       console.log("fetchTokensData ERROR=", err);
       return of([]);
@@ -114,7 +114,7 @@ function toTokensWithContractDataFn(tokenBalances: TokenBalance[]): (
 }
 
 const tokenBalancesWithContractDataCache_sdo =
-  (apollo: any) =>
+  (httpClient: any) =>
   (
     state: {
       tokens: StatusDataObject<Token | TokenBalance>[];
@@ -130,7 +130,7 @@ const tokenBalancesWithContractDataCache_sdo =
       .filter(tb => !state.contractData.some(cd => cd.address === tb.address))
       .map(tb => tb.address);
     const contractData$ = missingCacheContractDataAddresses.length
-      ? fetchTokensData(apollo, missingCacheContractDataAddresses).pipe(
+      ? fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
           map(newTokens => {
             return newTokens
               ? newTokens.concat(state.contractData)
@@ -185,7 +185,7 @@ const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
 ) =>
   tokens.map(tkn => {
-    if (!!tkn.data.iconUrl) {
+    if (tkn.data.iconUrl) {
       return tkn;
     } else {
       tkn.data.iconUrl = getIconUrl(tkn.data.address);
@@ -209,11 +209,14 @@ export const replaceReefBalanceFromAccount = (
 };
 
 // noinspection TypeScriptValidateTypes
-export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
-  ApolloClient<any>,
-  StatusDataObject<ReefAccount>,
-  any
-]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
+export const loadAccountTokens_sdo = ([
+  httpClient,
+  signer,
+  forceReloadj,
+  tokensUpdated,
+]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
+  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+> => {
   // TODO check the status of signer - could be loading?
   return !signer
     ? of(
@@ -223,14 +226,8 @@ export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
           "Signer not set"
         )
       )
-    : zenToRx(
-        apollo.subscribe({
-          query: SIGNER_TOKENS_GQL,
-          variables: { accountId: signer.data.address },
-          fetchPolicy: "network-only",
-          errorPolicy: "all",
-        })
-      ).pipe(
+    : // can also be httpClient subscription
+      queryGql$(httpClient, getSignerTokensQuery(signer.data.address)).pipe(
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(
@@ -248,7 +245,7 @@ export const loadAccountTokens_sdo = ([apollo, signer, forceReload]: [
           throw new Error("No result from SIGNER_TOKENS_GQL");
         }),
         // eslint-disable-next-line camelcase
-        mergeScan(tokenBalancesWithContractDataCache_sdo(apollo), {
+        mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
           tokens: [],
           contractData: [reefTokenWithAmount()],
         }),
