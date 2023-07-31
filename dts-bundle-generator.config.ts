@@ -16,7 +16,7 @@ const findFilesWithIndexTs = dirPath => {
     } else if (file.endsWith("index.ts")) {
       entries.push({
         filePath: `./${path.relative("./", fullPath)}`,
-        outFile: `./dist/${getPackageName()}.d.ts`,
+        outFile: `./dist/${fullPath.split("/")[1]}.d.ts`,
         noCheck: true,
       });
     }
