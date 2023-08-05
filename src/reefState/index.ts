@@ -15,6 +15,7 @@ export {
   selectedAccount_status$,
   selectedAddress$,
 } from "./account/selectedAccount";
+export { onTxUpdateResetSigners } from "./account/accountsLocallyUpdatedData";
 export { selectedAccountAddressChange$ } from "./account/selectedAccountAddressChange";
 export { setSelectedAddress, setAccounts } from "./account/setAccounts";
 export {
