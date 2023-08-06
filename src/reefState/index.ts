@@ -41,7 +41,8 @@ export {
   skipBeforeStatus$,
 } from "./model/statusDataObject";
 export type { FeedbackStatus } from "./model/statusDataObject";
-export type { UpdateAction, UpdateDataType } from "./model/updateStateModel";
+export type { UpdateAction } from "./model/updateStateModel";
+export { UpdateDataType } from "./model/updateStateModel";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
 
 export { reloadTokens } from "./token/force-reload-tokens";
