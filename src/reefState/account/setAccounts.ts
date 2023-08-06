@@ -1,5 +1,5 @@
 import { UpdateDataCtx } from "../model/updateStateModel";
-import { ReefSigner } from "../../account/accountModel";
+import { ReefAccount, ReefSigner } from "../../account/accountModel";
 import { ReplaySubject, Subject, BehaviorSubject } from "rxjs";
 import type { Signer as InjectedSigningKey } from "@polkadot/api/types";
 import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
@@ -15,7 +15,7 @@ export const accountsJsonSubj = new ReplaySubject<
 >(1);
 export const accountsJsonSigningKeySubj =
   new BehaviorSubject<InjectedSigningKey | null>(null);
-export const updateSignersSubj = new Subject<UpdateDataCtx<ReefSigner[]>>();
+export const updateSignersSubj = new Subject<UpdateDataCtx<ReefAccount[]>>();
 export const setAccounts = (
   accounts:
     | AccountJson[]

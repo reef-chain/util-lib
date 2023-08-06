@@ -53,19 +53,24 @@ export const accountsLocallyUpdatedData$: Observable<
             updateActions,
             provider,
             allSignersLatestUpdates
-          ).then(lastUpdated => ({
-            all: replaceUpdatedSigners(
-              allSignersLatestUpdates,
+          )
+            .then(lastUpdated => ({
+              all: replaceUpdatedSigners(
+                allSignersLatestUpdates,
+                lastUpdated,
+                true
+              ),
+              allUpdated: replaceUpdatedSigners(
+                state.allUpdated,
+                lastUpdated,
+                true
+              ),
               lastUpdated,
-              true
-            ),
-            allUpdated: replaceUpdatedSigners(
-              state.allUpdated,
-              lastUpdated,
-              true
-            ),
-            lastUpdated,
-          }))
+            }))
+            .catch(err => {
+              console.log("ERROR WITH LOCALLY UPD=", err.message);
+              return null;
+            })
         )
       );
     },
@@ -76,7 +81,9 @@ export const accountsLocallyUpdatedData$: Observable<
     }
   ),
   filter((val: any) => !!val.lastUpdated.length),
-  map((val: any): any => val.all),
+  map((val: any): any => {
+    return toFeedbackDM(val.all, FeedbackStatusCode.COMPLETE_DATA);
+  }),
   catchError(err =>
     of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
   ),
