@@ -8,7 +8,8 @@ const getPackageName = () => {
 };
 
 const findFilesWithIndexTs = dirPath => {
-  const entries = [];
+  let entries = [{}];
+  entries.pop();
   fs.readdirSync(dirPath).forEach(file => {
     const fullPath = path.join(dirPath, file);
     if (fs.statSync(fullPath).isDirectory()) {
