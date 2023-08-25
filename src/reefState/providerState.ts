@@ -6,6 +6,7 @@ import {
   map,
   mergeScan,
   Observable,
+  ReplaySubject,
   shareReplay,
   startWith,
   Subject,
@@ -21,6 +22,11 @@ import {
 } from "./ws-connection-state";
 import { Network } from "../network/network";
 import { forceReload$ } from "./token/force-reload-tokens";
+
+export const providerSubj: ReplaySubject<Provider> =
+  new ReplaySubject<Provider>(1);
+export const setCurrentProvider = (provider: Provider): void =>
+  providerSubj.next(provider);
 
 const providerConnStateSubj = new Subject<WsConnectionState>();
 export const providerConnState$: Observable<WsConnectionState> =

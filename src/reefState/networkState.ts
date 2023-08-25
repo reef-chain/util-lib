@@ -1,7 +1,6 @@
 import { ReplaySubject } from "rxjs";
 import { Network } from "../network/network";
 
-// const providerSubj: ReplaySubject<Provider> = new ReplaySubject<Provider>(1);
 const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(
   1
 );
