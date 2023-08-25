@@ -36,7 +36,7 @@ interface AccountEvmAddrData {
   isEvmClaimed?: boolean;
 }
 
-function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
+export function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
   return result.data.accounts.map(
     acc =>
       ({
@@ -47,7 +47,7 @@ function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
   );
 }
 
-const indexedAccountValues$: Observable<
+export const indexedAccountValues$: Observable<
   StatusDataObject<AccountEvmAddrData[]>
 > = combineLatest([httpClientInstance$, availableAddresses$]).pipe(
   switchMap(([httpClient, signers]) => {

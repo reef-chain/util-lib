@@ -27,7 +27,7 @@ import {
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
 
-const getUpdatedAccountChainBalances$ = (
+export const getUpdatedAccountChainBalances$ = (
   providerAndSigners: [Provider | undefined, ReefAccount[]]
 ): Observable<
   | StatusDataObject<StatusDataObject<ReefAccount>[]>

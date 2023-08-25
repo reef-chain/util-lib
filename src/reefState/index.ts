@@ -4,6 +4,8 @@ export {
   toInjectedAccountsWithMeta,
   accounts_status$,
 } from "./account/accounts";
+export * from "./account/setAccounts";
+export * from "./account/accountsWithUpdatedChainDataBalances";
 export {
   accounts$,
   selectedAccount$,
@@ -26,7 +28,11 @@ export {
   selectedTokenPrices_status$,
   selectedTransactionHistory_status$,
 } from "./tokenState.rx";
-export { setSelectedNetwork, selectedNetwork$ } from "./networkState";
+export {
+  setSelectedNetwork,
+  selectedNetwork$,
+  ACTIVE_NETWORK_LS_KEY,
+} from "./networkState";
 export {
   instantProvider$,
   selectedProvider$,
