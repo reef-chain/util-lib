@@ -13,8 +13,8 @@ export const REEFSWAP_CONFIG: { [networkName: string]: DexProtocolv2 } = {
     graphqlDexsUrl: "https://squid.subsquid.io/reef-swap/graphql",
   },
   testnet: {
-    factoryAddress: "0x06D7a7334B9329D0750FFd0a636D6C3dFA77E580",
-    routerAddress: "0xa29DFc7329ac30445Ba963E313fD26E171722057",
+    factoryAddress: "0x91e24d4E9CbF443E4D00E35edB61be763499533c",
+    routerAddress: "0xfb5a06725de6df44806F806A09D160A6F09b53Ed",
     graphqlDexsUrl: "https://squid.subsquid.io/reef-swap-testnet/graphql",
   },
   localhost: {
