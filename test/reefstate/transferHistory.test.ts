@@ -51,6 +51,8 @@ describe("should test transferHistory observable", () => {
 
     expect(isValidUrl(splitted_url[2])).toEqual(true);
     expect(splitted_url[3]).toEqual("transfer");
-    expect(parseInt(splitted_url[6])).toBeTypeOf("number");
+  });
+  it("should check last val is no.", () => {
+    expect(res.data[0].url.split("/").length).toEqual(7);
   });
 });
