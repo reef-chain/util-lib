@@ -16,7 +16,7 @@ import { Provider, Signer } from "@reef-defi/evm-provider";
 import { toPlainString } from "./tokenUtil";
 import { _NFT_IPFS_RESOLVER_FN } from "./nftUtils";
 import { getIconUrl } from "../../token/getIconUrl";
-import { getExtrinsicUrl } from "../../token/transactionUtil";
+import { getTransferUrl } from "../../token/transactionUtil";
 import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
 
@@ -102,7 +102,12 @@ const toTokenTransfers = (
         transferData.to.id === signer.address,
       timestamp: transferData.timestamp,
       token: toTransferToken(transferData),
-      url: getExtrinsicUrl(transferData.extrinsic.id, network),
+      url: getTransferUrl(
+        transferData.extrinsic.block.height,
+        transferData.extrinsic.index,
+        transferData.event.index,
+        network
+      ),
       extrinsic: {
         blockId: transferData.extrinsic.block.id,
         blockHeight: transferData.extrinsic.block.height,

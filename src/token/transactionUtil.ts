@@ -111,3 +111,11 @@ export const getContractUrl = (
   address: string,
   network: Network = AVAILABLE_NETWORKS.mainnet
 ): string => `${network.reefscanFrontendUrl}/contract/${address}`;
+
+export const getTransferUrl = (
+  blockHeight: string,
+  extrinsicIndex: string,
+  eventIndex: string,
+  network: Network = AVAILABLE_NETWORKS.mainnet
+): string =>
+  `${network.reefscanFrontendUrl}/transfer/${blockHeight}/${extrinsicIndex}/${eventIndex}`;
