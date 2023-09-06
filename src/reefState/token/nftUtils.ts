@@ -39,7 +39,7 @@ export interface VerifiedNft {
   nftId: string;
 }
 
-export const parseTokenHolderArray = (resArr: VerifiedNft[]): NFT[] =>
+const parseTokenHolderArray = (resArr: VerifiedNft[]): NFT[] =>
   resArr.map(
     ({ balance, nftId, token: { id: address, type: contractType } }) => {
       return {

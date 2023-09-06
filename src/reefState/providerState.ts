@@ -6,7 +6,6 @@ import {
   map,
   mergeScan,
   Observable,
-  ReplaySubject,
   shareReplay,
   startWith,
   Subject,
