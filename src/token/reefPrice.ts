@@ -19,7 +19,8 @@ import {
   FeedbackStatusCode,
   toFeedbackDM,
 } from "../reefState/model/statusDataObject";
-import { forceReloadTokens$ } from "../reefState/token/reloadTokenState";
+
+import { forceReload$ } from "../reefState/token/force-reload-tokens";
 /*
 export const reefPrice$: Observable<number> = timer(0, 60000).pipe(
     switchMap(retrieveReefCoingeckoPrice),
@@ -30,7 +31,7 @@ export const reefPrice$: Observable<StatusDataObject<number>> = timer(
   0,
   60000
 ).pipe(
-  mergeWith(forceReloadTokens$),
+  mergeWith(forceReload$),
   switchMap(async () => {
     try {
       const price = await getTokenPrice(PRICE_REEF_TOKEN_ID);

@@ -13,20 +13,19 @@ import {
   startWith,
   Subject,
   switchMap,
-  tap,
 } from "rxjs";
+import { instantProvider$ } from "../providerState";
 import { Provider } from "@reef-defi/evm-provider";
 import { ReefAccount } from "../../account/accountModel";
 import { BigNumber } from "ethers";
 import { availableAddresses$ } from "./availableAddresses";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
   isFeedbackDM,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { getAddressesErrorFallback } from "./errorUtil";
-import { instantProvider$ } from "../providerState";
 
 const getUpdatedAccountChainBalances$ = (
   providerAndSigners: [Provider | undefined, ReefAccount[]]
@@ -35,12 +34,11 @@ const getUpdatedAccountChainBalances$ = (
   | { balances: any; signers: ReefAccount[] }
 > => {
   const signers: ReefAccount[] = providerAndSigners[1];
-
   return of(providerAndSigners).pipe(
     switchMap((provAndSigs: [Provider | undefined, ReefAccount[]]) => {
-      let provider = provAndSigs[0];
+      const provider = provAndSigs[0];
       if (!provider) {
-        let signers = provAndSigs[1];
+        const signers = provAndSigs[1];
         return merge(of(signers), NEVER).pipe(
           map(sgs =>
             toFeedbackDM(
@@ -151,7 +149,7 @@ const getUpdatedAccountChainBalances$ = (
 export const accountsWithUpdatedChainDataBalances$: Observable<
   StatusDataObject<StatusDataObject<ReefAccount>[]>
 > = combineLatest([instantProvider$, availableAddresses$]).pipe(
-  switchMap(getUpdatedAccountChainBalances$),
+  switchMap(provider_accs => getUpdatedAccountChainBalances$(provider_accs)),
   map(
     (
       balancesAndSigners:

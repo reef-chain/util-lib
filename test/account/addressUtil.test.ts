@@ -1,54 +1,41 @@
-import { getEvmAddress } from "../../src/account/addressUtil";
+import { describe, it, expect, beforeAll } from "vitest";
+import { KeypairType } from "@reef-defi/util-crypto/types";
+import { Keyring as ReefKeyring } from "@reef-defi/keyring";
+import { cryptoWaitReady } from "@reef-defi/util-crypto";
+import { KeyringPair } from "@reef-defi/keyring/types";
 import { Provider } from "@reef-defi/evm-provider";
-import { describe, it, expect } from "vitest";
-import jest from "jest";
-import { beforeEach, afterEach } from "@jest/globals";
+import { initProvider } from "../../src/network/providerUtil";
+import { getEvmAddress } from "../../src/account/addressUtil";
 
-// Mock Provider class
-jest.mock("@reef-defi/evm-provider", () => {
-  return {
-    Provider: jest.fn().mockImplementation(() => ({
-      api: {
-        query: {
-          evmAccounts: {
-            evmAddresses: jest.fn(),
-          },
-        },
-      },
-    })),
-  };
-});
-
-describe("getEvmAddress", () => {
-  let provider: any;
-
-  beforeEach(() => {
-    provider = new Provider("ws://localhost:9944");
+describe("availableAddresses", () => {
+  let provider: Provider;
+  const mnemonic =
+    "judge box bless much media say shrug crunch gun scorpion afraid object";
+  const CRYPTO_TYPE: KeypairType = "sr25519";
+  const SS58_FORMAT = 42;
+  const keyring = new ReefKeyring({
+    type: CRYPTO_TYPE,
+    ss58Format: SS58_FORMAT,
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  let keyringPair: KeyringPair;
+
+  beforeAll(async () => {
+    await cryptoWaitReady();
+    provider = await initProvider("wss://rpc-testnet.reefscan.com/ws");
+    keyringPair = keyring.addFromMnemonic(mnemonic, {}, CRYPTO_TYPE);
   });
 
-  it("should return the input address if it is not an EVM address", async () => {
-    const address = "0x1234567890123456789012345678901234567890123";
-    const result = await getEvmAddress(address, provider);
-    expect(result).toEqual(address);
+  it("should fetch evm address", async () => {
+    const res = await getEvmAddress(keyringPair.address, provider);
+    expect(res).toEqual("0x6d58ad955bdff99121ec07d2a4e96829f5f04746");
   });
-
-  it("should return the corresponding EVM address", async () => {
-    const address = "5135a58b5f103b25a73a1fffc57c584b7d8b9576d59e70ff";
-    const expected = "0xb080b6dD9e077eA6c4A4E4a4fD5126f07Ba0Fb2D";
-    provider.api.query.evmAccounts.evmAddresses.mockResolvedValueOnce(expected);
-    const result = await getEvmAddress(address, provider);
-    expect(result).toEqual(expected);
-  });
-
-  it("should throw an error if the EVM address does not exist", async () => {
-    const address = "5135a58b5f103b25a73a1fffc57c584b7d8b9576d59e70ff";
-    provider.api.query.evmAccounts.evmAddresses.mockResolvedValueOnce(null);
-    await expect(getEvmAddress(address, provider)).rejects.toThrow(
-      "EVM address does not exist"
-    );
+  it("should throw error if evm doesn't exist", async () => {
+    await expect(
+      getEvmAddress(
+        "5GQaLP6ap6JW4MbS22gVXLnUJxiVxCZzPA88cQfPSRZCYRNF",
+        provider
+      )
+    ).rejects.toThrow("EVM address does not exist");
   });
 });

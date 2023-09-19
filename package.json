@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "0.10.4",
+  "version": "1.0.0-rc8",
   "main": "./dist/util-lib.cjs",
   "module": "./dist/util-lib.mjs",
   "exports": {
@@ -17,6 +17,7 @@
   "scripts": {
     "dev": "vite --host",
     "watch": "vite build --watch",
+    "build-reinstall": "rm -rf node_modules&&rm yarn.lock&&yarn&&yarn build",
     "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "build-dts": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "test": "vitest",
@@ -29,18 +30,14 @@
     "circular-dep-test": "dpdm --no-warning --no-tree ./src/index.ts "
   },
   "dependencies": {
-    "@apollo/client": "^3.6.9",
     "@polkadot/extension-inject": "^0.44.6",
     "@reef-defi/evm-provider": "^1.0.10",
     "@reef-defi/extension-base": "^1.0.10",
     "@reef-defi/extension-dapp": "^1.0.16",
     "@reef-defi/extension-inject": "^1.0.16",
-    "@types/react": "17.0.2",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
-    "graphql": "^16.6.0",
-    "graphql-ws": "^5.11.2",
-    "react": "17.0.2"
+    "pusher-js": "^8.2.0"
   },
   "devDependencies": {
     "@types/jsdom": "^20.0.1",

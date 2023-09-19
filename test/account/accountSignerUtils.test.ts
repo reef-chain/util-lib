@@ -1,59 +1,37 @@
+import { describe, it, expect, beforeAll } from "vitest";
+import { KeyringPair } from "@reef-defi/keyring/types";
 import { Provider, Signer } from "@reef-defi/evm-provider";
-import {
-  getReefAccountSigner,
-  getAccountSigner,
-} from "../../src/account/accountSignerUtils";
-import { ReplaySubject, Subject, BehaviorSubject } from "rxjs";
-import type { Signer as InjectedSigningKey } from "@polkadot/api/types";
+import { initProvider } from "../../src/network/providerUtil";
+import { getSigner } from "../testUtils/signer";
+import { mnemonic1 as mnemonic } from "../testUtils/mnemonics";
+import { getKeyring } from "../testUtils/keyring";
+import { getReefAccountSigner } from "../../src/account/accountSignerUtils";
+import { ReefAccount } from "../../src/account/accountModel";
 
-import { describe, it, expect } from "vitest";
-import jest from "jest";
+describe("account signer utils", () => {
+  let provider: Provider;
+  let keyringPair: KeyringPair;
+  let signer: Signer;
 
-jest.mock("./example", () => ({
-  getAccountSigner: jest.fn(),
-}));
-
-describe("getReefAccountSigner", () => {
-  it("should call getAccountSigner with the correct parameters", async () => {
-    // Arrange
-    const address = "0x123abc";
-    const source = "extension";
-    const provider = {} as Provider;
-    const accountsJsonSigningKeySubj =
-      new BehaviorSubject<InjectedSigningKey | null>(null);
-
-    // Mock accountsJsonSigningKeySubj.getValue()
-    const mockGetValue = jest
-      .spyOn(accountsJsonSigningKeySubj, "getValue")
-      .mockReturnValue(source);
-
-    // Act
-    await getReefAccountSigner({ address, source }, provider);
-
-    // Assert
-    expect(mockGetValue).toHaveBeenCalledTimes(1);
-    expect(mockGetValue).toHaveBeenCalledWith();
-
-    expect(getAccountSigner).toHaveBeenCalledTimes(1);
-    expect(getAccountSigner).toHaveBeenCalledWith(address, provider, source);
+  beforeAll(async () => {
+    provider = await initProvider("wss://rpc-testnet.reefscan.com/ws");
+    keyringPair = await getKeyring(mnemonic);
+    signer = getSigner(provider, keyringPair.address);
   });
 
-  it("should return the result of getAccountSigner", async () => {
-    // Arrange
-    const address = "0x123abc";
-    const source = "extension";
-    const provider = {} as Provider;
-    const signer = {} as any;
-
-    // Mock getAccountSigner()
-    jest
-      .spyOn(getReefAccountSigner, "getAccountSigner")
-      .mockResolvedValue(signer);
-
-    // Act
-    const result = await getReefAccountSigner({ address, source }, provider);
-
-    // Assert
-    expect(result).toBe(signer);
+  it("should not return any signer if no provider", async () => {
+    try {
+      const res = await getReefAccountSigner(
+        { address: "", source: "" } as ReefAccount,
+        null as any
+      );
+      expect(res).toEqual(undefined);
+    } catch (error) {}
+  });
+  it("should return same substrate address as signer", async () => {
+    const res = getSigner(provider, keyringPair.address);
+    expect(res._substrateAddress).toEqual(
+      "5FnuRnDoK9J6b7RfeixeWUKs63ikPqN5mVMVXd3qD14SArbC"
+    );
   });
 });

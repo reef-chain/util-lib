@@ -69,23 +69,26 @@ export const replaceUpdatedSigners = <T>(
 export const updateSignersEvmBindings = (
   updateActions: UpdateAction[],
   provider: Provider,
-  signers: StatusDataObject<ReefAccount>[] = []
+  accounts_sdo: StatusDataObject<ReefAccount>[] = []
 ): Promise<StatusDataObject<ReefAccount>[]> => {
-  if (!signers.length) {
+  if (!accounts_sdo.length) {
     return Promise.resolve([]);
   }
   const updSigners = getSignersToUpdate(
     UpdateDataType.ACCOUNT_EVM_BINDING,
     updateActions,
-    signers.map(s => s.data)
+    accounts_sdo.map(s => s.data)
   );
 
   return Promise.all(
     updSigners.map(
       async (
         sig: ReefAccount
-      ): Promise<StatusDataObject<ReefAccount> | boolean> => {
-        let signer = await getReefAccountSigner(sig, provider);
+      ): Promise<
+        | StatusDataObject<ReefAccount>
+        | { isEvmClaimed: boolean; evmAddress: string }
+      > => {
+        const signer = await getReefAccountSigner(sig, provider);
         if (!signer) {
           return toFeedbackDM(
             sig as ReefAccount,
@@ -93,21 +96,31 @@ export const updateSignersEvmBindings = (
             "ERROR: Can not get account signer."
           );
         }
-        return signer.isClaimed();
+        const isEvmClaimed = await signer.isClaimed();
+        const evmAddress = isEvmClaimed ? await signer.queryEvmAddress() : "";
+        return { isEvmClaimed, evmAddress };
       }
     )
   ).then(
     (
-      claimed: (StatusDataObject<ReefAccount> | boolean)[]
+      claimed: (
+        | StatusDataObject<ReefAccount>
+        | { isEvmClaimed: boolean; evmAddress: string }
+      )[]
     ): StatusDataObject<ReefAccount>[] =>
       claimed.map(
-        (isEvmClaimed: boolean | StatusDataObject<ReefAccount>, i: number) => {
-          if (isFeedbackDM(isEvmClaimed)) {
-            return isEvmClaimed as StatusDataObject<ReefAccount>;
+        (
+          isEvmClaimedData:
+            | { isEvmClaimed: boolean; evmAddress: string }
+            | StatusDataObject<ReefAccount>,
+          i: number
+        ) => {
+          if (isFeedbackDM(isEvmClaimedData)) {
+            return isEvmClaimedData as StatusDataObject<ReefAccount>;
           }
-          const sig = updSigners[i] as ReefAccount;
+          const account = updSigners[i] as ReefAccount;
           return toFeedbackDM(
-            { ...sig, isEvmClaimed } as ReefAccount,
+            { ...account, ...isEvmClaimedData } as ReefAccount,
             FeedbackStatusCode.COMPLETE_DATA
           );
         }

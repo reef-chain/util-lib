@@ -18,10 +18,10 @@ export const REEFSWAP_CONFIG: { [networkName: string]: DexProtocolv2 } = {
     graphqlDexsUrl: "https://squid.subsquid.io/reef-swap-testnet/graphql",
   },
   localhost: {
-    factoryAddress: '',
-    routerAddress: '',
+    factoryAddress: "",
+    routerAddress: "",
     graphqlDexsUrl: "http://localhost:4351/graphql",
-   }
+  },
 };
 
 export const getReefswapNetworkConfig = (network: Network): DexProtocolv2 => {

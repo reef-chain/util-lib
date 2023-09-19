@@ -55,7 +55,10 @@ export async function initProvider(
   return newProvider;
 }
 
-export async function disconnectProvider(provider: Provider) {
+export async function disconnectProvider(provider?: Provider) {
+  if (!provider) {
+    return;
+  }
   try {
     await provider.api.isReadyOrError;
     await provider.api.disconnect();
