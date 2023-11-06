@@ -6,15 +6,15 @@ import { selectedNetwork$ } from "../reefState/networkState";
 export const getGQLUrls = (
   network: Network
 ): { ws: string; http: string } | undefined => {
-  if (!network.graphqlUrl) {
+  if (!network.graphqlExplorerUrl) {
     return undefined;
   }
-  const ws = network.graphqlUrl.startsWith("http")
-    ? network.graphqlUrl.replace("http", "ws")
-    : network.graphqlUrl;
-  const http = network.graphqlUrl.startsWith("ws")
-    ? network.graphqlUrl.replace("ws", "http")
-    : network.graphqlUrl;
+  const ws = network.graphqlExplorerUrl.startsWith("http")
+    ? network.graphqlExplorerUrl.replace("http", "ws")
+    : network.graphqlExplorerUrl;
+  const http = network.graphqlExplorerUrl.startsWith("ws")
+    ? network.graphqlExplorerUrl.replace("ws", "http")
+    : network.graphqlExplorerUrl;
   return { ws, http };
 };
 export const graphqlRequest = (
