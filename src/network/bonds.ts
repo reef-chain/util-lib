@@ -1,4 +1,5 @@
 import { REEF_TOKEN, Token } from "../token";
+import { NetworkName } from "./network";
 
 export interface Bond {
   name: string;
@@ -10,7 +11,7 @@ export interface Bond {
   apy: string;
 }
 
-export const bondsMainnet: Bond[] = [
+const bondsMainnet: Bond[] = [
   {
     name: "Reef community staking bond",
     description: "",
@@ -21,3 +22,9 @@ export const bondsMainnet: Bond[] = [
     apy: "32",
   },
 ];
+
+export const bonds: Record<NetworkName, Bond[]> = {
+  mainnet: bondsMainnet,
+  testnet: [],
+  localhost: [],
+};
