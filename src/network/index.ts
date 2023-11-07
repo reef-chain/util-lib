@@ -8,4 +8,5 @@ export {
   getLatestBlockAccountUpdates$,
   getLatestBlockContractEvents$,
 } from "./latestBlock";
-export { Bond, bonds } from "./bonds";
+export type { Bond } from "./bonds";
+export { bonds } from "./bonds";
