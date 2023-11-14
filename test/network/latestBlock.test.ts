@@ -4,6 +4,7 @@ import {
   _getBlockAccountTransactionUpdates$,
   PusherLatestBlock,
   AccountIndexedTransactionType,
+  latestBlockUpdates$,
 } from "../../src/network/latestBlock";
 import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
@@ -181,12 +182,19 @@ describe("Latest block", () => {
     expect(block4.addresses.length).toBe(1);
   }, 10000);
 
-  it("should get latest latest data", async ctx => {
+  it("should get latest lindexed block data", async ctx => {
+    const network = await firstValueFrom(selectedNetwork$);
+    expect(network).toBeTruthy();
+    const block = await firstValueFrom(latestBlockUpdates$);
+    expect(block.blockHeight).toBeGreaterThan(7821890);
+  }, 20000);
+
+  it("should get latest block account change data", async ctx => {
     const network = await firstValueFrom(selectedNetwork$);
     expect(network).toBeTruthy();
     const block = await firstValueFrom(getLatestBlockAccountUpdates$([]));
-    expect(block.blockHeight).toBeGreaterThan(0);
-  }, 10000);
+    expect(block?.blockHeight).toBeGreaterThan(0);
+  }, 20000);
 
   it.skip("should get token update", async ctx => {
     const block = await firstValueFrom(

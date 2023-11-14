@@ -8,6 +8,7 @@ export interface Network {
   graphqlExplorerUrl: string;
   genesisHash: string;
   reefscanFrontendUrl: string;
+  options?: unknown;
 }
 
 export const SS58_REEF = 42;

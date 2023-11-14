@@ -1,10 +1,9 @@
 import Pusher from "pusher-js";
 import {
   catchError,
-  combineLatest,
   from,
   map,
-  NEVER,
+  mergeScan,
   Observable,
   of,
   shareReplay,
@@ -17,8 +16,6 @@ import { AVAILABLE_NETWORKS, Network } from "./network";
 const PUSHER_KEY = "fc5ad78eb31981de6c67";
 const APP_CLUSTER = "eu";
 const INDEXED_BLOCK_CHANNEL_NAME = "reef-chain";
-let pusherClient: Pusher;
-let block$: Observable<PusherLatestBlock>;
 
 export const enum AccountIndexedTransactionType {
   REEF20_TRANSFER,
@@ -32,27 +29,28 @@ const allIndexedTransactions = [
   AccountIndexedTransactionType.REEF20_TRANSFER,
 ];
 
-const getPusher = (): Promise<Pusher> => {
-  if (!pusherClient) {
-    return new Promise((resolve, reject) => {
-      pusherClient = new Pusher(PUSHER_KEY, {
-        cluster: APP_CLUSTER,
-      });
-      pusherClient.connection.bind("error", function (err) {
-        if (err.error.data.code === 4004) {
-          console.log("Pusher Service Over limit!");
-          return;
-        }
-        console.log("Pusher Service ERR", err);
-        reject("Pusher connect error=" + err?.error?.message);
-      });
-
-      pusherClient.connection.bind("connected", v => {
-        resolve(pusherClient);
-      });
+const getPusherClient = (
+  pusherKey: string,
+  pusherCluster: string
+): Promise<Pusher> => {
+  return new Promise((resolve, reject) => {
+    const pClient = new Pusher(pusherKey, {
+      cluster: pusherCluster,
     });
-  }
-  return Promise.resolve(pusherClient);
+    pClient.connection.bind("error", function (err) {
+      if (err.error.data.code === 4004) {
+        console.log("Pusher Service Over limit!");
+        return;
+      }
+      console.log("Pusher Service ERR", err);
+      reject("Pusher connect error=" + err?.error?.message);
+    });
+
+    pClient.connection.bind("connected", () => {
+      console.log("pusher connected");
+      resolve(pClient);
+    });
+  });
 };
 
 interface LatestBlock {
@@ -75,14 +73,43 @@ export interface LatestAddressUpdates extends LatestBlock {
   addresses: string[];
 }
 
-const latestBlockUpdates$ = combineLatest([
-  from(getPusher()),
-  selectedNetwork$,
-]).pipe(
-  switchMap(([pusher, network]: [Pusher, Network]) => {
+export interface PusherConfig {
+  pusherKey: string;
+  pusherCluster: string;
+}
+
+export const latestBlockUpdates$ = selectedNetwork$.pipe(
+  mergeScan(
+    (acc: { pusher?: Pusher; network?: Network; pusherKey?: string }, curr) => {
+      let pusher$;
+      let pusherKey;
+      if (
+        !acc.pusherKey ||
+        (curr.options as PusherConfig)?.pusherKey !== acc.pusherKey
+      ) {
+        acc.pusher?.disconnect();
+        pusherKey = (curr.options as PusherConfig)?.pusherKey || PUSHER_KEY;
+        pusher$ = from(
+          getPusherClient(
+            pusherKey,
+            (curr.options as PusherConfig)?.pusherCluster || APP_CLUSTER
+          )
+        );
+      }
+      if (!pusher$) {
+        pusher$ = of(acc.pusher);
+      }
+      return pusher$.pipe(
+        map(pusher => ({ pusher, network: curr, pusherKey }))
+      );
+    },
+    { pusher: undefined, network: undefined, pusherKey: undefined }
+  ),
+  filter((v): v is NonNullable<never> => !!v.pusher && !!v.network),
+  switchMap(({ pusher, network }: { pusher: Pusher; network: Network }) => {
     return new Observable<PusherLatestBlock>(obs => {
       const channelEvent =
-        network.rpcUrl === AVAILABLE_NETWORKS.mainnet.rpcUrl
+        network.name === AVAILABLE_NETWORKS.mainnet.name
           ? "block-finalised"
           : "block-finalised-testnet";
       const channel = pusher.subscribe(INDEXED_BLOCK_CHANNEL_NAME);
@@ -249,5 +276,9 @@ export const getLatestBlockContractEvents$ = (
     }),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    filter(v => !!v)
+    filter(v => !!v),
+    catchError(err => {
+      console.log("getLatestBlockContractEvents$ err=", err.message);
+      return of(null);
+    })
   ) as Observable<LatestAddressUpdates>;

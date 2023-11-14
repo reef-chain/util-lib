@@ -10,6 +10,7 @@ export {
   selectedNFTs$,
   selectedTokenBalances$,
   selectedTokenPrices$,
+  selectedTransactionHistory$,
 } from "./selected-account-plain-data.rx";
 export {
   selectedAccount_status$,
