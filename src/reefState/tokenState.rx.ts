@@ -90,6 +90,7 @@ export const selectedTokenBalances_status$: Observable<
             (
               tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
             ) => {
+              console.log("loading account token balances", tkns);
               return combineLatest([
                 of(tkns),
                 selectedAccountReefBalance$,

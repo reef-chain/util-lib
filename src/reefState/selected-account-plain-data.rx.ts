@@ -1,9 +1,16 @@
 import { distinctUntilChanged, map, Observable, of, shareReplay } from "rxjs";
-import { NFT, Token, TokenBalance, TokenWithAmount } from "../token";
+import {
+  NFT,
+  Token,
+  TokenBalance,
+  TokenTransfer,
+  TokenWithAmount,
+} from "../token";
 import {
   selectedNFTs_status$,
   selectedTokenBalances_status$,
   selectedTokenPrices_status$,
+  selectedTransactionHistory_status$,
 } from "./tokenState.rx";
 import { ReefAccount } from "../account";
 import { accounts_status$ } from "./account/accounts";
@@ -27,6 +34,10 @@ export const selectedNFTs$: Observable<NFT[] | null | undefined> =
 export const selectedTokenPrices$: Observable<
   TokenWithAmount[] | null | undefined
 > = unwrapSDOArray(selectedTokenPrices_status$);
+
+export const selectedTransactionHistory$: Observable<
+  TokenTransfer[] | null | undefined
+> = unwrapSDO(selectedTransactionHistory_status$);
 
 function unwrapSDO<T>(
   sdoObservable: Observable<StatusDataObject<T> | undefined>
