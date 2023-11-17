@@ -7,7 +7,6 @@ export interface Network {
   name: NetworkName;
   graphqlExplorerUrl: string;
   genesisHash: string;
-  reefscanFrontendUrl: string;
   options?: unknown;
 }
 
@@ -24,7 +23,6 @@ export const AVAILABLE_NETWORKS: Networks = {
     graphqlExplorerUrl: "wss://squid.subsquid.io/reef-explorer-testnet/graphql",
     genesisHash:
       "0xb414a8602b2251fa538d38a9322391500bd0324bc7ac6048845d57c37dd83fe6",
-    reefscanFrontendUrl: "https://testnet.reefscan.com",
   },
   mainnet: {
     name: "mainnet",
@@ -34,7 +32,6 @@ export const AVAILABLE_NETWORKS: Networks = {
     graphqlExplorerUrl: "wss://squid.subsquid.io/reef-explorer/graphql",
     genesisHash:
       "0x7834781d38e4798d548e34ec947d19deea29df148a7bf32484b7b24dacf8d4b7",
-    reefscanFrontendUrl: "https://reefscan.com",
   },
   localhost: {
     name: "localhost",
@@ -43,6 +40,5 @@ export const AVAILABLE_NETWORKS: Networks = {
     verificationApiUrl: "http://localhost:8001",
     graphqlExplorerUrl: "ws://localhost:8080/v1/graphql",
     genesisHash: "",
-    reefscanFrontendUrl: "http://localhost:3000",
   },
 };

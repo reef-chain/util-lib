@@ -106,11 +106,11 @@ export const sendToNativeAddress = (
 export const getExtrinsicUrl = (
   id: string,
   network: Network = AVAILABLE_NETWORKS.mainnet
-): string => `${network.reefscanFrontendUrl}/extrinsic/${id}`;
+): string => `${network.reefscanUrl}/extrinsic/${id}`;
 export const getContractUrl = (
   address: string,
   network: Network = AVAILABLE_NETWORKS.mainnet
-): string => `${network.reefscanFrontendUrl}/contract/${address}`;
+): string => `${network.reefscanUrl}/contract/${address}`;
 
 export const getTransferUrl = (
   blockHeight: string,
@@ -118,4 +118,4 @@ export const getTransferUrl = (
   eventIndex: string,
   network: Network = AVAILABLE_NETWORKS.mainnet
 ): string =>
-  `${network.reefscanFrontendUrl}/transfer/${blockHeight}/${extrinsicIndex}/${eventIndex}`;
+  `${network.reefscanUrl}/transfer/${blockHeight}/${extrinsicIndex}/${eventIndex}`;
