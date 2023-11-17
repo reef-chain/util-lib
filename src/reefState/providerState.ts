@@ -12,24 +12,48 @@ import {
   tap,
 } from "rxjs";
 import { Provider } from "@reef-defi/evm-provider";
-import { disconnectProvider, initProvider, Network } from "../network";
+import { disconnectProvider, initProvider } from "../network/providerUtil";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";
-import { forceReloadTokens$ } from "./token/reloadTokenState";
 import {
   getCollectedWsStateValue$,
   WsConnectionState,
 } from "./ws-connection-state";
+import { Network } from "../network/network";
+import { forceReload$ } from "./token/force-reload-tokens";
 
 const providerConnStateSubj = new Subject<WsConnectionState>();
 export const providerConnState$: Observable<WsConnectionState> =
   getCollectedWsStateValue$(providerConnStateSubj);
 
+async function connectProvider(
+  currNet: Network,
+  resolve: (
+    value:
+      | PromiseLike<{
+          provider: Provider | undefined;
+          network: Network;
+        }>
+      | { provider: Provider | undefined; network: Network }
+  ) => void
+) {
+  try {
+    const pr: Provider = await initProvider(
+      currNet.rpcUrl,
+      providerConnStateSubj
+    );
+    console.log("PROVIDER CONNECTED");
+    resolve({ provider: pr, network: currNet });
+  } catch (err) {
+    resolve({ provider: undefined, network: currNet });
+  }
+}
+
 export const selectedNetworkProvider$: Observable<{
   provider: Provider;
   network: Network;
 }> = selectedNetwork$.pipe(
-  combineLatestWith(forceReloadTokens$),
+  combineLatestWith(forceReload$),
   mergeScan(
     (
       pr_url: {
@@ -46,25 +70,22 @@ export const selectedNetworkProvider$: Observable<{
         return Promise.resolve(pr_url);
       }
       return new Promise<{ provider: Provider | undefined; network: Network }>(
-        async (resolve, _reject) => {
-          if (pr_url.provider) {
-            try {
-              await disconnectProvider(pr_url.provider);
-              console.log("PROVIDER DISCONNECTED");
-            } catch (e: any) {
-              console.log("Error disconnecting provider=", e.message);
-            }
-          }
-          try {
-            const pr: Provider = await initProvider(
-              currNet.rpcUrl,
-              providerConnStateSubj
-            );
-            console.log("PROVIDER CONNECTED");
-            resolve({ provider: pr, network: currNet });
-          } catch (err) {
-            resolve({ provider: undefined, network: currNet });
-          }
+        (resolve, _reject) => {
+          // if (pr_url.provider) {
+          //   try {
+          disconnectProvider(pr_url.provider)
+            .catch(param => {
+              console.log("Error disconnecting provider=", param.message);
+            })
+            .finally(() => {
+              return connectProvider(currNet, resolve);
+            });
+          console.log("PROVIDER DISCONNECTED");
+          /*} catch (e: any) {
+
+            }*/
+          // }
+          // await connectProvider(currNet, resolve);
         }
       );
     },
@@ -86,8 +107,6 @@ export const instantProvider$ = selectedProvider$.pipe(
   startWith(undefined),
   shareReplay(1)
 );
-
-// export const setSelectedProvider = (provider: Provider): void => providerSubj.next(provider);
 
 function finalizeWithValue<T>(callback: (value: T) => void) {
   return (source: Observable<T>) =>

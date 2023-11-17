@@ -10,7 +10,8 @@ import {
   Token,
   TokenBalance,
   TokenWithAmount,
-} from "../../token";
+} from "../../token/tokenModel";
+
 import { Pool } from "../../token/pool";
 import { calculateTokenPrice_sdo } from "../../token/tokenUtil";
 
@@ -46,7 +47,7 @@ export const toTokensWithPrice_sdo = ([tokens, reefPrice, pools]: [
   StatusDataObject<StatusDataObject<Pool | null>[]>
 ]): StatusDataObject<StatusDataObject<TokenWithAmount>[]> => {
   const tknsWPrice = tokens.data.map(token_sdo => {
-    let isReef = token_sdo.data.address === REEF_ADDRESS;
+    const isReef = token_sdo.data.address === REEF_ADDRESS;
     const returnTkn = toFeedbackDM(
       {
         ...token_sdo.data,

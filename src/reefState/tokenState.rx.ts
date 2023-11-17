@@ -1,7 +1,6 @@
 import {
   catchError,
   combineLatest,
-  debounceTime,
   from,
   map,
   mergeWith,
@@ -9,13 +8,8 @@ import {
   of,
   shareReplay,
   startWith,
-  Subject,
   switchMap,
-  tap,
-  throttleTime,
-  withLatestFrom,
 } from "rxjs";
-import { loadAvailablePools, toAvailablePools } from "./token/poolUtils";
 import {
   NFT,
   Token,
@@ -27,20 +21,18 @@ import { reefPrice$ } from "../token/reefPrice";
 import {
   loadAccountTokens_sdo,
   replaceReefBalanceFromAccount,
-  setReefBalanceFromAccount,
 } from "./token/selectedAccountTokenBalances";
-import { apolloClientInstance$ } from "../graphql";
 import { selectedAccount_status$ } from "./account/selectedAccount";
 import { selectedNetwork$ } from "./networkState";
-import { AvailablePool, Pool } from "../token/pool";
+import { Pool } from "../token/pool";
 import { selectedAccountAddressChange$ } from "./account/selectedAccountAddressChange";
 import { Network } from "../network/network";
 import { ReefAccount } from "../account/accountModel";
 import { fetchPools$ } from "../pools/pools";
 import {
   collectFeedbackDMStatus,
-  StatusDataObject,
   FeedbackStatusCode,
+  StatusDataObject,
   toFeedbackDM,
 } from "./model/statusDataObject";
 import { loadSignerNfts } from "./token/nftUtils";
@@ -52,12 +44,20 @@ import { getReefswapNetworkConfig } from "../network/dex";
 import { filter } from "rxjs/operators";
 import { BigNumber } from "ethers";
 import { selectedNetworkProvider$, selectedProvider$ } from "./providerState";
-import { forceReloadTokens$ } from "./token/reloadTokenState";
+import {
+  selectedAccountAnyBalanceUpdate$,
+  selectedAccountFtBalanceUpdate$,
+  selectedAccountNftBalanceUpdate$,
+} from "./token/reloadTokenState";
+import { getLatestBlockAccountUpdates$ } from "../network";
+import { httpClientInstance$ } from "../graphql/httpClient";
+import { AccountIndexedTransactionType } from "../network/latestBlock";
+import { forceReload$ } from "./token/force-reload-tokens";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
 ]).pipe(shareReplay(1));
 
 const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
@@ -72,19 +72,41 @@ const selectedAccountReefBalance$ = selectedAccount_status$.pipe(
 export const selectedTokenBalances_status$: Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
-    return loadAccountTokens_sdo(vals).pipe(
-      switchMap(
-        (tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>) => {
-          return combineLatest([of(tkns), selectedAccountReefBalance$]).pipe(
-            map(arrVal => replaceReefBalanceFromAccount(arrVal[0], arrVal[1]))
-          );
-        }
-      ),
+    const [httpClient, signer, forceReload, _] = vals;
+    return getLatestBlockAccountUpdates$(
+      [signer.data.address],
+      [AccountIndexedTransactionType.REEF20_TRANSFER]
+    ).pipe(
+      startWith(true),
+      switchMap(_ => {
+        return loadAccountTokens_sdo(vals).pipe(
+          switchMap(
+            (
+              tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+            ) => {
+              console.log("loading account token balances", tkns);
+              return combineLatest([
+                of(tkns),
+                selectedAccountReefBalance$,
+              ]).pipe(
+                map(arrVal =>
+                  replaceReefBalanceFromAccount(arrVal[0], arrVal[1])
+                )
+              );
+            }
+          ),
+          catchError((err: any) => {
+            console.log("ERROR2 selectedTokenBalances_status$=", err);
+            return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+          })
+        );
+      }),
       catchError((err: any) => {
         console.log("ERROR0 selectedTokenBalances_status$=", err);
         return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
@@ -118,7 +140,7 @@ export const selectedPools_status$: Observable<
         StatusDataObject<ReefAccount>
       ]
     ) => {
-      let [tkns, networkProvider, signer] = valArr;
+      const [tkns, networkProvider, signer] = valArr;
       if (!signer) {
         return of(
           toFeedbackDM(
@@ -179,9 +201,9 @@ export const selectedTokenPrices_status$: Observable<
   shareReplay(1)
 );
 
-export const availableReefPools_status$: Observable<
+/*export const availableReefPools_status$: Observable<
   StatusDataObject<AvailablePool[]>
-> = combineLatest([apolloClientInstance$, selectedProvider$]).pipe(
+> = combineLatest([httpClientInstance$, selectedProvider$]).pipe(
   switchMap(loadAvailablePools),
   map(toAvailablePools),
   map(pools => toFeedbackDM(pools, FeedbackStatusCode.COMPLETE_DATA)),
@@ -190,14 +212,15 @@ export const availableReefPools_status$: Observable<
   ),
   startWith(toFeedbackDM([], FeedbackStatusCode.LOADING)),
   shareReplay(1)
-);
+);*/
 
 export const selectedNFTs_status$: Observable<
   StatusDataObject<StatusDataObject<NFT>[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountNftBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(v => loadSignerNfts(v)),
   mergeWith(
@@ -208,7 +231,6 @@ export const selectedNFTs_status$: Observable<
   catchError(err =>
     of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
   ),
-  // tap((v)=>{console.log('lib 1NFTsssss =',v)}),
   shareReplay(1)
 );
 
@@ -216,11 +238,12 @@ export const selectedNFTs_status$: Observable<
 export const selectedTransactionHistory_status$: Observable<
   StatusDataObject<TokenTransfer[]>
 > = combineLatest([
-  apolloClientInstance$,
+  httpClientInstance$,
   selectedAccountAddressChange$,
   selectedNetwork$,
   selectedProvider$,
-  forceReloadTokens$,
+  forceReload$,
+  selectedAccountAnyBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(loadTransferHistory),
   map(vArr =>

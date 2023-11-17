@@ -1,7 +1,5 @@
-import { gql } from "@apollo/client";
-
-export const TRANSFER_HISTORY_GQL = gql`
-  subscription query($accountId: String!) {
+export const TRANSFER_HISTORY_QUERY = `
+  query transferHistory($accountId: String!) {
     transfers(
       where: {
         OR: [{ from: { id_eq: $accountId } }, { to: { id_eq: $accountId } }]
@@ -24,8 +22,12 @@ export const TRANSFER_HISTORY_GQL = gql`
         type
         contractData
       }
+      event {
+        index
+      }
       extrinsic {
         id
+        index
         block {
           id
           height
@@ -43,41 +45,10 @@ export const TRANSFER_HISTORY_GQL = gql`
     }
   }
 `;
-/*
-export const TRANSFER_HISTORY_GQL = gql`
-  subscription query($accountId: String!) {
-    transfer(
-      where: {
-        _or: [
-          { to_address: { _eq: $accountId } }
-          { from_address: { _eq: $accountId } }
-        ]
-        _and: { success: { _eq: true } }
-      }
-      limit: 10
-      order_by: { timestamp: desc }
-    ) {
-      amount
-      success
-      token_address
-      from_address
-      to_address
-      timestamp
-      nft_id
-      token {
-        address
-        verified_contract {
-          name
-          type
-          contract_data
-        }
-      }
-      extrinsic{
-        block_id
-        index
-        hash
-      }
-    }
-  }
-`;
-*/
+
+export const getSignerHistoryQuery = (accountId: string) => {
+  return {
+    query: TRANSFER_HISTORY_QUERY,
+    variables: { accountId },
+  };
+};

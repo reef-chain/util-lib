@@ -19,11 +19,13 @@ import { updateSignersSubj } from "./setAccounts";
 import { availableAddresses$ } from "./availableAddresses";
 import { Provider } from "@reef-defi/evm-provider";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
+  StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
 import { selectedProvider$ } from "../providerState";
+import { TxStatusUpdate } from "../../token/transactionUtil";
+import { UpdateAction } from "../model/updateStateModel";
 
 export const accountsLocallyUpdatedData$: Observable<
   StatusDataObject<StatusDataObject<ReefAccount>[]>
@@ -51,19 +53,24 @@ export const accountsLocallyUpdatedData$: Observable<
             updateActions,
             provider,
             allSignersLatestUpdates
-          ).then(lastUpdated => ({
-            all: replaceUpdatedSigners(
-              allSignersLatestUpdates,
+          )
+            .then(lastUpdated => ({
+              all: replaceUpdatedSigners(
+                allSignersLatestUpdates,
+                lastUpdated,
+                true
+              ),
+              allUpdated: replaceUpdatedSigners(
+                state.allUpdated,
+                lastUpdated,
+                true
+              ),
               lastUpdated,
-              true
-            ),
-            allUpdated: replaceUpdatedSigners(
-              state.allUpdated,
-              lastUpdated,
-              true
-            ),
-            lastUpdated,
-          }))
+            }))
+            .catch(err => {
+              console.log("ERROR WITH LOCALLY UPD=", err.message);
+              return null;
+            })
         )
       );
     },
@@ -74,7 +81,9 @@ export const accountsLocallyUpdatedData$: Observable<
     }
   ),
   filter((val: any) => !!val.lastUpdated.length),
-  map((val: any): any => val.all),
+  map((val: any): any => {
+    return toFeedbackDM(val.all, FeedbackStatusCode.COMPLETE_DATA);
+  }),
   catchError(err =>
     of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
   ),
@@ -82,12 +91,12 @@ export const accountsLocallyUpdatedData$: Observable<
   shareReplay(1)
 );
 
-/*export const onTxUpdateResetSigners = (
-    txUpdateData: TxStatusUpdate,
-    updateActions: UpdateAction[],
+export const onTxUpdateResetSigners = (
+  txUpdateData: TxStatusUpdate,
+  updateActions: UpdateAction[]
 ): void => {
-    if (txUpdateData?.isInBlock || txUpdateData?.error) {
-        const delay = txUpdateData.txTypeEvm ? 2000 : 0;
-        setTimeout(() => reloadSignersSubj.next({ updateActions }), delay);
-    }
-};*/
+  if (txUpdateData?.isInBlock || txUpdateData?.error) {
+    const delay = txUpdateData.txTypeEvm ? 2000 : 0;
+    setTimeout(() => updateSignersSubj.next({ updateActions }), delay);
+  }
+};

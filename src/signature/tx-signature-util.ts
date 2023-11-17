@@ -4,10 +4,9 @@ import { Metadata, TypeRegistry } from "@polkadot/types";
 import type { AnyJson } from "@polkadot/types/types";
 import type { Call } from "@polkadot/types/interfaces";
 import { base64Decode, base64Encode } from "@reef-defi/util-crypto";
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { ethers } from "ethers";
 import { Fragment, JsonFragment } from "@ethersproject/abi";
-import { getContractTypeAbi, REEF_ADDRESS, Token } from "../token";
-import { apolloClientInstance$, CONTRACT_DATA_GQL, zenToRx } from "../graphql";
+import { REEF_ADDRESS } from "../token";
 import {
   catchError,
   firstValueFrom,
@@ -17,8 +16,11 @@ import {
   of,
   take,
 } from "rxjs";
-import { CONTRACT_ABI_GQL } from "../graphql/contractData.gql";
+import { getContractAbiQuery } from "../graphql/contractData.gql";
 import { ERC20 } from "../token/abi/ERC20";
+import { httpClientInstance$ } from "../graphql/httpClient";
+
+import { queryGql$ } from "../graphql/gqlUtil";
 
 export interface DecodedMethodData {
   methodName: string;
@@ -32,20 +34,25 @@ export interface DecodedMethodData {
   };
 }
 
-async function getContractAbi(
-  contractAddress: string
-): Promise<any[] | string> {
+export async function getContractAbi(contractAddress: string): Promise<any[]> {
   if (contractAddress === REEF_ADDRESS) {
-    return Promise.resolve(ERC20.toString());
+    return Promise.resolve(ERC20 as any[]);
   }
   return firstValueFrom(
-    apolloClientInstance$.pipe(
-      mergeMap(apollo => fetchContractAbi$(apollo, contractAddress)),
+    httpClientInstance$.pipe(
+      mergeMap(httpClient => fetchContractAbi$(httpClient, contractAddress)),
       map(res => {
         if (res[0] && res[0]["REEFERC20"]) {
-          res = res[0]["REEFERC20"];
+          res = res[0];
         }
-        return res;
+        let abiArr: any[] = [];
+        res.forEach(ercDefinitionsObj => {
+          Object.keys(ercDefinitionsObj).forEach(ercKey => {
+            const ercDefinitionsObjAbi = ercDefinitionsObj[ercKey];
+            abiArr = abiArr.concat(ercDefinitionsObjAbi);
+          });
+        });
+        return abiArr;
       }),
       take(1)
     )
@@ -53,16 +60,17 @@ async function getContractAbi(
 }
 
 function fetchContractAbi$(
-  apollo: any,
+  httpClient: any,
   contractAddress: string
 ): Observable<any | null> {
-  return zenToRx(
-    apollo.subscribe({
+  /*return zenToRx(
+    httpClient.subscribe({
       query: CONTRACT_ABI_GQL,
       variables: { address: contractAddress },
       fetchPolicy: "network-only",
     })
-  ).pipe(
+  )*/
+  return queryGql$(httpClient, getContractAbiQuery(contractAddress)).pipe(
     take(1),
     map((verContracts: any) =>
       verContracts.data.verifiedContracts.map(
@@ -143,18 +151,22 @@ export async function decodePayloadMethod(
   if (isEvm) {
     const contractAddress = args[0];
     let decodedData;
-
-    if (!abi) {
+    if (!abi || !abi.length) {
       abi = await getContractAbi(contractAddress);
     }
 
-    if (abi && !!args) {
+    if (abi && abi.length && !!args) {
       const methodArgs = args[1];
-      const iface = new ethers.utils.Interface(abi);
-      decodedData = iface.parseTransaction({
-        data: methodArgs,
-        value: sentValue,
-      });
+      try {
+        console.log("ABI can have duplicate member warnings");
+        const iface = new ethers.utils.Interface(abi);
+        decodedData = iface.parseTransaction({
+          data: methodArgs,
+          value: sentValue,
+        });
+      } catch (e) {
+        /* empty */
+      }
     }
     decodedResponse.vm["evm"] = {
       contractAddress,
