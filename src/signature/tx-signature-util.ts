@@ -96,6 +96,7 @@ export async function decodePayloadMethod(
   await api.isReady;
   if (!types) {
     types = getSpecTypes(
+      // @ts-ignore
       api.registry,
       api.runtimeChain.toString(),
       api.runtimeVersion.specName,
@@ -122,8 +123,9 @@ export async function decodePayloadMethod(
     const metadata = new Metadata(registry, base64Decode(metaCalls || ""));
     registry.setMetadata(metadata, undefined, undefined);
 
+    // @ts-ignore
     method = registry.createType("Call", methodDataEncoded);
-    args = (method.toHuman() as { args: AnyJson }).args;
+    args = (method?.toHuman() as { args: AnyJson }).args;
   } catch (error) {
     console.log("decodeMethod: ERROR decoding method");
     return null;

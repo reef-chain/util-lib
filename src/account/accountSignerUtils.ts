@@ -62,6 +62,7 @@ export const getAccountSigner = async (
         ? new ReefSignerWrapper(
             provider,
             address,
+            // @ts-ignore
             new ReefSigningKeyWrapper(signingKey)
           )
         : undefined
@@ -76,6 +77,7 @@ export class ReefSigningKeyWrapper implements InjectedSigner {
     this.sigKey = signingKey;
   }
 
+  // @ts-ignore
   signPayload(payload: SignerPayloadJSON) {
     console.log("SIG PAYLOAD=", payload.method);
 
