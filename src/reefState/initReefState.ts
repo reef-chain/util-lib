@@ -6,8 +6,8 @@ import { AccountJson } from "@reef-defi/extension-base/background/types";
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
 import { Signer as InjectedSigningKey } from "@polkadot/api/types";
-import { ipfsUrlResolverFn } from "../token/nftUtil";
-import { AxiosInstance } from "axios";
+
+export type IpfsUrlResolverFn = (ipfsHash) => string;
 
 export interface StateOptions {
   network?: Network;
@@ -18,7 +18,7 @@ export interface StateOptions {
       | InjectedAccountWithMetaReef[];
     injectedSigner: InjectedSigningKey;
   };
-  ipfsHashResolverFn?: ipfsUrlResolverFn;
+  ipfsHashResolverFn?: IpfsUrlResolverFn;
 }
 
 type destroyConnection = () => void;

@@ -9,7 +9,7 @@ import {
 } from "rxjs";
 import { BigNumber } from "ethers";
 import { ContractType, NFT } from "../../token/tokenModel";
-import { ipfsUrlResolverFn, resolveNftImageLinks$ } from "../../token/nftUtil";
+import { resolveNftImageLinks$ } from "../../token/nftUtil";
 import { ReefAccount } from "../../account/accountModel";
 import {
   collectFeedbackDMStatus,
@@ -24,9 +24,10 @@ import { Provider } from "@reef-defi/evm-provider";
 import { instantProvider$ } from "../providerState";
 import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
+import { IpfsUrlResolverFn } from "../initReefState";
 
-export let _NFT_IPFS_RESOLVER_FN: ipfsUrlResolverFn | undefined;
-export const setNftIpfsResolverFn = (val?: ipfsUrlResolverFn) => {
+export let _NFT_IPFS_RESOLVER_FN: IpfsUrlResolverFn | undefined;
+export const setNftIpfsResolverFn = (val?: IpfsUrlResolverFn) => {
   _NFT_IPFS_RESOLVER_FN = val;
 };
 

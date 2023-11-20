@@ -3896,10 +3896,10 @@
     "@types/websocket" "^1.0.5"
     websocket "^1.0.34"
 
-"@reef-chain/evm-provider@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-chain/evm-provider/-/evm-provider-2.0.0.tgz#3aa6bad9436adfdddd31d798ec6bf44ebcae704d"
-  integrity sha512-d0VqkOrTCHVrHCRllKlQlIHwh3EEi+N55830pofkgFmj28z9DmVNKWzDNytuLpvGGWGGFHygKKfxk3seLfaOpg==
+"@reef-chain/evm-provider@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@reef-chain/evm-provider/-/evm-provider-2.0.1.tgz#3c4826ba2d86b88ab39d4c8b9c4cb6b8d6f6b6ea"
+  integrity sha512-ISmgJ8El+lfLzrnJ1x7XuVKDTZK6A6N2uWd94PE/X4CPq3wNt/EdHJA1EhY4kIP3yhXIofxeLzH5E5Llum5P9w==
   dependencies:
     "@open-web3/dev-config" "^0.2.9"
     "@open-web3/orml-api-derive" "^2.0.1"
