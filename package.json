@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "./dist/util-lib.cjs",
   "module": "./dist/util-lib.mjs",
   "exports": {

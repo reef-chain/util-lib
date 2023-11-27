@@ -17,7 +17,7 @@ export type Networks = Record<NetworkName, Network>;
 export const AVAILABLE_NETWORKS: Networks = {
   testnet: {
     name: "testnet",
-    rpcUrl: "wss://rpc-testnet.reefscan.info/ws",
+    rpcUrl: "wss://rpc-testnet.reefscan.com/ws",
     reefscanUrl: "https://testnet.reefscan.com",
     verificationApiUrl: "https://api-testnet.reefscan.com",
     graphqlExplorerUrl: "wss://squid.subsquid.io/reef-explorer-testnet/graphql",
@@ -26,7 +26,7 @@ export const AVAILABLE_NETWORKS: Networks = {
   },
   mainnet: {
     name: "mainnet",
-    rpcUrl: "wss://rpc.reefscan.info/ws",
+    rpcUrl: "wss://rpc.reefscan.com/ws",
     reefscanUrl: "https://reefscan.com",
     verificationApiUrl: "https://api.reefscan.com",
     graphqlExplorerUrl: "wss://squid.subsquid.io/reef-explorer/graphql",
