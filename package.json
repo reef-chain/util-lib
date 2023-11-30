@@ -37,7 +37,7 @@
     "@reef-defi/extension-inject": "^1.0.16",
     "axios": "^0.27.2",
     "bignumber.js": "^9.1.0",
-    "pusher-js": "^8.2.0"
+    "firebase": "^10.7.0"
   },
   "devDependencies": {
     "@types/jsdom": "^20.0.1",
