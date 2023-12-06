@@ -98,7 +98,8 @@ const toTokenTransfers = (
       from: transferData.from?.id,
       to: transferData.to.id,
       inbound:
-        transferData.to.evmAddress === signer.evmAddress ||
+        (!!signer.evmAddress &&
+          transferData.to.evmAddress === signer.evmAddress) ||
         transferData.to.id === signer.address,
       timestamp: transferData.timestamp,
       token: toTransferToken(transferData),
