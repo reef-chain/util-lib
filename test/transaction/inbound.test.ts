@@ -1,4 +1,4 @@
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   initReefState,
   selectedTransactionHistory$,
@@ -40,5 +40,6 @@ describe("tx history inbound resolver test", () => {
       selectedTransactionHistory_status$.pipe(skip(1))
     );
     console.log(transfers);
+    expect(transfers.data != undefined);
   });
 });
