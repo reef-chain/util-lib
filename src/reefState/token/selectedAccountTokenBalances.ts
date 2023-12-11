@@ -8,7 +8,9 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
+  from,
   map,
+  mergeMap,
   mergeScan,
   Observable,
   of,
@@ -62,7 +64,7 @@ export const fetchTokensData = (
         (vContract: { id: string; contractData: any }) => {
           return {
             address: vContract.id,
-            iconUrl: "",
+            iconUrl: vContract.contractData?.iconUrl,
             decimals: vContract.contractData?.decimals || 18,
             name: vContract.contractData?.name,
             symbol: vContract.contractData?.symbol,
@@ -129,21 +131,24 @@ const tokenBalancesWithContractDataCache_sdo =
     const missingCacheContractDataAddresses = tokenBalances
       .filter(tb => !state.contractData.some(cd => cd.address === tb.address))
       .map(tb => tb.address);
-    const contractData$ = missingCacheContractDataAddresses.length
-      ? fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
-          map(newTokens => {
-            return newTokens
-              ? newTokens.concat(state.contractData)
-              : state.contractData;
-          })
-        )
-      : of(state.contractData);
 
-    return contractData$.pipe(
-      map((tokenContractData: Token[]) =>
-        toTokensWithContractDataFn(tokenBalances)(tokenContractData)
-      ),
-      startWith(toTokensWithContractDataFn(tokenBalances)(state.contractData)),
+    return from(
+      fetchTokensData(httpClient, missingCacheContractDataAddresses)
+    ).pipe(
+      mergeMap(newTokens => {
+        return of(
+          newTokens ? newTokens.concat(state.contractData) : state.contractData
+        );
+      }),
+      mergeMap((tokenContractData: Token[]) => {
+        return of(
+          toTokensWithContractDataFn(tokenBalances)(tokenContractData)
+        ).pipe(
+          startWith(
+            toTokensWithContractDataFn(tokenBalances)(state.contractData)
+          )
+        );
+      }),
       // tap(v => console.log('tokenBalancesWithContractDataCache_sdo = ', v)),
       catchError(err => {
         console.log(
@@ -155,7 +160,6 @@ const tokenBalancesWithContractDataCache_sdo =
       shareReplay(1)
     );
   };
-
 /*let addReefTokenBalance = async (
     // eslint-disable-next-line camelcase
     tokenBalances: { token_address: string; balance: number }[],
@@ -183,8 +187,8 @@ const tokenBalancesWithContractDataCache_sdo =
 
 const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
-) =>
-  tokens.map(tkn => {
+) => {
+  return tokens.map(tkn => {
     if (tkn.data.iconUrl) {
       return tkn;
     } else {
@@ -192,6 +196,7 @@ const resolveEmptyIconUrls = (
       return tkn;
     }
   });
+};
 
 // adding shareReplay is messing up TypeScriptValidateTypes
 export const replaceReefBalanceFromAccount = (
@@ -249,13 +254,22 @@ export const loadAccountTokens_sdo = ([
           tokens: [],
           contractData: [reefTokenWithAmount()],
         }),
-        map((tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) =>
-          resolveEmptyIconUrls(tokens_cd.tokens)
+        map(
+          (tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) => {
+            // tokens_cd.tokens.map(tokens=>{
+            //   if(tokens.data.address=="0x6685129d58bbf9FCd567770eFf1b9875e1fA24Bc")console.log("pre",tokens.data)
+            // })
+            return resolveEmptyIconUrls(tokens_cd.tokens);
+            // tokenss.map(tokens=>{
+            //   if(tokens.data.address=="0x6685129d58bbf9FCd567770eFf1b9875e1fA24Bc")console.log("post",tokens.data)
+            // })
+            // return tokenss;
+          }
         ),
         map(sortReefTokenFirst),
-        map((tkns: StatusDataObject<Token | TokenBalance>[]) =>
-          toFeedbackDM(tkns, collectFeedbackDMStatus(tkns))
-        ),
+        map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
+          return toFeedbackDM(tkns, collectFeedbackDMStatus(tkns));
+        }),
         catchError(err => {
           console.log("loadAccountTokens 1 ERROR=", err);
           return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
