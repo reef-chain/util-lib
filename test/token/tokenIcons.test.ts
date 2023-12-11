@@ -1,14 +1,13 @@
 import { beforeAll, describe, it } from "vitest";
-import { initReefState } from "../../src/reefState";
+import { initReefState, selectedTokenBalances$ } from "../../src/reefState";
 import { AVAILABLE_NETWORKS } from "../../src/network";
-import axios from "axios";
-import { getContractDataQuery } from "../../src/graphql/contractData.gql";
+import { firstValueFrom, skip } from "rxjs";
 
 describe("graphql tests", () => {
-  const accountId = "5HWEZvfy8uUsxqNTNuxrkMrDmAmkECzC2GCjcn2KLtKZuJaw";
+  const accountId = "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP";
   beforeAll(async () => {
     initReefState({
-      network: AVAILABLE_NETWORKS.mainnet,
+      network: AVAILABLE_NETWORKS.testnet,
       jsonAccounts: {
         accounts: [
           {
@@ -22,7 +21,10 @@ describe("graphql tests", () => {
     });
   });
 
-  it("should fetch tokens contract data", async () => {
+  it("should log list of tokens", async () => {
+    const axios = require("axios");
+    const { from, map } = require("rxjs");
+
     const distinctAddr = [
       "0xF881F66FFAE3C017D4d59244857f7AB6B5B5CF35",
       "0x7F12d5d92F9b4E250fe3f0302A29F6F93cBBBD8D",
@@ -37,15 +39,56 @@ describe("graphql tests", () => {
       "0x810678BdD2Cf7c5D492Cb8B930975c172cE964AC",
       "0xC8D55c9706fa2E72699a72936474F4c393B302aC",
     ];
+    const CONTRACT_DATA_QUERY = `
+  query contract_data_query($addresses: [String!]!) {
+    verifiedContracts(where: { id_in: $addresses }, limit: 300) {
+      id
+      contractData
+    }
+  }
+`;
 
+    const getContractDataQuery = addresses => {
+      return {
+        query: CONTRACT_DATA_QUERY,
+        variables: { addresses },
+      };
+    };
     const graphql = JSON.stringify(getContractDataQuery(distinctAddr));
-    const response = await axios.post(
-      "https://squid.subsquid.io/reef-explorer-testnet/graphql",
-      graphql,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    console.log(response.data.data);
+
+    from(
+      axios
+        .post(
+          "https://squid.subsquid.io/reef-explorer-testnet/graphql",
+          graphql,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+        .then(response => {
+          return response.data;
+        })
+    )
+      .pipe(
+        map(verContracts => {
+          const res = verContracts.data.verifiedContracts.map(vContract => {
+            return {
+              address: vContract.id,
+              iconUrl:
+                "https://cloudflare-ipfs.com/ipfs" +
+                  vContract.contractData?.iconUrl || "",
+              decimals: vContract.contractData?.decimals || 18,
+              name: vContract.contractData?.name,
+              symbol: vContract.contractData?.symbol,
+            };
+          });
+          console.log("client observer ===", res);
+          return res;
+        })
+      )
+      .subscribe();
+
+    const tokenBal = await firstValueFrom(selectedTokenBalances$.pipe(skip(1)));
+    // console.log(tokenBal)
   });
 });
