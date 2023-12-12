@@ -8,7 +8,9 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
+  from,
   map,
+  mergeMap,
   mergeScan,
   Observable,
   of,
@@ -31,12 +33,17 @@ import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
 import { reefTokenWithAmount } from "../../token/tokenUtil";
+import { toIpfsProviderUrl } from "src/token/nftUtil";
 
 // eslint-disable-next-line camelcase
 export const fetchTokensData = (
   httpClient: any,
   missingCacheContractDataAddresses: string[]
 ): Observable<Token[]> => {
+  if (!missingCacheContractDataAddresses.length) {
+    return of([]);
+  }
+
   const distinctAddr = missingCacheContractDataAddresses.reduce(
     (distinctAddrList: string[], curr: string) => {
       if (distinctAddrList.indexOf(curr) < 0) {
@@ -46,13 +53,6 @@ export const fetchTokensData = (
     },
     []
   );
-  /*return zenToRx(
-    apollo.subscribe({
-      query: CONTRACT_DATA_GQL,
-      variables: { addresses: distinctAddr },
-      fetchPolicy: "network-only",
-    })
-  )*/
 
   return queryGql$(httpClient, getContractDataQuery(distinctAddr)).pipe(
     take(1),
@@ -62,7 +62,7 @@ export const fetchTokensData = (
         (vContract: { id: string; contractData: any }) => {
           return {
             address: vContract.id,
-            iconUrl: "",
+            iconUrl: vContract.contractData?.iconUrl,
             decimals: vContract.contractData?.decimals || 18,
             name: vContract.contractData?.name,
             symbol: vContract.contractData?.symbol,
@@ -129,22 +129,22 @@ const tokenBalancesWithContractDataCache_sdo =
     const missingCacheContractDataAddresses = tokenBalances
       .filter(tb => !state.contractData.some(cd => cd.address === tb.address))
       .map(tb => tb.address);
-    const contractData$ = missingCacheContractDataAddresses.length
-      ? fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
-          map(newTokens => {
-            return newTokens
-              ? newTokens.concat(state.contractData)
-              : state.contractData;
-          })
-        )
-      : of(state.contractData);
 
-    return contractData$.pipe(
-      map((tokenContractData: Token[]) =>
-        toTokensWithContractDataFn(tokenBalances)(tokenContractData)
+    return fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
+      mergeMap(newTokens =>
+        of(
+          newTokens ? newTokens.concat(state.contractData) : state.contractData
+        )
       ),
-      startWith(toTokensWithContractDataFn(tokenBalances)(state.contractData)),
-      // tap(v => console.log('tokenBalancesWithContractDataCache_sdo = ', v)),
+      mergeMap((tokenContractData: Token[]) => {
+        return of(
+          toTokensWithContractDataFn(tokenBalances)(tokenContractData)
+        ).pipe(
+          startWith(
+            toTokensWithContractDataFn(tokenBalances)(state.contractData)
+          )
+        );
+      }),
       catchError(err => {
         console.log(
           "tokenBalancesWithContractDataCache_sdo ERROR=",
@@ -156,42 +156,17 @@ const tokenBalancesWithContractDataCache_sdo =
     );
   };
 
-/*let addReefTokenBalance = async (
-    // eslint-disable-next-line camelcase
-    tokenBalances: { token_address: string; balance: number }[],
-) => {
-    const reefTkn = reefTokenWithAmount();
-    const reefTokenResult = tokenBalances.find(
-        (tb) => tb.token_address === reefTkn.address,
-    );
-
-    const reefBalance = await getReefCoinBalance(
-        signer.address,
-        provider as Provider,
-    );
-    if (!reefTokenResult) {
-        tokenBalances.push({
-            token_address: reefTkn.address,
-            balance: parseInt(utils.formatUnits(reefBalance, 'wei'), 10),
-        });
-        return Promise.resolve(tokenBalances);
-    }
-
-    reefTokenResult.balance = FixedNumber.fromValue(reefBalance).toUnsafeFloat();
-    return Promise.resolve(tokenBalances);
-};*/
-
 const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
-) =>
-  tokens.map(tkn => {
-    if (tkn.data.iconUrl) {
-      return tkn;
-    } else {
-      tkn.data.iconUrl = getIconUrl(tkn.data.address);
-      return tkn;
-    }
+) => {
+  return tokens.map(tkn => {
+    tkn.data.iconUrl = tkn.data.iconUrl
+      ? toIpfsProviderUrl(tkn.data.iconUrl) ?? tkn.data.iconUrl
+      : getIconUrl(tkn.data.address);
+
+    return tkn;
   });
+};
 
 // adding shareReplay is messing up TypeScriptValidateTypes
 export const replaceReefBalanceFromAccount = (
@@ -253,9 +228,9 @@ export const loadAccountTokens_sdo = ([
           resolveEmptyIconUrls(tokens_cd.tokens)
         ),
         map(sortReefTokenFirst),
-        map((tkns: StatusDataObject<Token | TokenBalance>[]) =>
-          toFeedbackDM(tkns, collectFeedbackDMStatus(tkns))
-        ),
+        map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
+          return toFeedbackDM(tkns, collectFeedbackDMStatus(tkns));
+        }),
         catchError(err => {
           console.log("loadAccountTokens 1 ERROR=", err);
           return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));

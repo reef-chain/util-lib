@@ -29,15 +29,18 @@ const extractIpfsHash = (ipfsUri: string): string | null => {
   return null;
 };
 
-const toIpfsProviderUrl = (
+export function getIpfsUrl(ipfsHash: string) {
+  // return `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
+  return `https://reef.infura-ipfs.io/ipfs/${ipfsHash}`;
+}
+
+export const toIpfsProviderUrl = (
   ipfsUriStr: string,
   ipfsUrlResolver?: IpfsUrlResolverFn
 ): string | null => {
   const ipfsHash = extractIpfsHash(ipfsUriStr);
   if (ipfsHash) {
-    return !ipfsUrlResolver
-      ? `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`
-      : ipfsUrlResolver(ipfsHash);
+    return !ipfsUrlResolver ? getIpfsUrl(ipfsHash) : ipfsUrlResolver(ipfsHash);
   }
   return null;
 };
