@@ -48,14 +48,6 @@ export const fetchTokensData = (
     },
     []
   );
-  /*return zenToRx(
-    apollo.subscribe({
-      query: CONTRACT_DATA_GQL,
-      variables: { addresses: distinctAddr },
-      fetchPolicy: "network-only",
-    })
-  )*/
-
   return queryGql$(httpClient, getContractDataQuery(distinctAddr)).pipe(
     take(1),
     map((verContracts: any) => {
@@ -149,7 +141,6 @@ const tokenBalancesWithContractDataCache_sdo =
           )
         );
       }),
-      // tap(v => console.log('tokenBalancesWithContractDataCache_sdo = ', v)),
       catchError(err => {
         console.log(
           "tokenBalancesWithContractDataCache_sdo ERROR=",
@@ -160,30 +151,6 @@ const tokenBalancesWithContractDataCache_sdo =
       shareReplay(1)
     );
   };
-/*let addReefTokenBalance = async (
-    // eslint-disable-next-line camelcase
-    tokenBalances: { token_address: string; balance: number }[],
-) => {
-    const reefTkn = reefTokenWithAmount();
-    const reefTokenResult = tokenBalances.find(
-        (tb) => tb.token_address === reefTkn.address,
-    );
-
-    const reefBalance = await getReefCoinBalance(
-        signer.address,
-        provider as Provider,
-    );
-    if (!reefTokenResult) {
-        tokenBalances.push({
-            token_address: reefTkn.address,
-            balance: parseInt(utils.formatUnits(reefBalance, 'wei'), 10),
-        });
-        return Promise.resolve(tokenBalances);
-    }
-
-    reefTokenResult.balance = FixedNumber.fromValue(reefBalance).toUnsafeFloat();
-    return Promise.resolve(tokenBalances);
-};*/
 
 const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
