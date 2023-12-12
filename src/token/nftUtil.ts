@@ -29,7 +29,7 @@ const extractIpfsHash = (ipfsUri: string): string | null => {
   return null;
 };
 
-const toIpfsProviderUrl = (
+export const toIpfsProviderUrl = (
   ipfsUriStr: string,
   ipfsUrlResolver?: IpfsUrlResolverFn
 ): string | null => {

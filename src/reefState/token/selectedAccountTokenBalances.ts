@@ -33,6 +33,7 @@ import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
 import { reefTokenWithAmount } from "../../token/tokenUtil";
+import { toIpfsProviderUrl } from "src/token/nftUtil";
 
 // eslint-disable-next-line camelcase
 export const fetchTokensData = (
@@ -157,6 +158,8 @@ const resolveEmptyIconUrls = (
 ) => {
   return tokens.map(tkn => {
     if (tkn.data.iconUrl) {
+      tkn.data.iconUrl =
+        toIpfsProviderUrl(tkn.data.iconUrl) ?? tkn.data.iconUrl;
       return tkn;
     } else {
       tkn.data.iconUrl = getIconUrl(tkn.data.address);
