@@ -40,6 +40,10 @@ export const fetchTokensData = (
   httpClient: any,
   missingCacheContractDataAddresses: string[]
 ): Observable<Token[]> => {
+  if (!missingCacheContractDataAddresses.length) {
+    return of([]);
+  }
+
   const distinctAddr = missingCacheContractDataAddresses.reduce(
     (distinctAddrList: string[], curr: string) => {
       if (distinctAddrList.indexOf(curr) < 0) {
@@ -49,6 +53,7 @@ export const fetchTokensData = (
     },
     []
   );
+
   return queryGql$(httpClient, getContractDataQuery(distinctAddr)).pipe(
     take(1),
     map((verContracts: any) => {
@@ -125,14 +130,12 @@ const tokenBalancesWithContractDataCache_sdo =
       .filter(tb => !state.contractData.some(cd => cd.address === tb.address))
       .map(tb => tb.address);
 
-    return from(
-      fetchTokensData(httpClient, missingCacheContractDataAddresses)
-    ).pipe(
-      mergeMap(newTokens => {
-        return of(
+    return fetchTokensData(httpClient, missingCacheContractDataAddresses).pipe(
+      mergeMap(newTokens =>
+        of(
           newTokens ? newTokens.concat(state.contractData) : state.contractData
-        );
-      }),
+        )
+      ),
       mergeMap((tokenContractData: Token[]) => {
         return of(
           toTokensWithContractDataFn(tokenBalances)(tokenContractData)
@@ -221,17 +224,8 @@ export const loadAccountTokens_sdo = ([
           tokens: [],
           contractData: [reefTokenWithAmount()],
         }),
-        map(
-          (tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) => {
-            // tokens_cd.tokens.map(tokens=>{
-            //   if(tokens.data.address=="0x6685129d58bbf9FCd567770eFf1b9875e1fA24Bc")console.log("pre",tokens.data)
-            // })
-            return resolveEmptyIconUrls(tokens_cd.tokens);
-            // tokenss.map(tokens=>{
-            //   if(tokens.data.address=="0x6685129d58bbf9FCd567770eFf1b9875e1fA24Bc")console.log("post",tokens.data)
-            // })
-            // return tokenss;
-          }
+        map((tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) =>
+          resolveEmptyIconUrls(tokens_cd.tokens)
         ),
         map(sortReefTokenFirst),
         map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
