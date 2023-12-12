@@ -157,14 +157,11 @@ const resolveEmptyIconUrls = (
   tokens: StatusDataObject<Token | TokenBalance>[]
 ) => {
   return tokens.map(tkn => {
-    if (tkn.data.iconUrl) {
-      tkn.data.iconUrl =
-        toIpfsProviderUrl(tkn.data.iconUrl) ?? tkn.data.iconUrl;
-      return tkn;
-    } else {
-      tkn.data.iconUrl = getIconUrl(tkn.data.address);
-      return tkn;
-    }
+    tkn.data.iconUrl = tkn.data.iconUrl
+      ? toIpfsProviderUrl(tkn.data.iconUrl) ?? tkn.data.iconUrl
+      : getIconUrl(tkn.data.address);
+
+    return tkn;
   });
 };
 
