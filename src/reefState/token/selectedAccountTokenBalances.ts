@@ -33,7 +33,7 @@ import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
 import { reefTokenWithAmount } from "../../token/tokenUtil";
-import { toIpfsProviderUrl } from "src/token/nftUtil";
+import { toIpfsProviderUrl } from "../../token/nftUtil";
 
 // eslint-disable-next-line camelcase
 export const fetchTokensData = (
