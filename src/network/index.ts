@@ -5,6 +5,7 @@ export { getReefswapNetworkConfig } from "./dex";
 export type { DexProtocolv2 } from "./dex";
 export type { LatestAddressUpdates } from "./latestBlock";
 export {
+  latestBlockUpdates$,
   getLatestBlockAccountUpdates$,
   getLatestBlockContractEvents$,
 } from "./latestBlock";
