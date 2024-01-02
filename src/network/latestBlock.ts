@@ -79,25 +79,27 @@ const getUpdatedAccounts = (
 ) => {
   switch (filterTransactionType) {
     case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
-      return Array.from(
-        new Set(
-          blockUpdates.updatedAccounts.REEF1155Transfers.concat(
-            blockUpdates.updatedAccounts.REEF721Transfers
+      return (
+        Array.from(
+          new Set(
+            blockUpdates.updatedAccounts.REEF1155Transfers.concat(
+              blockUpdates.updatedAccounts.REEF721Transfers
+            )
           )
-        )
+        ) || []
       );
     case AccountIndexedTransactionType.REEF20_TRANSFER:
-      return blockUpdates.updatedAccounts.REEF20Transfers;
+      return blockUpdates.updatedAccounts.REEF20Transfers || [];
     case AccountIndexedTransactionType.REEF_BIND_TX:
-      return blockUpdates.updatedAccounts.boundEvm;
+      return blockUpdates.updatedAccounts.boundEvm || [];
   }
   const allUpdated = Object.keys(blockUpdates.updatedAccounts).reduce(
     (mergedArr: string[], key: string) => {
-      return mergedArr.concat(blockUpdates.updatedAccounts[key]);
+      return mergedArr.concat(blockUpdates.updatedAccounts[key]) || [];
     },
     []
   );
-  return Array.from(new Set(allUpdated));
+  return Array.from(new Set(allUpdated)) || [];
 };
 
 function hasTransactionForTypes(
