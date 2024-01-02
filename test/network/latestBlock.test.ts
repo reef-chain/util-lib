@@ -2,19 +2,18 @@ import { beforeAll, describe, expect, it } from "vitest";
 import {
   getLatestBlockAccountUpdates$,
   _getBlockAccountTransactionUpdates$,
-  PusherLatestBlock,
+  LatestBlockData,
   AccountIndexedTransactionType,
   latestBlockUpdates$,
 } from "../../src/network/latestBlock";
 import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
 import { AVAILABLE_NETWORKS } from "../../src/network";
-import PusherIntegration from "pusher-js/types/spec/javascripts/helpers/pusher_integration_class";
 
 describe("Latest block", () => {
   beforeAll(async () => {
     initReefState({
-      network: AVAILABLE_NETWORKS.mainnet,
+      network: AVAILABLE_NETWORKS.testnet,
       jsonAccounts: {
         accounts: [
           {
@@ -46,7 +45,7 @@ describe("Latest block", () => {
           boundEvm: [],
         },
         updatedContracts: ["0xDA04bA1313d382374fDB1834Ed0dF441b51636C8"],
-      } as PusherLatestBlock);
+      } as LatestBlockData);
     }, 1000);
     const latestBlock$ = _getBlockAccountTransactionUpdates$(
       pusherLatestBlockSubj.asObservable() as Observable<any>,
@@ -182,11 +181,17 @@ describe("Latest block", () => {
     expect(block4.addresses.length).toBe(1);
   }, 10000);
 
-  it("should get latest lindexed block data", async ctx => {
+  it("should get latest indexed block data", async ctx => {
     const network = await firstValueFrom(selectedNetwork$);
     expect(network).toBeTruthy();
     const block = await firstValueFrom(latestBlockUpdates$);
-    expect(block.blockHeight).toBeGreaterThan(7821890);
+    console.log("latest block=", block);
+    // blockHeight can also be -1
+    if (network.name === "testnet") {
+      expect(block.blockHeight).toBeGreaterThan(138203);
+    } else {
+      expect(block.blockHeight).toBeGreaterThan(7821890);
+    }
   }, 20000);
 
   it("should get latest block account change data", async ctx => {
