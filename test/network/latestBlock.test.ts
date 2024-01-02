@@ -13,7 +13,7 @@ import { AVAILABLE_NETWORKS } from "../../src/network";
 describe("Latest block", () => {
   beforeAll(async () => {
     initReefState({
-      network: AVAILABLE_NETWORKS.mainnet,
+      network: AVAILABLE_NETWORKS.testnet,
       jsonAccounts: {
         accounts: [
           {
@@ -185,7 +185,13 @@ describe("Latest block", () => {
     const network = await firstValueFrom(selectedNetwork$);
     expect(network).toBeTruthy();
     const block = await firstValueFrom(latestBlockUpdates$);
-    expect(block.blockHeight).toBeGreaterThan(7821890);
+    console.log("latest block=", block);
+    // blockHeight can also be -1
+    if (network.name === "testnet") {
+      expect(block.blockHeight).toBeGreaterThan(138203);
+    } else {
+      expect(block.blockHeight).toBeGreaterThan(7821890);
+    }
   }, 20000);
 
   it("should get latest block account change data", async ctx => {

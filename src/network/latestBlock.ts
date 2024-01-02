@@ -52,9 +52,9 @@ const db = getDatabase(app);
 
 export const latestBlockUpdates$ = selectedNetwork$.pipe(
   filter((network: Network) => !!network),
-  switchMap(({ name }: { name: string }) => {
+  switchMap(({ name: network }: { name: string }) => {
     return new Observable<LatestBlockData>(obs => {
-      const unsubscribe = onValue(ref(db, name), snapshot => {
+      const unsubscribe = onValue(ref(db, network), snapshot => {
         const data = snapshot.val();
         if (!data) return;
         const keys = Object.keys(data);
