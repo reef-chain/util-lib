@@ -1,3 +1,5 @@
+import { InitProvider } from "./providerUtil";
+
 export type NetworkName = "mainnet" | "testnet" | "localhost";
 
 export interface Network {
@@ -7,7 +9,9 @@ export interface Network {
   name: NetworkName;
   graphqlExplorerUrl: string;
   genesisHash: string;
-  options?: unknown;
+  options?: {
+    initProvider?: InitProvider;
+  };
 }
 
 export const SS58_REEF = 42;
