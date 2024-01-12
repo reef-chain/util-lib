@@ -22,18 +22,10 @@ export const TRANSFER_HISTORY_QUERY = `
         type
         contractData
       }
-      event {
-        index
-      }
-      extrinsic {
-        id
-        index
-        block {
-          id
-          height
-          hash
-        }
-      }
+      #eventIndex
+      extrinsicIndex
+      blockHeight
+      blockHash
       from {
         id
         evmAddress

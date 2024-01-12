@@ -12,7 +12,11 @@ import {
   tap,
 } from "rxjs";
 import { Provider } from "@reef-chain/evm-provider";
-import { disconnectProvider, initProvider } from "../network/providerUtil";
+import {
+  disconnectProvider,
+  initProvider,
+  InitProvider,
+} from "../network/providerUtil";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";
 import {
@@ -38,10 +42,9 @@ async function connectProvider(
   ) => void
 ) {
   try {
-    const pr: Provider = await initProvider(
-      currNet.rpcUrl,
-      providerConnStateSubj
-    );
+    const iProvider: InitProvider =
+      currNet.options?.initProvider || initProvider;
+    const pr: Provider = await iProvider(currNet.rpcUrl, providerConnStateSubj);
     console.log("PROVIDER CONNECTED");
     resolve({ provider: pr, network: currNet });
   } catch (err) {
@@ -80,7 +83,7 @@ export const selectedNetworkProvider$: Observable<{
             .finally(() => {
               return connectProvider(currNet, resolve);
             });
-          console.log("PROVIDER DISCONNECTED");
+          console.log("PROVIDER CONNECTING");
           /*} catch (e: any) {
 
             }*/
