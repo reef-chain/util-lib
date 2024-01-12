@@ -25,15 +25,9 @@ export const TRANSFER_HISTORY_QUERY = `
       event {
         index
       }
-      extrinsic {
-        id
-        index
-        block {
-          id
-          height
-          hash
-        }
-      }
+      extrinsicIndex
+      blockHeight
+      blockHash
       from {
         id
         evmAddress

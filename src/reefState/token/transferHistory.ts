@@ -104,16 +104,16 @@ const toTokenTransfers = (
       timestamp: transferData.timestamp,
       token: toTransferToken(transferData),
       url: getTransferUrl(
-        transferData.extrinsic.block.height,
-        transferData.extrinsic.index,
+        transferData.blockHeight,
+        transferData.extrinsicIndex,
         transferData.event.index,
         network
       ),
       extrinsic: {
-        blockId: transferData.extrinsic.block.id,
-        blockHeight: transferData.extrinsic.block.height,
-        id: transferData.extrinsic.id,
-        index: transferData.extrinsic.index,
+        blockId: transferData.blockHash,
+        blockHeight: transferData.blockHeight,
+        id: transferData.blockHeight + "-" + transferData.extrinsicIndex,
+        index: transferData.extrinsicIndex,
       },
       success: transferData.success,
     })
