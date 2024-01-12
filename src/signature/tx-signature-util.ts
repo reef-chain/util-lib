@@ -1,4 +1,4 @@
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import { getSpecTypes } from "@polkadot/types-known";
 import { Metadata, TypeRegistry } from "@polkadot/types";
 import type { AnyJson } from "@polkadot/types/types";
@@ -101,7 +101,7 @@ export async function decodePayloadMethod(
       api.runtimeChain.toString(),
       api.runtimeVersion.specName,
       api.runtimeVersion.specVersion
-    ) as unknown as Record<string, string>;
+    ) as unknown as Record<string | Text, string>;
   }
 
   let args: any | null = null;
