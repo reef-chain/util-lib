@@ -99,9 +99,9 @@ export async function decodePayloadMethod(
       // @ts-ignore
       api.registry,
       api.runtimeChain.toString(),
-      api.runtimeVersion.specName,
+      api.runtimeVersion.specName.toString(),
       api.runtimeVersion.specVersion
-    ) as unknown as Record<string | Text, string>;
+    ) as unknown as Record<string, string>;
   }
 
   let args: any | null = null;
