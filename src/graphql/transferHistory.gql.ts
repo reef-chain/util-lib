@@ -22,7 +22,7 @@ export const TRANSFER_HISTORY_QUERY = `
         type
         contractData
       }
-      #eventIndex
+      eventIndex
       extrinsicIndex
       blockHeight
       blockHash
