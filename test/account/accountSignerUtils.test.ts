@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { KeyringPair } from "@reef-defi/keyring/types";
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network/providerUtil";
 import { getSigner } from "../testUtils/signer";
 import { mnemonic1 as mnemonic } from "../testUtils/mnemonics";

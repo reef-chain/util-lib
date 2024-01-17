@@ -1,4 +1,4 @@
-import { Signer } from "@reef-chain/evm-provider";
+import { Signer } from "@reef-defi/evm-provider";
 import { BigNumber, Contract, Signer as EthersSigner } from "ethers";
 import { ERC20 } from "../token/abi/ERC20";
 import { ReefSigner } from "../account/accountModel";

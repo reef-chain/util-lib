@@ -17,7 +17,7 @@ import {
 } from "./accountStateUtil";
 import { updateSignersSubj } from "./setAccounts";
 import { availableAddresses$ } from "./availableAddresses";
-import { Provider } from "@reef-chain/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 import {
   FeedbackStatusCode,
   StatusDataObject,

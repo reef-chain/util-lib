@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { getSigner } from "../testUtils/signer";
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network";
 import { KeyringPair } from "@reef-defi/keyring/types";
 import { getKeyring } from "../testUtils/keyring";

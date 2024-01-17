@@ -5,7 +5,7 @@ import {
   getREEF20Contract,
 } from "../../src/network/rpc";
 import { getSigner } from "../testUtils/signer";
-import { Provider } from "@reef-chain/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network";
 import { KeyringPair } from "@reef-defi/keyring/types";
 import { getKeyring } from "../testUtils/keyring";

@@ -12,7 +12,7 @@ import { Network } from "../../network/network";
 import { getSignerHistoryQuery } from "../../graphql/transferHistory.gql";
 import { StatusDataObject } from "../model/statusDataObject";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { toPlainString } from "./tokenUtil";
 import { _NFT_IPFS_RESOLVER_FN } from "./nftUtils";
 import { getIconUrl } from "../../token/getIconUrl";
