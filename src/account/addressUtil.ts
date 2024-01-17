@@ -1,4 +1,4 @@
-import { Provider } from "@reef-chain/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 
 export const getEvmAddress = async (
   address: string,

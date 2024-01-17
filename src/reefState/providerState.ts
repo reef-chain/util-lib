@@ -11,11 +11,11 @@ import {
   Subject,
   tap,
 } from "rxjs";
-import { Provider } from "@reef-chain/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 import {
   disconnectProvider,
-  initProvider,
   InitProvider,
+  initProvider,
 } from "../network/providerUtil";
 import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";

@@ -38,7 +38,7 @@ import {
 import { loadSignerNfts } from "./token/nftUtils";
 import { loadTransferHistory } from "./token/transferHistory";
 import { getReefAccountSigner } from "../account/accountSignerUtils";
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { toTokensWithPrice_sdo } from "./token/tokenUtil";
 import { getReefswapNetworkConfig } from "../network/dex";
 import { filter } from "rxjs/operators";

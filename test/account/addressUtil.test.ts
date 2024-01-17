@@ -3,7 +3,7 @@ import { KeypairType } from "@reef-defi/util-crypto/types";
 import { Keyring as ReefKeyring } from "@reef-defi/keyring";
 import { cryptoWaitReady } from "@reef-defi/util-crypto";
 import { KeyringPair } from "@reef-defi/keyring/types";
-import { Provider } from "@reef-chain/evm-provider";
+import { Provider } from "@reef-defi/evm-provider";
 import { initProvider } from "../../src/network/providerUtil";
 import { getEvmAddress } from "../../src/account/addressUtil";
 

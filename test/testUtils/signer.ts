@@ -1,4 +1,4 @@
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import { MnemonicSigner } from "./mnemonic-signer";
 
 export const getSigner = (

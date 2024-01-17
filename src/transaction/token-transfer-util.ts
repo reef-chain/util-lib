@@ -4,7 +4,7 @@ import {
   parseAndRethrowErrorFromObserver,
 } from "./transaction-status-util";
 import { from, Observable, of, switchMap } from "rxjs";
-import { Provider, Signer } from "@reef-chain/evm-provider";
+import { Provider, Signer } from "@reef-defi/evm-provider";
 import type { Signer as SignerInterface } from "@polkadot/api/types";
 import { BigNumber, Contract } from "ethers";
 import { getEvmAddress } from "../account/addressUtil";
@@ -27,7 +27,7 @@ export function nativeTransferSigner$(
         fromAddr,
         toAddress,
         signer.provider,
-        signer.signingKey as any
+        signer.signingKey
       )
     )
   );
@@ -57,7 +57,7 @@ export function nativeTransfer$(
 
     provider.api.tx.balances
       .transfer(toAddress, amount)
-      .signAndSend(fromAddress, { signer: signingKey as any }, handler)
+      .signAndSend(fromAddress, { signer: signingKey }, handler)
       .then(unsub => {
         status$.subscribe(null, null, () => unsub());
       })
