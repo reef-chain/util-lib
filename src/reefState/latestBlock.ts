@@ -2,8 +2,8 @@ import { catchError, map, Observable, of, shareReplay, switchMap } from "rxjs";
 import { filter } from "rxjs/operators";
 import { initializeApp, FirebaseOptions } from "firebase/app";
 import { getDatabase, ref, onValue } from "firebase/database";
-import { selectedNetwork$ } from "../reefState/networkState";
-import { Network } from "./network";
+import { selectedNetwork$ } from "./networkState";
+import { Network } from "../network/network";
 
 const FIREBASE_CONFIG: FirebaseOptions = {
   apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
@@ -53,9 +53,11 @@ const db = getDatabase(app);
 export const latestBlockUpdates$ = selectedNetwork$.pipe(
   filter((network: Network) => !!network),
   switchMap(({ name: network }: { name: string }) => {
+    console.log("LATEST BLOCK net=", network);
     return new Observable<LatestBlockData>(obs => {
       const unsubscribe = onValue(ref(db, network), snapshot => {
         const data = snapshot.val();
+        console.log("latest data=", data);
         if (!data) return;
         const keys = Object.keys(data);
         if (!keys.length) return;
@@ -206,8 +208,9 @@ export const getLatestBlockAccountUpdates$ = (
 
 export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
-): Observable<LatestAddressUpdates> =>
-  latestBlockUpdates$.pipe(
+): Observable<LatestAddressUpdates> => {
+  console.log("getLatestBlockContractEvents$ call=", filterContractAddresses);
+  return latestBlockUpdates$.pipe(
     map((blockUpdates: LatestBlockData) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {
         return blockUpdates.updatedContracts;
@@ -231,3 +234,4 @@ export const getLatestBlockContractEvents$ = (
       return of(null);
     })
   ) as Observable<LatestAddressUpdates>;
+};

@@ -49,9 +49,9 @@ import {
   selectedAccountFtBalanceUpdate$,
   selectedAccountNftBalanceUpdate$,
 } from "./token/reloadTokenState";
-import { getLatestBlockAccountUpdates$ } from "../network";
+import { getLatestBlockAccountUpdates$ } from "../reefState/latestBlock";
 import { httpClientInstance$ } from "../graphql/httpClient";
-import { AccountIndexedTransactionType } from "../network/latestBlock";
+import { AccountIndexedTransactionType } from "./latestBlock";
 import { forceReload$ } from "./token/force-reload-tokens";
 
 const reloadingValues$ = combineLatest([

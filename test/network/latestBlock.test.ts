@@ -5,7 +5,7 @@ import {
   LatestBlockData,
   AccountIndexedTransactionType,
   latestBlockUpdates$,
-} from "../../src/network/latestBlock";
+} from "../../src/reefState/latestBlock";
 import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
 import { AVAILABLE_NETWORKS } from "../../src/network";

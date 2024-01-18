@@ -24,7 +24,7 @@ import { httpClientInstance$ } from "../../graphql/httpClient";
 import {
   AccountIndexedTransactionType,
   getLatestBlockAccountUpdates$,
-} from "../../network/latestBlock";
+} from "../latestBlock";
 import { getEvmAddressQuery } from "../../graphql/accounts.gql";
 import { queryGql$ } from "../../graphql/gqlUtil";
 

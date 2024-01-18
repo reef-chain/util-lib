@@ -1,7 +1,9 @@
 import { map, share, switchMap } from "rxjs";
-import { getLatestBlockAccountUpdates$ } from "../../network";
 import { selectedAccountAddressChange$ } from "../account/selectedAccountAddressChange";
-import { AccountIndexedTransactionType } from "../../network/latestBlock";
+import {
+  AccountIndexedTransactionType,
+  getLatestBlockAccountUpdates$,
+} from "../latestBlock";
 
 export const selectedAccountFtBalanceUpdate$ =
   selectedAccountAddressChange$.pipe(
