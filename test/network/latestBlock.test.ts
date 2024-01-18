@@ -4,7 +4,7 @@ import {
   _getBlockAccountTransactionUpdates$,
   LatestBlockData,
   AccountIndexedTransactionType,
-  latestBlockUpdates$,
+  getLatestBlockUpdates$,
 } from "../../src/reefState/latestBlock";
 import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
@@ -184,7 +184,7 @@ describe("Latest block", () => {
   it("should get latest indexed block data", async ctx => {
     const network = await firstValueFrom(selectedNetwork$);
     expect(network).toBeTruthy();
-    const block = await firstValueFrom(latestBlockUpdates$);
+    const block = await firstValueFrom(getLatestBlockUpdates$("testnet"));
     console.log("latest block=", block);
     // blockHeight can also be -1
     if (network.name === "testnet") {

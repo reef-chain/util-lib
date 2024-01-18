@@ -1,9 +1,18 @@
-import { catchError, map, Observable, of, shareReplay, switchMap } from "rxjs";
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  shareReplay,
+  switchMap,
+} from "rxjs";
 import { filter } from "rxjs/operators";
 import { initializeApp, FirebaseOptions } from "firebase/app";
 import { getDatabase, ref, onValue } from "firebase/database";
 import { selectedNetwork$ } from "./networkState";
-import { Network } from "../network/network";
+import { Network, NetworkName } from "../network/network";
+import { AVAILABLE_NETWORKS } from "../../dist/network";
 
 const FIREBASE_CONFIG: FirebaseOptions = {
   apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
@@ -50,30 +59,46 @@ export interface LatestAddressUpdates extends LatestBlock {
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getDatabase(app);
 
-export const latestBlockUpdates$ = selectedNetwork$.pipe(
-  filter((network: Network) => !!network),
-  switchMap(({ name: network }: { name: string }) => {
-    console.log("LATEST BLOCK net=", network);
-    return new Observable<LatestBlockData>(obs => {
-      const unsubscribe = onValue(ref(db, network), snapshot => {
-        const data = snapshot.val();
-        console.log("latest data=", data);
-        if (!data) return;
-        const keys = Object.keys(data);
-        if (!keys.length) return;
-        const latestBlock = data[keys[0]];
-        latestBlock.blockHeight = Number(keys[0]);
-        obs.next(latestBlock);
+// if networkName is undefined reefState observable is used
+export const getLatestBlockUpdates$ = (
+  networkNameOrReefStateNetwork?: NetworkName
+) => {
+  let selNetwork$: Observable<NetworkName>;
+  if (networkNameOrReefStateNetwork) {
+    const rsNetwork = new ReplaySubject<NetworkName>(1);
+    rsNetwork.next(networkNameOrReefStateNetwork);
+    selNetwork$ = rsNetwork.asObservable();
+  } else {
+    selNetwork$ = selectedNetwork$.pipe(
+      filter((network: Network) => !!network),
+      map(v => v.name)
+    );
+  }
+
+  return selNetwork$.pipe(
+    switchMap((networkName: NetworkName) => {
+      console.log("LATEST BLOCK net=", networkName);
+      return new Observable<LatestBlockData>(obs => {
+        const unsubscribe = onValue(ref(db, networkName), snapshot => {
+          const data = snapshot.val();
+          console.log("latest data=", data);
+          if (!data) return;
+          const keys = Object.keys(data);
+          if (!keys.length) return;
+          const latestBlock = data[keys[0]];
+          latestBlock.blockHeight = Number(keys[0]);
+          obs.next(latestBlock);
+        });
+
+        return () => {
+          unsubscribe();
+        };
       });
+    }),
 
-      return () => {
-        unsubscribe();
-      };
-    });
-  }),
-
-  shareReplay(1)
-);
+    shareReplay(1)
+  );
+};
 
 const getUpdatedAccounts = (
   blockUpdates: LatestBlockData,
@@ -193,10 +218,11 @@ export const _getBlockAccountTransactionUpdates$ = (
 
 export const getLatestBlockAccountUpdates$ = (
   filterAccountAddresses?: string[],
-  filterTransactionType?: AccountIndexedTransactionType[]
+  filterTransactionType?: AccountIndexedTransactionType[],
+  networkNameOrReefStateNetwork?: NetworkName
 ) =>
   _getBlockAccountTransactionUpdates$(
-    latestBlockUpdates$,
+    getLatestBlockUpdates$(networkNameOrReefStateNetwork),
     filterAccountAddresses,
     filterTransactionType
   ).pipe(
@@ -207,10 +233,11 @@ export const getLatestBlockAccountUpdates$ = (
   );
 
 export const getLatestBlockContractEvents$ = (
-  filterContractAddresses?: string[]
+  filterContractAddresses?: string[],
+  networkNameOrReefStateNetwork?: NetworkName
 ): Observable<LatestAddressUpdates> => {
   console.log("getLatestBlockContractEvents$ call=", filterContractAddresses);
-  return latestBlockUpdates$.pipe(
+  return getLatestBlockUpdates$(networkNameOrReefStateNetwork).pipe(
     map((blockUpdates: LatestBlockData) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {
         return blockUpdates.updatedContracts;
