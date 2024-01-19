@@ -1,63 +1,31 @@
-import {
-  catchError,
-  map,
-  Observable,
-  of,
-  ReplaySubject,
-  shareReplay,
-  switchMap,
-} from "rxjs";
+import { catchError, map, Observable, of, ReplaySubject, take } from "rxjs";
 import { filter } from "rxjs/operators";
-import { initializeApp, FirebaseOptions } from "firebase/app";
-import { getDatabase, ref, onValue } from "firebase/database";
 import { selectedNetwork$ } from "./networkState";
 import { Network, NetworkName } from "../network/network";
-import { AVAILABLE_NETWORKS } from "../../dist/network";
+import {
+  connectedIndexerEmitter$,
+  getBlockDataEmitter,
+  getIndexerEventsNetworkChannel,
+} from "../utils/reefscanEvents";
+import {
+  AccountIndexedTransactionType,
+  allIndexedTransactions,
+  LatestAddressUpdates,
+  LatestBlockData,
+} from "./latestBlockModel";
 
-const FIREBASE_CONFIG: FirebaseOptions = {
-  apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
-  authDomain: "reef-block-index.firebaseapp.com",
-  databaseURL: "https://reef-block-index-default-rtdb.firebaseio.com",
-  projectId: "reef-block-index",
-  storageBucket: "reef-block-index.appspot.com",
-  messagingSenderId: "265934184271",
-  appId: "1:265934184271:web:8f55865e0438452a17af3a",
+export const publishIndexerEvent = (
+  blockData: LatestBlockData,
+  network: NetworkName,
+  key: string
+) => {
+  const channel = getIndexerEventsNetworkChannel(network);
+  connectedIndexerEmitter$
+    .pipe(take(1))
+    .subscribe(conn =>
+      conn?.publish({ key, channel, message: JSON.stringify(blockData) })
+    );
 };
-
-export const enum AccountIndexedTransactionType {
-  REEF20_TRANSFER,
-  REEF_NFT_TRANSFER,
-  REEF_BIND_TX,
-}
-
-const allIndexedTransactions = [
-  AccountIndexedTransactionType.REEF_BIND_TX,
-  AccountIndexedTransactionType.REEF_NFT_TRANSFER,
-  AccountIndexedTransactionType.REEF20_TRANSFER,
-];
-
-interface LatestBlock {
-  blockHash: string;
-  blockHeight: number;
-  blockId: string;
-}
-
-export interface LatestBlockData extends LatestBlock {
-  updatedAccounts: {
-    REEF20Transfers: string[];
-    REEF721Transfers: string[];
-    REEF1155Transfers: string[];
-    boundEvm: string[];
-  };
-  updatedContracts: string[];
-}
-
-export interface LatestAddressUpdates extends LatestBlock {
-  addresses: string[];
-}
-
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getDatabase(app);
 
 // if networkName is undefined reefState observable is used
 export const getLatestBlockUpdates$ = (
@@ -75,29 +43,8 @@ export const getLatestBlockUpdates$ = (
     );
   }
 
-  return selNetwork$.pipe(
-    switchMap((networkName: NetworkName) => {
-      console.log("LATEST BLOCK net=", networkName);
-      return new Observable<LatestBlockData>(obs => {
-        const unsubscribe = onValue(ref(db, networkName), snapshot => {
-          const data = snapshot.val();
-          console.log("latest data=", data);
-          if (!data) return;
-          const keys = Object.keys(data);
-          if (!keys.length) return;
-          const latestBlock = data[keys[0]];
-          latestBlock.blockHeight = Number(keys[0]);
-          obs.next(latestBlock);
-        });
-
-        return () => {
-          unsubscribe();
-        };
-      });
-    }),
-
-    shareReplay(1)
-  );
+  // return getBlockDataFirebase(selNetwork$);
+  return getBlockDataEmitter(selNetwork$);
 };
 
 const getUpdatedAccounts = (

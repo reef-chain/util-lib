@@ -51,8 +51,8 @@ import {
 } from "./token/reloadTokenState";
 import { getLatestBlockAccountUpdates$ } from "../reefState/latestBlock";
 import { httpClientInstance$ } from "../graphql/httpClient";
-import { AccountIndexedTransactionType } from "./latestBlock";
 import { forceReload$ } from "./token/force-reload-tokens";
+import {AccountIndexedTransactionType} from "./latestBlockModel";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,

@@ -1,13 +1,12 @@
-import { setSelectedNetwork } from "./networkState";
-import { AVAILABLE_NETWORKS, Network } from "../network/network";
-import { accountsJsonSigningKeySubj, setAccounts } from "./account/setAccounts";
-import { setNftIpfsResolverFn } from "./token/nftUtils";
-import { AccountJson } from "@reef-defi/extension-base/background/types";
-import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
-import { Signer as InjectedSigningKey } from "@polkadot/api/types";
-
-export type IpfsUrlResolverFn = (ipfsHash) => string;
+import {setSelectedNetwork} from "./networkState";
+import {AVAILABLE_NETWORKS, Network} from "../network/network";
+import {accountsJsonSigningKeySubj, setAccounts} from "./account/setAccounts";
+import {setNftIpfsResolverFn} from "./token/nftUtils";
+import {AccountJson} from "@reef-defi/extension-base/background/types";
+import {InjectedAccountWithMeta} from "@polkadot/extension-inject/types";
+import {InjectedAccountWithMeta as InjectedAccountWithMetaReef} from "@reef-defi/extension-inject/types";
+import {Signer as InjectedSigningKey} from "@polkadot/api/types";
+import {IpfsUrlResolverFn} from "../token/nftUtil";
 
 export interface StateOptions {
   network?: Network;

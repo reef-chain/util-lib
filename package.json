@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "2.1.10",
+  "version": "2.2.0",
   "main": "./dist/util-lib.cjs",
   "module": "./dist/util-lib.mjs",
   "exports": {
@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "vite --host",
     "watch": "vite build --watch",
-    "build-reinstall": "rm -rf node_modules&&rm yarn.lock&&yarn&&yarn build",
+    "build:clean": "rm -rf node_modules&&rm -f yarn.lock&&yarn install&&yarn build",
     "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "build-dts": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "test": "vitest",
@@ -37,9 +37,10 @@
     "@reef-defi/extension-inject": "^1.0.16",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.2",
-    "pusher-js": "^8.2.0",
+    "emitter-io": "^1.39.0",
     "ethers": "~5.5.4",
-    "firebase": "^10.7.0"
+    "firebase": "^10.7.0",
+    "pusher-js": "^8.2.0"
   },
   "devDependencies": {
     "@types/jsdom": "^20.0.1",

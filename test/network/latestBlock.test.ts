@@ -1,14 +1,16 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import {
-  getLatestBlockAccountUpdates$,
   _getBlockAccountTransactionUpdates$,
-  LatestBlockData,
-  AccountIndexedTransactionType,
+  getLatestBlockAccountUpdates$,
+  getLatestBlockContractEvents$,
   getLatestBlockUpdates$,
+  publishIndexerEvent,
 } from "../../src/reefState/latestBlock";
-import { firstValueFrom, Observable, skip, Subject, tap } from "rxjs";
+import { firstValueFrom, Observable, of, skip, Subject, tap } from "rxjs";
 import { initReefState, selectedNetwork$ } from "../../src/reefState";
 import { AVAILABLE_NETWORKS } from "../../src/network";
+import { getBlockDataEmitter } from "../../src/utils/reefscanEvents";
+import {AccountIndexedTransactionType, LatestBlockData} from "../../src/reefState/latestBlockModel";
 
 describe("Latest block", () => {
   beforeAll(async () => {
@@ -212,4 +214,35 @@ describe("Latest block", () => {
       )
     );
   }, 100000);
+
+  it("should get contract update", async ctx => {
+    const block = await firstValueFrom(
+      getLatestBlockContractEvents$(
+        ["0x9FdEb478A27E216f80DaEE0967dc426338eD02f2"]
+        // getLatestBlockContractEvents$(['0x0000000000000000000000000000000001000000']
+      ).pipe(
+        tap(v => console.log("val=", v)),
+        skip(100)
+      )
+    );
+  }, 100000);
+
+  it("should publish emitter event", async ctx => {
+    const bHeight = -1;
+    setTimeout(
+      () =>
+        publishIndexerEvent(
+          {
+            blockHeight: bHeight,
+          } as LatestBlockData,
+          "testnet",
+          "G1WA4k9ezrCjHwugRi09ZicHhZlMPb3D"
+        ),
+      1000
+    );
+    const evt = await firstValueFrom(getBlockDataEmitter(of("testnet")));
+    console.log("emitter event=", evt);
+    expect(evt.blockHeight).toBe(bHeight);
+    //await new Promise(resolve => setTimeout(resolve, 30000));
+  }, 10000);
 });

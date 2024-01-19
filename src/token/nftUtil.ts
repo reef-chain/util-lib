@@ -19,7 +19,6 @@ import {
 } from "../reefState/model/statusDataObject";
 import { getContractTypeAbi } from "./tokenUtil";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
-import { IpfsUrlResolverFn } from "../reefState/initReefState";
 
 const extractIpfsHash = (ipfsUri: string): string | null => {
   const ipfsProtocol = "ipfs://";
@@ -34,6 +33,7 @@ export function getIpfsUrl(ipfsHash: string) {
   return `https://reef.infura-ipfs.io/ipfs/${ipfsHash}`;
 }
 
+export type IpfsUrlResolverFn = (ipfsHash) => string;
 export const toIpfsProviderUrl = (
   ipfsUriStr: string,
   ipfsUrlResolver?: IpfsUrlResolverFn
