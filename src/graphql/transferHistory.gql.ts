@@ -21,10 +21,15 @@ export const TRANSFER_HISTORY_QUERY = `
         type
         contractData
       }
+      signedData
+      extrinsicHash
+      extrinsicId
       eventIndex
       extrinsicIndex
       blockHeight
       blockHash
+      finalized
+      reefswapAction
       from {
         id
         evmAddress
