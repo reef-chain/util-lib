@@ -90,7 +90,7 @@ export const selectedTokenBalances_status$: Observable<
             (
               tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
             ) => {
-              console.log("loading account token balances", tkns);
+              // console.log("loading account token balances", tkns);
               return combineLatest([
                 of(tkns),
                 selectedAccountReefBalance$,
@@ -254,8 +254,9 @@ export const selectedTransactionHistory_status$: Observable<
       map(() => toFeedbackDM([], FeedbackStatusCode.LOADING))
     )
   ),
-  catchError(err =>
-    of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message))
-  ),
+  catchError((err, _) => {
+    console.log("selectedTransactionHistory_status$ ERR=", err.message);
+    return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+  }),
   shareReplay(1)
 );

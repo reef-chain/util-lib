@@ -1,27 +1,25 @@
 import {
   catchError,
   combineLatest,
-  finalize,
   forkJoin,
   map,
   Observable,
   of,
   startWith,
   switchMap,
-  tap,
-  withLatestFrom,
 } from "rxjs";
 import { Contract } from "ethers";
 import axios from "axios";
 import { Signer } from "@reef-defi/evm-provider";
 import { NFT, NFTMetadata } from "./tokenModel";
 import {
-  StatusDataObject,
   FeedbackStatusCode,
+  StatusDataObject,
   toFeedbackDM,
 } from "../reefState/model/statusDataObject";
 import { getContractTypeAbi } from "./tokenUtil";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
+import { IpfsUrlResolverFn } from "../reefState/initReefState";
 
 const extractIpfsHash = (ipfsUri: string): string | null => {
   const ipfsProtocol = "ipfs://";
@@ -31,15 +29,18 @@ const extractIpfsHash = (ipfsUri: string): string | null => {
   return null;
 };
 
-const toIpfsProviderUrl = (
+export function getIpfsUrl(ipfsHash: string) {
+  // return `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
+  return `https://reef.infura-ipfs.io/ipfs/${ipfsHash}`;
+}
+
+export const toIpfsProviderUrl = (
   ipfsUriStr: string,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ): string | null => {
   const ipfsHash = extractIpfsHash(ipfsUriStr);
   if (ipfsHash) {
-    return !ipfsUrlResolver
-      ? `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`
-      : ipfsUrlResolver(ipfsHash);
+    return !ipfsUrlResolver ? getIpfsUrl(ipfsHash) : ipfsUrlResolver(ipfsHash);
   }
   return null;
 };
@@ -47,7 +48,7 @@ const toIpfsProviderUrl = (
 const resolveUriToUrl = (
   uri: string,
   nft: NFT,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ): string => {
   const ipfsUrl = toIpfsProviderUrl(uri, ipfsUrlResolver);
   if (ipfsUrl) {
@@ -59,7 +60,9 @@ const resolveUriToUrl = (
     let replaceValue = nft.nftId;
     try {
       replaceValue = parseInt(nft.nftId, 10).toString(16).padStart(64, "0");
-    } catch (e) {}
+    } catch (e) {
+      /* empty */
+    }
     return uri.replace(idPlaceholder, replaceValue);
   }
   return uri;
@@ -68,7 +71,7 @@ const resolveUriToUrl = (
 const resolveImageData = (
   metadata: NFTMetadata,
   nft: NFT,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ): NFTMetadata => {
   const imageUriVal: string = metadata?.image
     ? metadata.image
@@ -83,7 +86,7 @@ const resolveImageData = (
 export const getResolveNftPromise = async (
   nft: NFT | null,
   signer: Signer,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ): Promise<NFT | null> => {
   if (!nft) {
     return Promise.resolve(null);
@@ -116,7 +119,7 @@ export const getResolveNftPromise = async (
 export const resolveNftImageLinks = (
   nfts: (NFT | null)[],
   signer: Signer,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ): Observable<(NFT | null)[]> =>
   nfts?.length
     ? forkJoin(
@@ -127,7 +130,7 @@ export const resolveNftImageLinks = (
 export const resolveNftImageLinks$ = (
   nfts: (NFT | null)[] | NFT[],
   signer: Signer,
-  ipfsUrlResolver?: ipfsUrlResolverFn
+  ipfsUrlResolver?: IpfsUrlResolverFn
 ):
   | Observable<StatusDataObject<NFT | null>[]>
   | Observable<StatusDataObject<NFT>[]> => {
@@ -167,5 +170,3 @@ export const resolveNftImageLinks$ = (
   return combineLatest(resolveObsArr);
   // .pipe(tap(v=>console.log('NFTS TAP', v)));
 };
-
-export type ipfsUrlResolverFn = (ipfsHash) => string;

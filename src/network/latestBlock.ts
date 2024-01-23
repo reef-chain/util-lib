@@ -1,21 +1,19 @@
-import Pusher from "pusher-js";
-import {
-  catchError,
-  from,
-  map,
-  mergeScan,
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-} from "rxjs";
+import { catchError, map, Observable, of, shareReplay, switchMap } from "rxjs";
 import { filter } from "rxjs/operators";
+import { initializeApp, FirebaseOptions } from "firebase/app";
+import { getDatabase, ref, onValue } from "firebase/database";
 import { selectedNetwork$ } from "../reefState/networkState";
-import { AVAILABLE_NETWORKS, Network } from "./network";
+import { Network } from "./network";
 
-const PUSHER_KEY = "fc5ad78eb31981de6c67";
-const APP_CLUSTER = "eu";
-const INDEXED_BLOCK_CHANNEL_NAME = "reef-chain";
+const FIREBASE_CONFIG: FirebaseOptions = {
+  apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
+  authDomain: "reef-block-index.firebaseapp.com",
+  databaseURL: "https://reef-block-index-default-rtdb.firebaseio.com",
+  projectId: "reef-block-index",
+  storageBucket: "reef-block-index.appspot.com",
+  messagingSenderId: "265934184271",
+  appId: "1:265934184271:web:8f55865e0438452a17af3a",
+};
 
 export const enum AccountIndexedTransactionType {
   REEF20_TRANSFER,
@@ -29,37 +27,13 @@ const allIndexedTransactions = [
   AccountIndexedTransactionType.REEF20_TRANSFER,
 ];
 
-const getPusherClient = (
-  pusherKey: string,
-  pusherCluster: string
-): Promise<Pusher> => {
-  return new Promise((resolve, reject) => {
-    const pClient = new Pusher(pusherKey, {
-      cluster: pusherCluster,
-    });
-    pClient.connection.bind("error", function (err) {
-      if (err.error.data.code === 4004) {
-        console.log("Pusher Service Over limit!");
-        return;
-      }
-      console.log("Pusher Service ERR", err);
-      reject("Pusher connect error=" + err?.error?.message);
-    });
-
-    pClient.connection.bind("connected", () => {
-      console.log("pusher connected");
-      resolve(pClient);
-    });
-  });
-};
-
 interface LatestBlock {
   blockHash: string;
   blockHeight: number;
   blockId: string;
 }
 
-export interface PusherLatestBlock extends LatestBlock {
+export interface LatestBlockData extends LatestBlock {
   updatedAccounts: {
     REEF20Transfers: string[];
     REEF721Transfers: string[];
@@ -73,52 +47,25 @@ export interface LatestAddressUpdates extends LatestBlock {
   addresses: string[];
 }
 
-export interface PusherConfig {
-  pusherKey: string;
-  pusherCluster: string;
-}
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getDatabase(app);
 
 export const latestBlockUpdates$ = selectedNetwork$.pipe(
-  mergeScan(
-    (acc: { pusher?: Pusher; network?: Network; pusherKey?: string }, curr) => {
-      let pusher$;
-      let pusherKey;
-      if (
-        !acc.pusherKey ||
-        (curr.options as PusherConfig)?.pusherKey !== acc.pusherKey
-      ) {
-        acc.pusher?.disconnect();
-        pusherKey = (curr.options as PusherConfig)?.pusherKey || PUSHER_KEY;
-        pusher$ = from(
-          getPusherClient(
-            pusherKey,
-            (curr.options as PusherConfig)?.pusherCluster || APP_CLUSTER
-          )
-        );
-      }
-      if (!pusher$) {
-        pusher$ = of(acc.pusher);
-      }
-      return pusher$.pipe(
-        map(pusher => ({ pusher, network: curr, pusherKey }))
-      );
-    },
-    { pusher: undefined, network: undefined, pusherKey: undefined }
-  ),
-  filter((v): v is NonNullable<never> => !!v.pusher && !!v.network),
-  switchMap(({ pusher, network }: { pusher: Pusher; network: Network }) => {
-    return new Observable<PusherLatestBlock>(obs => {
-      const channelEvent =
-        network.name === AVAILABLE_NETWORKS.mainnet.name
-          ? "block-finalised"
-          : "block-finalised-testnet";
-      const channel = pusher.subscribe(INDEXED_BLOCK_CHANNEL_NAME);
-      channel.bind(channelEvent, data => {
-        obs.next(data);
+  filter((network: Network) => !!network),
+  switchMap(({ name: network }: { name: string }) => {
+    return new Observable<LatestBlockData>(obs => {
+      const unsubscribe = onValue(ref(db, network), snapshot => {
+        const data = snapshot.val();
+        if (!data) return;
+        const keys = Object.keys(data);
+        if (!keys.length) return;
+        const latestBlock = data[keys[0]];
+        latestBlock.blockHeight = Number(keys[0]);
+        obs.next(latestBlock);
       });
 
       return () => {
-        channel.unsubscribe();
+        unsubscribe();
       };
     });
   }),
@@ -127,34 +74,36 @@ export const latestBlockUpdates$ = selectedNetwork$.pipe(
 );
 
 const getUpdatedAccounts = (
-  blockUpdates: PusherLatestBlock,
+  blockUpdates: LatestBlockData,
   filterTransactionType?: AccountIndexedTransactionType
 ) => {
+  const updatedAccounts = blockUpdates.updatedAccounts || {};
   switch (filterTransactionType) {
     case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
+      // eslint-disable-next-line no-case-declarations
+      const reef1155Transfers = updatedAccounts.REEF1155Transfers || [];
       return Array.from(
         new Set(
-          blockUpdates.updatedAccounts.REEF1155Transfers.concat(
-            blockUpdates.updatedAccounts.REEF721Transfers
-          )
+          reef1155Transfers.concat(updatedAccounts.REEF721Transfers || [])
         )
       );
     case AccountIndexedTransactionType.REEF20_TRANSFER:
-      return blockUpdates.updatedAccounts.REEF20Transfers;
+      return updatedAccounts.REEF20Transfers || [];
     case AccountIndexedTransactionType.REEF_BIND_TX:
-      return blockUpdates.updatedAccounts.boundEvm;
+      return updatedAccounts.boundEvm || [];
   }
-  const allUpdated = Object.keys(blockUpdates.updatedAccounts).reduce(
+  const allUpdated = Object.keys(updatedAccounts).reduce(
     (mergedArr: string[], key: string) => {
-      return mergedArr.concat(blockUpdates.updatedAccounts[key]);
+      return mergedArr.concat(updatedAccounts[key] || []);
     },
     []
   );
+
   return Array.from(new Set(allUpdated));
 };
 
 function hasTransactionForTypes(
-  blockUpdates: PusherLatestBlock,
+  blockUpdates: LatestBlockData,
   filterTransactionType: AccountIndexedTransactionType[]
 ) {
   if (!filterTransactionType.length) {
@@ -162,22 +111,23 @@ function hasTransactionForTypes(
   }
 
   return filterTransactionType.some(tt => {
+    const updatedAccounts = blockUpdates.updatedAccounts || {};
     switch (tt) {
       case AccountIndexedTransactionType.REEF20_TRANSFER:
-        if (blockUpdates.updatedAccounts.REEF20Transfers.length) {
+        if (updatedAccounts.REEF20Transfers?.length) {
           return true;
         }
         break;
       case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
         if (
-          blockUpdates.updatedAccounts.REEF721Transfers.length ||
-          blockUpdates.updatedAccounts.REEF1155Transfers.length
+          updatedAccounts.REEF721Transfers?.length ||
+          updatedAccounts.REEF1155Transfers?.length
         ) {
           return true;
         }
         break;
       case AccountIndexedTransactionType.REEF_BIND_TX:
-        if (blockUpdates.updatedAccounts.boundEvm.length) {
+        if (updatedAccounts.boundEvm?.length) {
           return true;
         }
         break;
@@ -187,12 +137,12 @@ function hasTransactionForTypes(
 }
 
 export const _getBlockAccountTransactionUpdates$ = (
-  latestBlockUpdates$: Observable<PusherLatestBlock>,
+  latestBlockUpdates$: Observable<LatestBlockData>,
   filterAccountAddresses?: string[],
   filterTransactionType: AccountIndexedTransactionType[] = allIndexedTransactions
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates$.pipe(
-    map((blockUpdates: PusherLatestBlock) => {
+    map((blockUpdates: LatestBlockData) => {
       if (
         filterAccountAddresses &&
         filterAccountAddresses.some(addr => addr.startsWith("0x"))
@@ -202,11 +152,11 @@ export const _getBlockAccountTransactionUpdates$ = (
 
       const allUpdatedAccounts = Array.from(
         new Set(
-          filterTransactionType?.reduce((accs: string[], curr) => {
-            return accs.concat(getUpdatedAccounts(blockUpdates, curr));
+          filterTransactionType?.reduce((accs: string[], txType) => {
+            return accs.concat(getUpdatedAccounts(blockUpdates, txType));
           }, [])
         )
-      );
+      ).filter(v => !!v);
       if (
         !filterAccountAddresses ||
         !filterAccountAddresses.filter(v => !!v).length
@@ -216,7 +166,6 @@ export const _getBlockAccountTransactionUpdates$ = (
           addresses: allUpdatedAccounts,
         } as LatestAddressUpdates;
       }
-
       const filtered = allUpdatedAccounts.filter(addr =>
         filterAccountAddresses.some(a => addr.trim() === a.trim())
       );
@@ -230,7 +179,7 @@ export const _getBlockAccountTransactionUpdates$ = (
     ),
     filter(value =>
       hasTransactionForTypes(
-        value as unknown as PusherLatestBlock,
+        value as unknown as LatestBlockData,
         filterTransactionType
       )
     ),
@@ -259,7 +208,7 @@ export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[]
 ): Observable<LatestAddressUpdates> =>
   latestBlockUpdates$.pipe(
-    map((blockUpdates: PusherLatestBlock) => {
+    map((blockUpdates: LatestBlockData) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {
         return blockUpdates.updatedContracts;
       }

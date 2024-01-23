@@ -47,3 +47,4 @@ export { UpdateDataType } from "./model/updateStateModel";
 export { addPendingTransactionSubj, pendingTxList$ } from "./tx/pendingTx.rx";
 
 export { reloadTokens } from "./token/force-reload-tokens";
+export type { IpfsUrlResolverFn } from "./initReefState";
