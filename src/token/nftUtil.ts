@@ -19,7 +19,8 @@ import {
 } from "../reefState/model/statusDataObject";
 import { getContractTypeAbi } from "./tokenUtil";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
-import { IpfsUrlResolverFn } from "../reefState/initReefState";
+
+import { IpfsUrlResolverFn } from "../reefState/ipfsUrlResolverFn";
 
 const extractIpfsHash = (ipfsUri: string): string | null => {
   const ipfsProtocol = "ipfs://";

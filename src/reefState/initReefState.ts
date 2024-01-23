@@ -6,8 +6,7 @@ import { AccountJson } from "@reef-defi/extension-base/background/types";
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
 import { Signer as InjectedSigningKey } from "@polkadot/api/types";
-
-export type IpfsUrlResolverFn = (ipfsHash) => string;
+import { IpfsUrlResolverFn } from "./ipfsUrlResolverFn";
 
 export interface StateOptions {
   network?: Network;
