@@ -21,13 +21,6 @@
             },
             "configurations": {}
           },
-          "build:nx": {
-            "executor": "nx:run-script",
-            "options": {
-              "script": "build:nx"
-            },
-            "configurations": {}
-          },
           "build:clean": {
             "executor": "nx:run-script",
             "options": {
@@ -18014,6 +18007,81 @@
       {
         "source": "util-lib",
         "target": "npm:vitest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/esbuild",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint-plugin",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/js",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/node",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/workspace",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc-node/register",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc/core",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@types/jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:esbuild",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:jest-environment-node",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:nx",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:ts-jest",
         "type": "static"
       },
       {

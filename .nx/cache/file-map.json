@@ -56,28 +56,16 @@
         "hash": "8143564513521340325"
       },
       {
+        "file": "vite.config.ts",
+        "hash": "3220546460705591764"
+      },
+      {
         "file": ".husky/pre-commit",
         "hash": "13469207043343598078"
       },
       {
-        "file": "src/main.ts",
-        "hash": "10477707736645011441"
-      },
-      {
-        "file": "src/network/latestBlock.ts",
-        "hash": "12605144603699572005"
-      },
-      {
-        "file": "src/account/accountSignerUtils.ts",
-        "hash": "12800273790544356657"
-      },
-      {
         "file": "package.json",
-        "hash": "9239798130593692302"
-      },
-      {
-        "file": "tsconfig.json",
-        "hash": "6947278409381741575"
+        "hash": "8925512548562635969"
       }
     ],
     "projectFileMap": {
@@ -153,7 +141,7 @@
         },
         {
           "file": "package.json",
-          "hash": "8111187978311912145",
+          "hash": "14087939561806964944",
           "deps": [
             "npm:@polkadot/extension-inject",
             "npm:@reef-chain/evm-provider",
@@ -184,6 +172,21 @@
             "npm:typescript",
             "npm:vite",
             "npm:vitest",
+            "npm:@nx/esbuild",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/jest",
+            "npm:@nx/js",
+            "npm:@nx/node",
+            "npm:@nx/workspace",
+            "npm:@swc-node/register",
+            "npm:@swc/core",
+            "npm:@types/jest",
+            "npm:esbuild",
+            "npm:jest",
+            "npm:jest-environment-node",
+            "npm:nx",
+            "npm:ts-jest",
             "npm:rxjs"
           ]
         },
@@ -202,7 +205,7 @@
         },
         {
           "file": "src/account/accountSignerUtils.ts",
-          "hash": "18133721023856567906",
+          "hash": "12800273790544356657",
           "deps": [
             "npm:@reef-defi/evm-provider",
             "npm:@polkadot/api",
@@ -279,7 +282,7 @@
           "hash": "11453442262262667589"
         },
         {
-          "file": "src/index.ts",
+          "file": "src/main.ts",
           "hash": "10477707736645011441"
         },
         {
@@ -301,7 +304,7 @@
         },
         {
           "file": "src/network/latestBlock.ts",
-          "hash": "3433218561728676046",
+          "hash": "4092083609842197576",
           "deps": ["npm:rxjs", "npm:firebase"]
         },
         {
@@ -832,12 +835,17 @@
           "deps": ["npm:ethers", "npm:vitest"]
         },
         {
+          "file": "tmp/util-lib/main-with-require-overrides.js",
+          "hash": "3194316655105992342",
+          "deps": ["npm:module", "npm:path", "npm:fs"]
+        },
+        {
           "file": "tsconfig.app.json",
           "hash": "11653504435993440299"
         },
         {
           "file": "tsconfig.json",
-          "hash": "10182701031779797300"
+          "hash": "6947278409381741575"
         },
         {
           "file": "tsconfig.spec.json",

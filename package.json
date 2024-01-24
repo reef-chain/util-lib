@@ -3,11 +3,11 @@
   "private": false,
   "version": "2.1.12",
   "main": "./dist/src/main.js",
-  "module": "./dist/src/main.js",
+  "module": "./dist/module/util-lib.mjs",
   "exports": {
     ".": {
       "require": "./dist/src/main.js",
-      "import": "./dist/src/main.js"
+      "import": "./dist/module/util-lib.mjs"
     }
   },
   "files": [
@@ -17,9 +17,8 @@
   "scripts": {
     "dev": "vite --host",
     "watch": "vite build --watch",
-    "build:nx": "nx build",
     "build:clean": "rm -rf node_modules&&rm -f yarn.lock&&yarn install&&yarn build",
-    "build": "tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
+    "build": "nx build && tsc && vite build && dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "build-dts": "dts-bundle-generator --config ./dts-bundle-generator.config.ts",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
