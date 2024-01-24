@@ -27,3 +27,4 @@ export { createEmptyTokenWithAmount } from "./tokenUtil";
 export { createEmptyToken } from "./tokenUtil";
 export { getContractTypeAbi } from "./tokenUtil";
 export { reefPrice$ } from "./reefPrice";
+export type { IpfsUrlResolverFn } from "./nftUtil";
