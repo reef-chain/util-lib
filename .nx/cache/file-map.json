@@ -50,24 +50,7 @@
   "pathMappings": {},
   "nxJsonPlugins": [],
   "fileMap": {
-    "nonProjectFiles": [
-      {
-        "file": "tmp/util-lib/main-with-require-overrides.js",
-        "hash": "8143564513521340325"
-      },
-      {
-        "file": "vite.config.ts",
-        "hash": "3220546460705591764"
-      },
-      {
-        "file": ".husky/pre-commit",
-        "hash": "13469207043343598078"
-      },
-      {
-        "file": "package.json",
-        "hash": "8925512548562635969"
-      }
-    ],
+    "nonProjectFiles": [],
     "projectFileMap": {
       "util-lib": [
         {
@@ -80,7 +63,7 @@
         },
         {
           "file": ".gitignore",
-          "hash": "15267165722908119250"
+          "hash": "7403150125481584316"
         },
         {
           "file": ".husky/pre-commit",
@@ -141,7 +124,7 @@
         },
         {
           "file": "package.json",
-          "hash": "14087939561806964944",
+          "hash": "8925512548562635969",
           "deps": [
             "npm:@polkadot/extension-inject",
             "npm:@reef-chain/evm-provider",
@@ -835,11 +818,6 @@
           "deps": ["npm:ethers", "npm:vitest"]
         },
         {
-          "file": "tmp/util-lib/main-with-require-overrides.js",
-          "hash": "3194316655105992342",
-          "deps": ["npm:module", "npm:path", "npm:fs"]
-        },
-        {
           "file": "tsconfig.app.json",
           "hash": "11653504435993440299"
         },
@@ -853,7 +831,7 @@
         },
         {
           "file": "vite.config.ts",
-          "hash": "3946298137897409019",
+          "hash": "3220546460705591764",
           "deps": ["npm:path", "npm:vite"]
         },
         {
