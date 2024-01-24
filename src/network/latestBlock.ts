@@ -33,13 +33,15 @@ interface LatestBlock {
   blockId: string;
 }
 
+interface UpdatedAccounts {
+  REEF20Transfers?: string[];
+  REEF721Transfers?: string[];
+  REEF1155Transfers?: string[];
+  boundEvm?: string[];
+}
+
 export interface LatestBlockData extends LatestBlock {
-  updatedAccounts: {
-    REEF20Transfers: string[];
-    REEF721Transfers: string[];
-    REEF1155Transfers: string[];
-    boundEvm: string[];
-  };
+  updatedAccounts: UpdatedAccounts;
   updatedContracts: string[];
 }
 
@@ -77,7 +79,7 @@ const getUpdatedAccounts = (
   blockUpdates: LatestBlockData,
   filterTransactionType?: AccountIndexedTransactionType
 ) => {
-  const updatedAccounts = blockUpdates.updatedAccounts || {};
+  const updatedAccounts: UpdatedAccounts = blockUpdates.updatedAccounts || {};
   switch (filterTransactionType) {
     case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
       // eslint-disable-next-line no-case-declarations
