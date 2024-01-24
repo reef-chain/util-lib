@@ -52,7 +52,7 @@ export const getAccountSigner = async (
   let signingKey: InjectedSigner | undefined =
     injSignerOrSource as InjectedSigner;
   if (!injSignerOrSource || typeof injSignerOrSource === "string") {
-    signingKey = await getAccountInjectedSigner(injSignerOrSource);
+    signingKey = await getAccountInjectedSigner(injSignerOrSource?.toString());
   }
 
   if (!addressSigners.has(address)) {
