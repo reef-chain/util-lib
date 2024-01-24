@@ -12,6 +12,7 @@ import {
   allIndexedTransactions,
   LatestAddressUpdates,
   LatestBlockData,
+  UpdatedAccounts,
 } from "./latestBlockModel";
 
 export const publishIndexerEvent = (
@@ -51,7 +52,7 @@ const getUpdatedAccounts = (
   blockUpdates: LatestBlockData,
   filterTransactionType?: AccountIndexedTransactionType
 ) => {
-  const updatedAccounts = blockUpdates.updatedAccounts || {};
+  const updatedAccounts: UpdatedAccounts = blockUpdates.updatedAccounts || {};
   switch (filterTransactionType) {
     case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
       // eslint-disable-next-line no-case-declarations

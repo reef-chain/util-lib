@@ -16,13 +16,15 @@ interface LatestBlock {
   blockId: string;
 }
 
+export interface UpdatedAccounts {
+  REEF20Transfers?: string[];
+  REEF721Transfers?: string[];
+  REEF1155Transfers?: string[];
+  boundEvm?: string[];
+}
+
 export interface LatestBlockData extends LatestBlock {
-  updatedAccounts: {
-    REEF20Transfers: string[];
-    REEF721Transfers: string[];
-    REEF1155Transfers: string[];
-    boundEvm: string[];
-  };
+  updatedAccounts: UpdatedAccounts;
   updatedContracts: string[];
 }
 
