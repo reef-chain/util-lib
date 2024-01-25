@@ -9,10 +9,9 @@
     "@reef-defi/extension-inject": "^1.0.16",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.2",
-    "emitter-io": "^1.39.0",
     "ethers": "~5.5.4",
     "firebase": "^10.7.0",
-    "pusher-js": "^8.2.0",
+    "mqtt": "^5.3.5",
     "@types/jsdom": "^20.0.1",
     "@types/node": "^18.11.18",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
@@ -54,15 +53,7 @@
     "nonProjectFiles": [
       {
         "file": ".nx/cache/d/server-process.json",
-        "hash": "10574364119389234458"
-      },
-      {
-        "file": "src/reefState/latestBlockModel.ts",
-        "hash": "6464806765095721948"
-      },
-      {
-        "file": "src/reefState/latestBlock.ts",
-        "hash": "3058166091702815268"
+        "hash": "6236659342591935380"
       }
     ],
     "projectFileMap": {
@@ -141,7 +132,7 @@
         },
         {
           "file": "package.json",
-          "hash": "11332577215600790716",
+          "hash": "17057656962263350277",
           "deps": [
             "npm:@polkadot/extension-inject",
             "npm:@reef-defi/extension-base",
@@ -150,7 +141,6 @@
             "npm:axios",
             "npm:bignumber.js",
             "npm:ethers",
-            "npm:pusher-js",
             "npm:@types/jsdom",
             "npm:@types/node",
             "npm:@typescript-eslint/eslint-plugin",
@@ -448,14 +438,14 @@
         },
         {
           "file": "src/reefState/latestBlock.ts",
-          "hash": "14186071840622906943",
+          "hash": "3058166091702815268",
           "deps": [
             "npm:rxjs"
           ]
         },
         {
           "file": "src/reefState/latestBlockModel.ts",
-          "hash": "2568988896583402265"
+          "hash": "6464806765095721948"
         },
         {
           "file": "src/reefState/model/statusDataObject.ts",
@@ -735,6 +725,13 @@
           "hash": "11323990178747375439"
         },
         {
+          "file": "src/utils/emitter-io.ts",
+          "hash": "17991890943127559414",
+          "deps": [
+            "npm:mqtt"
+          ]
+        },
+        {
           "file": "src/utils/math.ts",
           "hash": "11514912913557836641",
           "deps": [
@@ -743,10 +740,9 @@
         },
         {
           "file": "src/utils/reefscanEvents.ts",
-          "hash": "8069774182020718635",
+          "hash": "18327694235402942387",
           "deps": [
-            "npm:rxjs",
-            "npm:emitter-io"
+            "npm:rxjs"
           ]
         },
         {
@@ -1005,7 +1001,7 @@
         },
         {
           "file": "yarn.lock",
-          "hash": "9266254656041918558"
+          "hash": "12179375560832809253"
         }
       ]
     }

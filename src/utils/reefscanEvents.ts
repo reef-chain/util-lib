@@ -11,8 +11,12 @@ import {
 } from "rxjs";
 import { filter, shareReplay } from "rxjs/operators";
 import { NetworkName } from "../network/network";
-import * as emitter from "emitter-io";
 import { LatestBlockData } from "../reefState/latestBlockModel";
+import {
+  Emitter,
+  connect as emitterConn,
+  EmitterEvents,
+} from "../utils/emitter-io";
 
 const emitterConfig = {
   host: "http://events.reefscan.info",
@@ -21,19 +25,19 @@ const emitterConfig = {
 const EMITTER_READ_KEY = "Bqx4Kdv5gJFX4omLzZFWsK5QcCYurwX8";
 
 function getEmitterConnection(config: { port: number; host: string }) {
-  return new Promise<emitter.Emitter>((resolve, reject) => {
-    const emitterClient = emitter.connect(config);
-    emitterClient.on("connect", function () {
+  return new Promise<Emitter>((resolve, reject) => {
+    const emitterClient = emitterConn(config);
+    emitterClient.on(EmitterEvents.connect, function () {
       resolve(emitterClient);
     });
-    emitterClient.on("error", function (e) {
-      console.log("emitter events error", e.message);
+    emitterClient.on(EmitterEvents.error, function (e: unknown) {
+      console.log("emitter events error", e);
       reject(null);
     });
   });
 }
 
-export const indexerEmitterConn$: Observable<emitter.Emitter | null> = of(
+export const indexerEmitterConn$: Observable<Emitter | null> = of(
   emitterConfig
 ).pipe(
   switchMap(config => {
@@ -41,10 +45,8 @@ export const indexerEmitterConn$: Observable<emitter.Emitter | null> = of(
 
     return from(getEmitterConnection(config)).pipe(
       switchMap(emitterConn => {
-        const subj: ReplaySubject<emitter.Emitter | null> = new ReplaySubject(
-          1
-        );
-        emitterConn.on("disconnect", function () {
+        const subj: ReplaySubject<Emitter | null> = new ReplaySubject(1);
+        emitterConn.on(EmitterEvents.disconnect, function () {
           console.log("reefscan events disconnected");
           subj.next(null);
         });
@@ -73,9 +75,9 @@ export const getIndexerEventsNetworkChannel = (network: NetworkName) => {
   return channel;
 };
 
-export const connectedIndexerEmitter$: Observable<emitter.Emitter> =
+export const connectedIndexerEmitter$: Observable<Emitter> =
   indexerEmitterConn$.pipe(
-    filter((v): v is emitter.Emitter => {
+    filter((v): v is Emitter => {
       if (!v) {
         console.log("indexer events waiting for connection");
       } else {
@@ -97,7 +99,7 @@ export const getBlockDataEmitter = (selNetwork$: Observable<NetworkName>) => {
               key: EMITTER_READ_KEY,
               channel,
             });
-            emitterConn.on("message", function (event) {
+            emitterConn.on(EmitterEvents.message, function (event: any) {
               if (event.channel === channel) {
                 console.log("indexer evt=", event.asString());
                 const latestBlock = JSON.parse(event.asString());
