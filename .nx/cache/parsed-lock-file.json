@@ -5868,6 +5868,15 @@
         "hash": "sha512-FNoYzHawTMk/6KMQoEG5O4PuioX19UbwdQKF44yw0nLfOypfQdjtfZzo/UIJWAJ23sNIFbD1Ug9lbaDGMwbqQA=="
       }
     },
+    "npm:@wunderwerk/emitter-io-worker": {
+      "type": "npm",
+      "name": "npm:@wunderwerk/emitter-io-worker",
+      "data": {
+        "version": "0.2.4",
+        "packageName": "@wunderwerk/emitter-io-worker",
+        "hash": "sha512-2OOY/PFQ+UvOnoQeHFZX4kbwoq+xI6Abt7Ekz1jYGuJMUIkTQPAH3Tg6IXVrq/6Bv2kt5JNycAeBI8m9qoHA9Q=="
+      }
+    },
     "npm:@yarnpkg/lockfile": {
       "type": "npm",
       "name": "npm:@yarnpkg/lockfile",
@@ -6799,9 +6808,9 @@
       "type": "npm",
       "name": "npm:bip32-ed25519",
       "data": {
-        "version": "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134",
+        "version": "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134",
         "packageName": "bip32-ed25519",
-        "hash": "1905091896542339371"
+        "hash": "16164179970835068064"
       }
     },
     "npm:bip32": {
@@ -34475,6 +34484,11 @@
       "type": "static"
     },
     {
+      "source": "npm:@wunderwerk/emitter-io-worker",
+      "target": "npm:emitter-io",
+      "type": "static"
+    },
+    {
       "source": "npm:@yarnpkg/parsers",
       "target": "npm:js-yaml",
       "type": "static"
@@ -34502,6 +34516,11 @@
     {
       "source": "npm:@zondax/ledger-substrate",
       "target": "npm:bip32",
+      "type": "static"
+    },
+    {
+      "source": "npm:@zondax/ledger-substrate",
+      "target": "npm:bip32-ed25519",
       "type": "static"
     },
     {

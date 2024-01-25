@@ -6005,6 +6005,13 @@
   dependencies:
     tslib "^2.3.0"
 
+"@wunderwerk/emitter-io-worker@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/@wunderwerk/emitter-io-worker/-/emitter-io-worker-0.2.4.tgz#59034c51c4e31b0e128e38ea79cc83c862d92544"
+  integrity sha512-2OOY/PFQ+UvOnoQeHFZX4kbwoq+xI6Abt7Ekz1jYGuJMUIkTQPAH3Tg6IXVrq/6Bv2kt5JNycAeBI8m9qoHA9Q==
+  dependencies:
+    emitter-io "^1.39.0"
+
 "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
@@ -6749,9 +6756,9 @@ bindings@^1.3.0, bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-"bip32-ed25519@git+https://github.com/Zondax/bip32-ed25519.git":
+"bip32-ed25519@https://github.com/Zondax/bip32-ed25519":
   version "0.0.4"
-  resolved "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134"
+  resolved "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134"
   dependencies:
     bn.js "^5.1.1"
     elliptic "^6.4.1"

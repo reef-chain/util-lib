@@ -30,30 +30,19 @@
           },
           "build": {
             "cache": true,
-            "dependsOn": [
-              "^build"
-            ],
-            "inputs": [
-              "production",
-              "^production"
-            ],
+            "dependsOn": ["^build"],
+            "inputs": ["production", "^production"],
             "executor": "@nx/esbuild:esbuild",
-            "outputs": [
-              "{options.outputPath}"
-            ],
+            "outputs": ["{options.outputPath}"],
             "defaultConfiguration": "production",
             "options": {
               "platform": "node",
               "outputPath": "dist/",
-              "format": [
-                "cjs"
-              ],
+              "format": ["cjs"],
               "bundle": false,
               "main": "src/main.ts",
               "tsConfig": "tsconfig.app.json",
-              "assets": [
-                "src/assets"
-              ],
+              "assets": ["src/assets"],
               "generatePackageJson": true,
               "esbuildOptions": {
                 "sourcemap": true,
@@ -82,9 +71,7 @@
               "{workspaceRoot}/jest.preset.js"
             ],
             "executor": "@nx/jest:jest",
-            "outputs": [
-              "{workspaceRoot}/coverage/{projectName}"
-            ],
+            "outputs": ["{workspaceRoot}/coverage/{projectName}"],
             "options": {
               "passWithNoTests": true,
               "jestConfig": "jest.config.ts"
@@ -146,9 +133,7 @@
             "configurations": {}
           },
           "nx-release-publish": {
-            "dependsOn": [
-              "^nx-release-publish"
-            ],
+            "dependsOn": ["^nx-release-publish"],
             "executor": "@nx/js:release-publish",
             "options": {},
             "configurations": {}
@@ -177,13 +162,9 @@
               "{workspaceRoot}/eslint.config.js"
             ],
             "executor": "@nx/eslint:lint",
-            "outputs": [
-              "{options.outputFile}"
-            ],
+            "outputs": ["{options.outputFile}"],
             "options": {
-              "lintFilePatterns": [
-                "./src"
-              ]
+              "lintFilePatterns": ["./src"]
             },
             "configurations": {}
           }
@@ -6065,6 +6046,15 @@
         "hash": "sha512-FNoYzHawTMk/6KMQoEG5O4PuioX19UbwdQKF44yw0nLfOypfQdjtfZzo/UIJWAJ23sNIFbD1Ug9lbaDGMwbqQA=="
       }
     },
+    "npm:@wunderwerk/emitter-io-worker": {
+      "type": "npm",
+      "name": "npm:@wunderwerk/emitter-io-worker",
+      "data": {
+        "version": "0.2.4",
+        "packageName": "@wunderwerk/emitter-io-worker",
+        "hash": "sha512-2OOY/PFQ+UvOnoQeHFZX4kbwoq+xI6Abt7Ekz1jYGuJMUIkTQPAH3Tg6IXVrq/6Bv2kt5JNycAeBI8m9qoHA9Q=="
+      }
+    },
     "npm:@yarnpkg/lockfile": {
       "type": "npm",
       "name": "npm:@yarnpkg/lockfile",
@@ -6996,9 +6986,9 @@
       "type": "npm",
       "name": "npm:bip32-ed25519",
       "data": {
-        "version": "git+https://github.com/Zondax/bip32-ed25519.git#0949df01b5c93885339bc28116690292088f6134",
+        "version": "https://github.com/Zondax/bip32-ed25519#0949df01b5c93885339bc28116690292088f6134",
         "packageName": "bip32-ed25519",
-        "hash": "1905091896542339371"
+        "hash": "16164179970835068064"
       }
     },
     "npm:bip32": {
@@ -18099,6 +18089,11 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:@reef-chain/evm-provider",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:@reef-defi/extension-base",
         "type": "static"
       },
@@ -18110,6 +18105,11 @@
       {
         "source": "util-lib",
         "target": "npm:@reef-defi/extension-inject",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@wunderwerk/emitter-io-worker",
         "type": "static"
       },
       {
@@ -18129,7 +18129,62 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:firebase",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:pusher-js",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/esbuild",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint-plugin",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/js",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/node",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/workspace",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc-node/register",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc/core",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@types/jest",
         "type": "static"
       },
       {
@@ -18169,6 +18224,11 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:esbuild",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:eslint",
         "type": "static"
       },
@@ -18189,7 +18249,22 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:jest-environment-node",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:lint-staged",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:nx",
         "type": "static"
       },
       {
@@ -18205,6 +18280,11 @@
       {
         "source": "util-lib",
         "target": "npm:prettier",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:ts-jest",
         "type": "static"
       },
       {
@@ -18225,21 +18305,6 @@
       {
         "source": "util-lib",
         "target": "npm:vitest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:esbuild",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:jest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:jest-environment-node",
         "type": "static"
       },
       {
@@ -30528,6 +30593,13 @@
         "type": "static"
       }
     ],
+    "npm:@wunderwerk/emitter-io-worker": [
+      {
+        "source": "npm:@wunderwerk/emitter-io-worker",
+        "target": "npm:emitter-io",
+        "type": "static"
+      }
+    ],
     "npm:@yarnpkg/parsers": [
       {
         "source": "npm:@yarnpkg/parsers",
@@ -30561,6 +30633,11 @@
       {
         "source": "npm:@zondax/ledger-substrate",
         "target": "npm:bip32",
+        "type": "static"
+      },
+      {
+        "source": "npm:@zondax/ledger-substrate",
+        "target": "npm:bip32-ed25519",
         "type": "static"
       },
       {

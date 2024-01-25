@@ -11,7 +11,7 @@ import {
 } from "rxjs";
 import { filter, shareReplay } from "rxjs/operators";
 import { NetworkName } from "../network/network";
-import * as emitter from "emitter-io";
+import * as emitter from "@wunderwerk/emitter-io-worker";
 import { LatestBlockData } from "../reefState/latestBlockModel";
 
 const emitterConfig = {
@@ -21,8 +21,8 @@ const emitterConfig = {
 const EMITTER_READ_KEY = "Bqx4Kdv5gJFX4omLzZFWsK5QcCYurwX8";
 
 function getEmitterConnection(config: { port: number; host: string }) {
-  return new Promise<emitter.Emitter>((resolve, reject) => {
-    const emitterClient = emitter.connect(config);
+  return new Promise<any>((resolve, reject) => {
+    const emitterClient = (emitter as any).connect(config);
     emitterClient.on("connect", function () {
       resolve(emitterClient);
     });
@@ -33,7 +33,7 @@ function getEmitterConnection(config: { port: number; host: string }) {
   });
 }
 
-export const indexerEmitterConn$: Observable<emitter.Emitter | null> = of(
+export const indexerEmitterConn$: Observable<any | null> = of(
   emitterConfig
 ).pipe(
   switchMap(config => {
@@ -41,9 +41,7 @@ export const indexerEmitterConn$: Observable<emitter.Emitter | null> = of(
 
     return from(getEmitterConnection(config)).pipe(
       switchMap(emitterConn => {
-        const subj: ReplaySubject<emitter.Emitter | null> = new ReplaySubject(
-          1
-        );
+        const subj: ReplaySubject<any | null> = new ReplaySubject(1);
         emitterConn.on("disconnect", function () {
           console.log("reefscan events disconnected");
           subj.next(null);
@@ -73,9 +71,9 @@ export const getIndexerEventsNetworkChannel = (network: NetworkName) => {
   return channel;
 };
 
-export const connectedIndexerEmitter$: Observable<emitter.Emitter> =
+export const connectedIndexerEmitter$: Observable<any> =
   indexerEmitterConn$.pipe(
-    filter((v): v is emitter.Emitter => {
+    filter((v): v is any => {
       if (!v) {
         console.log("indexer events waiting for connection");
       } else {
