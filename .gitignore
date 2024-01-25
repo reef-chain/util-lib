@@ -27,4 +27,4 @@ coverage
 
 # nx
 .nx
-tmp/*
+tmp

@@ -37,6 +37,7 @@
     "@wunderwerk/emitter-io-worker": "^0.2.4",
     "axios": "^1.6.2",
     "bignumber.js": "^9.1.2",
+    "emitter-io": "^1.39.0",
     "ethers": "~5.5.4",
     "firebase": "^10.7.0",
     "pusher-js": "^8.2.0"
@@ -79,5 +80,8 @@
   },
   "peerDependencies": {
     "rxjs": "^7.5.6"
+  },
+  "resolutions": {
+    "@wunderwerk/emitter-io-worker": "^0.2.4"
   }
 }
