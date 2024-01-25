@@ -20,7 +20,7 @@ import {
 } from "../model/statusDataObject";
 import { getSignerNftsQuery } from "../../graphql/signerNfts.gql";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import { instantProvider$ } from "../providerState";
 import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
