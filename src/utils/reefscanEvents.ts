@@ -6,6 +6,7 @@ import {
   Observable,
   of,
   ReplaySubject,
+  share,
   switchMap,
   timer,
 } from "rxjs";
@@ -24,6 +25,8 @@ const emitterConfig = {
 };
 const EMITTER_READ_KEY = "UMuO3iJMyZIM5H9v1PW7uOZEYLoUeCpc";
 
+const emitterChannelObsCache = new Map<string, Observable<LatestBlockData>>();
+
 function getEmitterConnection(config: { port: number; host: string }) {
   return new Promise<Emitter>((resolve, reject) => {
     const emitterClient = emitterConn(config);
@@ -41,7 +44,7 @@ export const indexerEmitterConn$: Observable<Emitter | null> = of(
   emitterConfig
 ).pipe(
   switchMap(config => {
-    console.log("connecting to reefscan events");
+    // console.log("connecting to reefscan events");
 
     return from(getEmitterConnection(config)).pipe(
       switchMap(emitterConn => {
@@ -88,34 +91,43 @@ export const connectedIndexerEmitter$: Observable<Emitter> =
     shareReplay(1)
   );
 
+const getEmitterChannel$ = (channel: string) => {
+  if (!emitterChannelObsCache.has(channel)) {
+    const ch$ = connectedIndexerEmitter$.pipe(
+      switchMap(emitterConn => {
+        return new Observable<LatestBlockData>(obs => {
+          emitterConn.subscribe({
+            key: EMITTER_READ_KEY,
+            channel,
+          });
+          emitterConn.on(EmitterEvents.message, function (event: any) {
+            if (event.channel === channel) {
+              // console.log("indexer evt=", event.asString());
+              const latestBlock = JSON.parse(event.asString());
+              if (latestBlock.blockHeight >= -1) {
+                obs.next(latestBlock);
+              }
+            }
+          });
+
+          return () => {
+            console.log("unsubs from emitter channel=", channel);
+            emitterConn.unsubscribe({ key: EMITTER_READ_KEY, channel });
+          };
+        });
+      }),
+      share()
+    );
+
+    emitterChannelObsCache.set(channel, ch$);
+  }
+  return emitterChannelObsCache.get(channel);
+};
 export const getBlockDataEmitter = (selNetwork$: Observable<NetworkName>) => {
   return selNetwork$.pipe(
     switchMap((networkName: NetworkName) => {
       const channel = getIndexerEventsNetworkChannel(networkName);
-      return connectedIndexerEmitter$.pipe(
-        switchMap(emitterConn => {
-          return new Observable<LatestBlockData>(obs => {
-            emitterConn.subscribe({
-              key: EMITTER_READ_KEY,
-              channel,
-            });
-            emitterConn.on(EmitterEvents.message, function (event: any) {
-              if (event.channel === channel) {
-                console.log("indexer evt=", event.asString());
-                const latestBlock = JSON.parse(event.asString());
-                if (latestBlock.blockHeight >= -1) {
-                  obs.next(latestBlock);
-                }
-              }
-            });
-
-            return () => {
-              console.log("unsubs from emitter channel=", channel);
-              emitterConn.unsubscribe({ key: EMITTER_READ_KEY, channel });
-            };
-          });
-        })
-      );
+      return getEmitterChannel$(channel);
     }),
 
     shareReplay(1)
