@@ -1,7 +1,7 @@
 import { gql, SubscriptionOptions } from "@apollo/client";
 import { utils } from "ethers";
 import { map, Observable, of, shareReplay, switchMap } from "rxjs";
-import { getLatestBlockContractEvents$ } from "../network";
+import { getLatestBlockContractEvents$ } from "../reefState/latestBlock";
 import { httpClientInstance$ } from "../graphql/httpClient";
 import { AxiosInstance } from "axios";
 import { filter } from "rxjs/operators";
