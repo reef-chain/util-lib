@@ -239,7 +239,7 @@ describe("Latest block", () => {
             blockHeight: bHeight,
           } as LatestBlockData,
           "testnet",
-          "G1WA4k9ezrCjHwugRi09ZicHhZlMPb3D"
+          "...publish_key..."
         ),
       1000
     );

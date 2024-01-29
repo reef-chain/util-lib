@@ -22,7 +22,7 @@ const emitterConfig = {
   host: "http://events.reefscan.info",
   port: 8080,
 };
-const EMITTER_READ_KEY = "Bqx4Kdv5gJFX4omLzZFWsK5QcCYurwX8";
+const EMITTER_READ_KEY = "UMuO3iJMyZIM5H9v1PW7uOZEYLoUeCpc";
 
 function getEmitterConnection(config: { port: number; host: string }) {
   return new Promise<Emitter>((resolve, reject) => {
