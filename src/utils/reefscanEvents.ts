@@ -19,13 +19,21 @@ import {
   EmitterEvents,
 } from "../utils/emitter-io";
 
-const emitterConfig = {
-  host: "http://events.reefscan.info",
-  port: 8080,
+export let emitterConfig: ReefscanEventsConnConfig = {
+  host: "events.reefscan.info",
+  port: 80,
 };
+
 const EMITTER_READ_KEY = "UMuO3iJMyZIM5H9v1PW7uOZEYLoUeCpc";
 
 const emitterChannelObsCache = new Map<string, Observable<LatestBlockData>>();
+const emitterConnObsCache = new Map<string, Observable<Emitter | null>>();
+
+export const setReefscanEventsConnConfig = (
+  config: ReefscanEventsConnConfig
+) => {
+  emitterConfig = config;
+};
 
 function getEmitterConnection(config: { port: number; host: string }) {
   return new Promise<Emitter>((resolve, reject) => {
@@ -40,37 +48,51 @@ function getEmitterConnection(config: { port: number; host: string }) {
   });
 }
 
-export const indexerEmitterConn$: Observable<Emitter | null> = of(
-  emitterConfig
-).pipe(
-  switchMap(config => {
-    // console.log("connecting to reefscan events");
+function getReefscanEventConnIdent(config: ReefscanEventsConnConfig) {
+  return config.host + config.port.toString();
+}
 
-    return from(getEmitterConnection(config)).pipe(
-      switchMap(emitterConn => {
-        const subj: ReplaySubject<Emitter | null> = new ReplaySubject(1);
-        emitterConn.on(EmitterEvents.disconnect, function () {
-          console.log("reefscan events disconnected");
-          subj.next(null);
-        });
-        subj.next(emitterConn);
-        return subj.pipe(
-          map(eConn => {
-            if (!eConn) {
-              throw new Error("emitter disconnected");
-            }
-            return eConn;
+export const getIndexerEmitterConn$ = (
+  config: ReefscanEventsConnConfig
+): Observable<Emitter | null> => {
+  const connIdent = getReefscanEventConnIdent(config);
+  if (!emitterConnObsCache.has(connIdent)) {
+    const emitterConn = of(config).pipe(
+      switchMap(config => {
+        // console.log("connecting to reefscan events");
+
+        return from(
+          getEmitterConnection(config as { port: number; host: string })
+        ).pipe(
+          switchMap(emitterConn => {
+            const subj: ReplaySubject<Emitter | null> = new ReplaySubject(1);
+            emitterConn.on(EmitterEvents.disconnect, function () {
+              console.log("reefscan events disconnected");
+              subj.next(null);
+            });
+            subj.next(emitterConn);
+            return subj.pipe(
+              map(eConn => {
+                if (!eConn) {
+                  throw new Error("emitter disconnected");
+                }
+                return eConn;
+              })
+            );
+          }),
+          catchError((err, caught) => {
+            console.log("reefscanEventsConn$ ERR=", err);
+            return merge(of(null), timer(8000).pipe(switchMap(() => caught)));
           })
         );
       }),
-      catchError((err, caught) => {
-        console.log("reefscanEventsConn$ ERR=", err);
-        return merge(of(null), timer(8000).pipe(switchMap(() => caught)));
-      })
+      shareReplay(1)
     );
-  }),
-  shareReplay(1)
-);
+    console.log("set emitter conn=", connIdent);
+    emitterConnObsCache.set(connIdent, emitterConn);
+  }
+  return emitterConnObsCache.get(connIdent);
+};
 
 export const getIndexerEventsNetworkChannel = (network: NetworkName) => {
   const INDEXER_EVENTS_CHANNEL_ROOT = "reef-indexer/";
@@ -78,8 +100,10 @@ export const getIndexerEventsNetworkChannel = (network: NetworkName) => {
   return channel;
 };
 
-export const connectedIndexerEmitter$: Observable<Emitter> =
-  indexerEmitterConn$.pipe(
+export const getConnectedIndexerEmitter$ = (
+  config: ReefscanEventsConnConfig
+): Observable<Emitter> =>
+  getIndexerEmitterConn$(config).pipe(
     filter((v): v is Emitter => {
       if (!v) {
         console.log("indexer events waiting for connection");
@@ -91,9 +115,18 @@ export const connectedIndexerEmitter$: Observable<Emitter> =
     shareReplay(1)
   );
 
-const getEmitterChannel$ = (channel: string) => {
-  if (!emitterChannelObsCache.has(channel)) {
-    const ch$ = connectedIndexerEmitter$.pipe(
+export interface ReefscanEventsConnConfig {
+  host: string;
+  port: number;
+}
+
+const getEmitterChannel$ = (
+  channel: string,
+  config: ReefscanEventsConnConfig = emitterConfig
+) => {
+  const channelIdent = getReefscanEventConnIdent(config) + channel;
+  if (!emitterChannelObsCache.has(channelIdent)) {
+    const ch$ = getConnectedIndexerEmitter$(config).pipe(
       switchMap(emitterConn => {
         return new Observable<LatestBlockData>(obs => {
           emitterConn.subscribe({
@@ -119,15 +152,18 @@ const getEmitterChannel$ = (channel: string) => {
       share()
     );
 
-    emitterChannelObsCache.set(channel, ch$);
+    emitterChannelObsCache.set(channelIdent, ch$);
   }
-  return emitterChannelObsCache.get(channel);
+  return emitterChannelObsCache.get(channelIdent);
 };
-export const getBlockDataEmitter = (selNetwork$: Observable<NetworkName>) => {
+export const getBlockDataEmitter = (
+  selNetwork$: Observable<NetworkName>,
+  emitterConfig?: ReefscanEventsConnConfig
+) => {
   return selNetwork$.pipe(
     switchMap((networkName: NetworkName) => {
       const channel = getIndexerEventsNetworkChannel(networkName);
-      return getEmitterChannel$(channel);
+      return getEmitterChannel$(channel, emitterConfig);
     }),
 
     shareReplay(1)

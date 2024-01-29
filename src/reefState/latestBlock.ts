@@ -3,9 +3,11 @@ import { filter } from "rxjs/operators";
 import { selectedNetwork$ } from "./networkState";
 import { Network, NetworkName } from "../network/network";
 import {
-  connectedIndexerEmitter$,
+  getConnectedIndexerEmitter$,
   getBlockDataEmitter,
   getIndexerEventsNetworkChannel,
+  ReefscanEventsConnConfig,
+  emitterConfig,
 } from "../utils/reefscanEvents";
 import {
   AccountIndexedTransactionType,
@@ -18,30 +20,31 @@ import {
 export const publishIndexerEvent = (
   blockData: LatestBlockData,
   network: NetworkName,
-  key: string
+  key: string,
+  config?: ReefscanEventsConnConfig
 ) => {
   const channel = getIndexerEventsNetworkChannel(network);
-  connectedIndexerEmitter$
+  getConnectedIndexerEmitter$(config || emitterConfig)
     .pipe(take(1))
     .subscribe(conn =>
       conn?.publish({ key, channel, message: JSON.stringify(blockData) })
     );
 };
 
-// if networkName is undefined reefState observable is used
+// if networkNameOrSelectedNetwork is undefined reefState selectedNetwork observable is used
 export const getLatestBlockUpdates$ = (
-  networkNameOrReefStateNetwork?: NetworkName
+  networkNameOrSelectedNetwork?: NetworkName
 ) => {
   let selNetwork$: Observable<NetworkName>;
-  if (networkNameOrReefStateNetwork) {
-    const rsNetwork = new ReplaySubject<NetworkName>(1);
-    rsNetwork.next(networkNameOrReefStateNetwork);
-    selNetwork$ = rsNetwork.asObservable();
-  } else {
+  if (!networkNameOrSelectedNetwork) {
     selNetwork$ = selectedNetwork$.pipe(
       filter((network: Network) => !!network),
       map(v => v.name)
     );
+  } else {
+    const rsNetwork = new ReplaySubject<NetworkName>(1);
+    rsNetwork.next(networkNameOrSelectedNetwork);
+    selNetwork$ = rsNetwork.asObservable();
   }
 
   // return getBlockDataFirebase(selNetwork$);
@@ -167,10 +170,10 @@ export const _getBlockAccountTransactionUpdates$ = (
 export const getLatestBlockAccountUpdates$ = (
   filterAccountAddresses?: string[],
   filterTransactionType?: AccountIndexedTransactionType[],
-  networkNameOrReefStateNetwork?: NetworkName
+  networkNameOrSelectedNetwork?: NetworkName
 ) =>
   _getBlockAccountTransactionUpdates$(
-    getLatestBlockUpdates$(networkNameOrReefStateNetwork),
+    getLatestBlockUpdates$(networkNameOrSelectedNetwork),
     filterAccountAddresses,
     filterTransactionType
   ).pipe(

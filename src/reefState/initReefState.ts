@@ -7,6 +7,10 @@ import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
 import { Signer as InjectedSigningKey } from "@polkadot/api/types";
 import { IpfsUrlResolverFn } from "./ipfsUrlResolverFn";
+import {
+  ReefscanEventsConnConfig,
+  setReefscanEventsConnConfig,
+} from "../utils/reefscanEvents";
 
 export interface StateOptions {
   network?: Network;
@@ -18,6 +22,7 @@ export interface StateOptions {
     injectedSigner: InjectedSigningKey;
   };
   ipfsHashResolverFn?: IpfsUrlResolverFn;
+  reefscanEventsConfig?: ReefscanEventsConnConfig;
 }
 
 type destroyConnection = () => void;
@@ -26,6 +31,7 @@ export const initReefState = ({
   network,
   jsonAccounts,
   ipfsHashResolverFn,
+  reefscanEventsConfig,
 }: StateOptions): destroyConnection => {
   /*const subscription = selectedNetwork$
     .pipe(
@@ -68,6 +74,9 @@ export const initReefState = ({
       },
     });*/
   setNftIpfsResolverFn(ipfsHashResolverFn);
+  if (reefscanEventsConfig) {
+    setReefscanEventsConnConfig(reefscanEventsConfig);
+  }
   setSelectedNetwork(network || AVAILABLE_NETWORKS.mainnet);
   /*if (signers) {
         accountsSubj.next(signers);

@@ -246,6 +246,6 @@ describe("Latest block", () => {
     const evt = await firstValueFrom(getBlockDataEmitter(of("testnet")));
     console.log("emitter event=", evt);
     expect(evt.blockHeight).toBe(bHeight);
-    //await new Promise(resolve => setTimeout(resolve, 30000));
+    await new Promise(resolve => setTimeout(resolve, 30000));
   }, 10000);
 });
