@@ -11,7 +11,7 @@ import {
   Subject,
   tap,
 } from "rxjs";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import {
   disconnectProvider,
   InitProvider,

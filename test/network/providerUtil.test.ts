@@ -2,7 +2,7 @@ import {
   initProvider,
   disconnectProvider,
 } from "../../src/network/providerUtil";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 describe("Provider functions", () => {

@@ -26,7 +26,7 @@
     "format": "npm run format:scripts",
     "prepare": "husky install && husky set .husky/pre-commit 'npx lint-staged' && git add .husky/pre-commit",
     "uninstall-husky": "npm uninstall husky --no-save && git config --unset core.hooksPath && npx rimraf .husky",
-    "circular-dep-test": "dpdm --no-warning --no-tree ./src/index.ts "
+    "circular-dep-test": "dpdm --no-warning --no-tree ./src/main.ts "
   },
   "dependencies": {
     "@polkadot/extension-inject": "^0.46.5",

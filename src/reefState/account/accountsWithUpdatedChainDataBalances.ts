@@ -15,7 +15,7 @@ import {
   switchMap,
 } from "rxjs";
 import { instantProvider$ } from "../providerState";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import { ReefAccount } from "../../account/accountModel";
 import { BigNumber } from "ethers";
 import { availableAddresses$ } from "./availableAddresses";
