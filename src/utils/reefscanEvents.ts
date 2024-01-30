@@ -59,11 +59,9 @@ export const getIndexerEmitterConn$ = (
   if (!emitterConnObsCache.has(connIdent)) {
     const emitterConn = of(config).pipe(
       switchMap(config => {
-        // console.log("connecting to reefscan events");
+        console.log("connecting to emitter= ", connIdent);
 
-        return from(
-          getEmitterConnection(config as { port: number; host: string })
-        ).pipe(
+        return from(getEmitterConnection(config)).pipe(
           switchMap(emitterConn => {
             const subj: ReplaySubject<Emitter | null> = new ReplaySubject(1);
             emitterConn.on(EmitterEvents.disconnect, function () {
