@@ -17450,6 +17450,11 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:@reef-chain/evm-provider",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:@reef-defi/extension-base",
         "type": "static"
       },
@@ -17476,6 +17481,11 @@
       {
         "source": "util-lib",
         "target": "npm:ethers",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:mqtt",
         "type": "static"
       },
       {
@@ -17575,6 +17585,56 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:@nx/esbuild",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/eslint-plugin",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/js",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/node",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@nx/workspace",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc-node/register",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@swc/core",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@types/jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:esbuild",
         "type": "static"
       },
@@ -17590,12 +17650,17 @@
       },
       {
         "source": "util-lib",
-        "target": "npm:rxjs",
+        "target": "npm:nx",
         "type": "static"
       },
       {
         "source": "util-lib",
-        "target": "npm:@reef-chain/evm-provider",
+        "target": "npm:ts-jest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:rxjs",
         "type": "static"
       },
       {
@@ -17641,11 +17706,6 @@
       {
         "source": "util-lib",
         "target": "npm:@ethersproject/abi",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:mqtt",
         "type": "static"
       },
       {

@@ -134,7 +134,6 @@ const getEmitterChannel$ = (
           });
           emitterConn.on(EmitterEvents.message, function (event: any) {
             if (event.channel === channel) {
-              console.log("indexer evt=", event.asString());
               const latestBlock = JSON.parse(event.asString());
               if (latestBlock.blockHeight >= -1) {
                 obs.next(latestBlock);
