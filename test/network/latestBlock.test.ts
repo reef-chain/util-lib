@@ -232,6 +232,7 @@ describe("Latest block", () => {
 
   it("should publish emitter event", async ctx => {
     const bHeight = -1;
+    const publishKey = "...";
     setTimeout(
       () =>
         publishIndexerEvent(
@@ -239,7 +240,7 @@ describe("Latest block", () => {
             blockHeight: bHeight,
           } as LatestBlockData,
           "testnet",
-          "...publish_key..."
+          publishKey
         ),
       1000
     );

@@ -21,7 +21,8 @@ import {
 
 export let emitterConfig: ReefscanEventsConnConfig = {
   host: "events.reefscan.info",
-  port: 80,
+  port: 443,
+  secure: true,
 };
 
 const EMITTER_READ_KEY = "UMuO3iJMyZIM5H9v1PW7uOZEYLoUeCpc";
@@ -32,10 +33,10 @@ const emitterConnObsCache = new Map<string, Observable<Emitter | null>>();
 export const setReefscanEventsConnConfig = (
   config: ReefscanEventsConnConfig
 ) => {
-  emitterConfig = config;
+  emitterConfig = { ...config };
 };
 
-function getEmitterConnection(config: { port: number; host: string }) {
+function getEmitterConnection(config: ReefscanEventsConnConfig) {
   return new Promise<Emitter>((resolve, reject) => {
     const emitterClient = emitterConn(config);
     emitterClient.on(EmitterEvents.connect, function () {
@@ -49,18 +50,17 @@ function getEmitterConnection(config: { port: number; host: string }) {
 }
 
 function getReefscanEventConnIdent(config: ReefscanEventsConnConfig) {
-  return config.host + config.port.toString();
+  return config.host + config.port?.toString() + config.secure?.toString();
 }
 
 export const getIndexerEmitterConn$ = (
   config: ReefscanEventsConnConfig
 ): Observable<Emitter | null> => {
-  const connIdent = getReefscanEventConnIdent(config);
+  const connConfig = { ...config };
+  const connIdent = getReefscanEventConnIdent(connConfig);
   if (!emitterConnObsCache.has(connIdent)) {
-    const emitterConn = of(config).pipe(
+    const emitterConn = of(connConfig).pipe(
       switchMap(config => {
-        console.log("connecting to emitter= ", connIdent);
-
         return from(getEmitterConnection(config)).pipe(
           switchMap(emitterConn => {
             const subj: ReplaySubject<Emitter | null> = new ReplaySubject(1);
@@ -86,7 +86,6 @@ export const getIndexerEmitterConn$ = (
       }),
       shareReplay(1)
     );
-    console.log("set emitter conn=", connIdent);
     emitterConnObsCache.set(connIdent, emitterConn);
   }
   return emitterConnObsCache.get(connIdent);
@@ -116,15 +115,17 @@ export const getConnectedIndexerEmitter$ = (
 export interface ReefscanEventsConnConfig {
   host: string;
   port: number;
+  secure: boolean;
 }
 
 const getEmitterChannel$ = (
   channel: string,
-  config: ReefscanEventsConnConfig = emitterConfig
+  config?: ReefscanEventsConnConfig
 ) => {
-  const channelIdent = getReefscanEventConnIdent(config) + channel;
+  const eventsConf = config ? { ...config } : { ...emitterConfig };
+  const channelIdent = getReefscanEventConnIdent(eventsConf) + channel;
   if (!emitterChannelObsCache.has(channelIdent)) {
-    const ch$ = getConnectedIndexerEmitter$(config).pipe(
+    const ch$ = getConnectedIndexerEmitter$(eventsConf).pipe(
       switchMap(emitterConn => {
         return new Observable<LatestBlockData>(obs => {
           emitterConn.subscribe({
@@ -133,7 +134,7 @@ const getEmitterChannel$ = (
           });
           emitterConn.on(EmitterEvents.message, function (event: any) {
             if (event.channel === channel) {
-              // console.log("indexer evt=", event.asString());
+              console.log("indexer evt=", event.asString());
               const latestBlock = JSON.parse(event.asString());
               if (latestBlock.blockHeight >= -1) {
                 obs.next(latestBlock);
@@ -154,65 +155,18 @@ const getEmitterChannel$ = (
   }
   return emitterChannelObsCache.get(channelIdent);
 };
+
 export const getBlockDataEmitter = (
   selNetwork$: Observable<NetworkName>,
   emitterConfig?: ReefscanEventsConnConfig
 ) => {
   return selNetwork$.pipe(
-    switchMap((networkName: NetworkName) => {
-      const channel = getIndexerEventsNetworkChannel(networkName);
-      return getEmitterChannel$(channel, emitterConfig);
-    }),
-
+    switchMap((networkName: NetworkName) =>
+      getEmitterChannel$(
+        getIndexerEventsNetworkChannel(networkName),
+        emitterConfig
+      )
+    ),
     shareReplay(1)
   );
 };
-
-/* const FIREBASE_CONFIG: FirebaseOptions = {
-    apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
-    authDomain: "reef-block-index.firebaseapp.com",
-    databaseURL: "https://reef-block-index-default-rtdb.firebaseio.com",
-    projectId: "reef-block-index",
-    storageBucket: "reef-block-index.appspot.com",
-    messagingSenderId: "265934184271",
-    appId: "1:265934184271:web:8f55865e0438452a17af3a",
-};
-
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getDatabase(app);
-
-const connectedRef = ref(db, ".info/connected");
-onValue(connectedRef, snap => {
-    if (snap.val() === true) {
-        console.log("FIREBASE connected");
-    } else {
-        console.log("FIREBASE not connected");
-    }
-});
-function getBlockDataFirebase(selNetwork$: Observable<NetworkName>) {
-    return selNetwork$.pipe(
-        switchMap((networkName: NetworkName) => {
-            console.log("LATEST BLOCK net=", networkName);
-            return new Observable<LatestBlockData>(obs => {
-                const dbRef = ref(db, networkName);
-
-                const unsubscribe = onValue(dbRef, snapshot => {
-                    const data = snapshot.val();
-                    console.log("latestBLOCK latest data=", data);
-                    if (!data) return;
-                    const keys = Object.keys(data);
-                    if (!keys.length) return;
-                    const latestBlock = data[keys[0]];
-                    latestBlock.blockHeight = Number(keys[0]);
-                    obs.next(latestBlock);
-                });
-
-                return () => {
-                    unsubscribe();
-                };
-            });
-        }),
-
-        shareReplay(1)
-    );
-}*/

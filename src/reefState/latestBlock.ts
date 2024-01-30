@@ -187,7 +187,6 @@ export const getLatestBlockContractEvents$ = (
   filterContractAddresses?: string[],
   networkNameOrReefStateNetwork?: NetworkName
 ): Observable<LatestAddressUpdates> => {
-  console.log("getLatestBlockContractEvents$ call=", filterContractAddresses);
   return getLatestBlockUpdates$(networkNameOrReefStateNetwork).pipe(
     map((blockUpdates: LatestBlockData) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {

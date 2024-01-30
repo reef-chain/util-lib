@@ -51,24 +51,36 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": ".nx/cache/d/server-process.json",
-        "hash": "5326887431788190727"
-      },
-      {
-        "file": "package.json",
-        "hash": "5986578675615560174"
+        "file": "src/reefState/initReefState.ts",
+        "hash": "12728601762383392705"
       },
       {
         "file": ".husky/pre-commit",
         "hash": "13469207043343598078"
       },
       {
-        "file": "src/utils/reefscanEvents.ts",
-        "hash": "11913934415261075786"
+        "file": ".nx/cache/d/server-process.json",
+        "hash": "5326887431788190727"
+      },
+      {
+        "file": "package.json",
+        "hash": "2356187937960100342"
+      },
+      {
+        "file": "src/reefState/latestBlock.ts",
+        "hash": "6255250715043887684"
       },
       {
         "file": "src/reefState/index.ts",
         "hash": "4858700945689552153"
+      },
+      {
+        "file": "src/utils/reefscanEvents.ts",
+        "hash": "16739308312769812970"
+      },
+      {
+        "file": "test/network/latestBlock.test.ts",
+        "hash": "14706559763724115703"
       }
     ],
     "projectFileMap": {

@@ -1,8 +1,8 @@
 {
   "run": {
     "command": "nx build",
-    "startTime": "2024-01-29T21:51:19.918Z",
-    "endTime": "2024-01-29T21:51:23.956Z",
+    "startTime": "2024-01-30T13:26:13.276Z",
+    "endTime": "2024-01-30T13:26:13.319Z",
     "inner": false
   },
   "tasks": [
@@ -11,10 +11,10 @@
       "target": "build",
       "projectName": "util-lib",
       "hash": "7735503337280815093",
-      "startTime": "2024-01-29T21:51:19.922Z",
-      "endTime": "2024-01-29T21:51:23.956Z",
+      "startTime": "2024-01-30T13:26:13.279Z",
+      "endTime": "2024-01-30T13:26:13.316Z",
       "params": "",
-      "cacheStatus": "cache-miss",
+      "cacheStatus": "local-cache-hit",
       "status": 0
     }
   ]
