@@ -9,7 +9,6 @@ export const TRANSFER_HISTORY_QUERY = `
     ) {
       timestamp
       amount
-      feeAmount
       fromEvmAddress
       id
       nftId
