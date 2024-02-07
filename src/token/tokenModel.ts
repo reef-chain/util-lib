@@ -96,4 +96,5 @@ export interface TokenTransfer {
   extrinsic: TransferExtrinsic;
   url: string;
   success: boolean;
+  reefswapAction?: string;
 }
