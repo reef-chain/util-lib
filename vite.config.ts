@@ -27,11 +27,12 @@ module.exports = defineConfig({
   base: "./",
   build: {
     lib: {
-      entry: path.resolve(__dirname, "src/index.ts"),
+      entry: path.resolve(__dirname, "src/main.ts"),
       name: getPackageNameCamelCase(),
       formats,
       fileName: (format) => fileName[format],
     },
+    outDir:'dist/module',
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library

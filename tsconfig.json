@@ -1,27 +1,30 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "declaration": true,
-    "outDir": "dist",
-    "module": "ESNext",
-    "lib": ["ESNext", "DOM"],
-    "moduleResolution": "Node",
-    "strict": true,
+    "rootDir": ".",
     "sourceMap": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
-    "noEmit": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "node"],
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "lib": ["es2021", "dom"],
     "skipLibCheck": true,
-    "baseUrl": "./",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {},
+    "esModuleInterop": true
   },
-  "include": ["src"],
-  "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "exclude": ["node_modules", "tmp"]
 }

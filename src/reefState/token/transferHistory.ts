@@ -12,7 +12,7 @@ import { Network } from "../../network/network";
 import { getSignerHistoryQuery } from "../../graphql/transferHistory.gql";
 import { StatusDataObject } from "../model/statusDataObject";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
-import { Provider, Signer } from "@reef-defi/evm-provider";
+import { Provider, Signer } from "@reef-chain/evm-provider";
 import { toPlainString } from "./tokenUtil";
 import { _NFT_IPFS_RESOLVER_FN } from "./nftUtils";
 import { getIconUrl } from "../../token/getIconUrl";
@@ -97,6 +97,7 @@ const toTokenTransfers = (
         id: transferData.blockHeight + "-" + transferData.extrinsicIndex,
         index: transferData.extrinsicIndex,
       },
+      reefswapAction: transferData.reefswapAction,
       success: transferData.success,
     })
   );
@@ -125,7 +126,9 @@ export const loadTransferHistory = ([
           }
           throw new Error("Could not load data.");
         }),
-        map((resData: any) => toTokenTransfers(resData, account.data, network)),
+        map((resData: any) => {
+          return toTokenTransfers(resData, account.data, network);
+        }),
         switchMap((transfers: TokenTransfer[]): Observable<TokenTransfer[]> => {
           const tokens = transfers.map((tr: TokenTransfer) => tr.token);
           const sig$ = from(getReefAccountSigner(account.data, provider));

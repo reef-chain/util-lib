@@ -20,11 +20,12 @@ import {
 } from "../model/statusDataObject";
 import { getSignerNftsQuery } from "../../graphql/signerNfts.gql";
 import { getReefAccountSigner } from "../../account/accountSignerUtils";
-import { Provider } from "@reef-defi/evm-provider";
+import { Provider } from "@reef-chain/evm-provider";
 import { instantProvider$ } from "../providerState";
 import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
-import { IpfsUrlResolverFn } from "../initReefState";
+
+import { IpfsUrlResolverFn } from "../ipfsUrlResolverFn";
 
 export let _NFT_IPFS_RESOLVER_FN: IpfsUrlResolverFn | undefined;
 export const setNftIpfsResolverFn = (val?: IpfsUrlResolverFn) => {

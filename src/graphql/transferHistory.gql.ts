@@ -38,6 +38,7 @@ export const TRANSFER_HISTORY_QUERY = `
         id
         evmAddress
       }
+      reefswapAction
     }
   }
 `;

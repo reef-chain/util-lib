@@ -1,83 +1,61 @@
-import { catchError, map, Observable, of, shareReplay, switchMap } from "rxjs";
+import { catchError, map, Observable, of, ReplaySubject, take } from "rxjs";
 import { filter } from "rxjs/operators";
-import { initializeApp, FirebaseOptions } from "firebase/app";
-import { getDatabase, ref, onValue } from "firebase/database";
-import { selectedNetwork$ } from "../reefState/networkState";
-import { Network } from "./network";
+import { selectedNetwork$ } from "./networkState";
+import { Network, NetworkName } from "../network/network";
+import {
+  getConnectedIndexerEmitter$,
+  getBlockDataEmitter,
+  getIndexerEventsNetworkChannel,
+  ReefscanEventsConnConfig,
+  emitterConfig,
+} from "../utils/reefscanEvents";
+import {
+  AccountIndexedTransactionType,
+  allIndexedTransactions,
+  LatestAddressUpdates,
+  LatestBlockData,
+  UpdatedAccounts,
+} from "./latestBlockModel";
 
-const FIREBASE_CONFIG: FirebaseOptions = {
-  apiKey: "AIzaSyDBt2QgRSCo70wV_752sA0i6fOrDQfO5J4",
-  authDomain: "reef-block-index.firebaseapp.com",
-  databaseURL: "https://reef-block-index-default-rtdb.firebaseio.com",
-  projectId: "reef-block-index",
-  storageBucket: "reef-block-index.appspot.com",
-  messagingSenderId: "265934184271",
-  appId: "1:265934184271:web:8f55865e0438452a17af3a",
+export const publishIndexerEvent = (
+  blockData: LatestBlockData,
+  network: NetworkName,
+  key: string,
+  config?: ReefscanEventsConnConfig
+) => {
+  const channel = getIndexerEventsNetworkChannel(network);
+  getConnectedIndexerEmitter$(config || emitterConfig)
+    .pipe(take(1))
+    .subscribe(conn =>
+      conn?.publish({ key, channel, message: JSON.stringify(blockData) })
+    );
 };
 
-export const enum AccountIndexedTransactionType {
-  REEF20_TRANSFER,
-  REEF_NFT_TRANSFER,
-  REEF_BIND_TX,
-}
+// if networkNameOrSelectedNetwork is undefined reefState selectedNetwork observable is used
+export const getLatestBlockUpdates$ = (
+  networkNameOrSelectedNetwork?: NetworkName
+) => {
+  let selNetwork$: Observable<NetworkName>;
+  if (!networkNameOrSelectedNetwork) {
+    selNetwork$ = selectedNetwork$.pipe(
+      filter((network: Network) => !!network),
+      map(v => v.name)
+    );
+  } else {
+    const rsNetwork = new ReplaySubject<NetworkName>(1);
+    rsNetwork.next(networkNameOrSelectedNetwork);
+    selNetwork$ = rsNetwork.asObservable();
+  }
 
-const allIndexedTransactions = [
-  AccountIndexedTransactionType.REEF_BIND_TX,
-  AccountIndexedTransactionType.REEF_NFT_TRANSFER,
-  AccountIndexedTransactionType.REEF20_TRANSFER,
-];
-
-interface LatestBlock {
-  blockHash: string;
-  blockHeight: number;
-  blockId: string;
-}
-
-export interface LatestBlockData extends LatestBlock {
-  updatedAccounts: {
-    REEF20Transfers: string[];
-    REEF721Transfers: string[];
-    REEF1155Transfers: string[];
-    boundEvm: string[];
-  };
-  updatedContracts: string[];
-}
-
-export interface LatestAddressUpdates extends LatestBlock {
-  addresses: string[];
-}
-
-const app = initializeApp(FIREBASE_CONFIG);
-const db = getDatabase(app);
-
-export const latestBlockUpdates$ = selectedNetwork$.pipe(
-  filter((network: Network) => !!network),
-  switchMap(({ name: network }: { name: string }) => {
-    return new Observable<LatestBlockData>(obs => {
-      const unsubscribe = onValue(ref(db, network), snapshot => {
-        const data = snapshot.val();
-        if (!data) return;
-        const keys = Object.keys(data);
-        if (!keys.length) return;
-        const latestBlock = data[keys[0]];
-        latestBlock.blockHeight = Number(keys[0]);
-        obs.next(latestBlock);
-      });
-
-      return () => {
-        unsubscribe();
-      };
-    });
-  }),
-
-  shareReplay(1)
-);
+  // return getBlockDataFirebase(selNetwork$);
+  return getBlockDataEmitter(selNetwork$);
+};
 
 const getUpdatedAccounts = (
   blockUpdates: LatestBlockData,
   filterTransactionType?: AccountIndexedTransactionType
 ) => {
-  const updatedAccounts = blockUpdates.updatedAccounts || {};
+  const updatedAccounts: UpdatedAccounts = blockUpdates.updatedAccounts || {};
   switch (filterTransactionType) {
     case AccountIndexedTransactionType.REEF_NFT_TRANSFER:
       // eslint-disable-next-line no-case-declarations
@@ -191,10 +169,11 @@ export const _getBlockAccountTransactionUpdates$ = (
 
 export const getLatestBlockAccountUpdates$ = (
   filterAccountAddresses?: string[],
-  filterTransactionType?: AccountIndexedTransactionType[]
+  filterTransactionType?: AccountIndexedTransactionType[],
+  networkNameOrSelectedNetwork?: NetworkName
 ) =>
   _getBlockAccountTransactionUpdates$(
-    latestBlockUpdates$,
+    getLatestBlockUpdates$(networkNameOrSelectedNetwork),
     filterAccountAddresses,
     filterTransactionType
   ).pipe(
@@ -205,9 +184,10 @@ export const getLatestBlockAccountUpdates$ = (
   );
 
 export const getLatestBlockContractEvents$ = (
-  filterContractAddresses?: string[]
-): Observable<LatestAddressUpdates> =>
-  latestBlockUpdates$.pipe(
+  filterContractAddresses?: string[],
+  networkNameOrReefStateNetwork?: NetworkName
+): Observable<LatestAddressUpdates> => {
+  return getLatestBlockUpdates$(networkNameOrReefStateNetwork).pipe(
     map((blockUpdates: LatestBlockData) => {
       if (!filterContractAddresses || !filterContractAddresses.length) {
         return blockUpdates.updatedContracts;
@@ -231,3 +211,4 @@ export const getLatestBlockContractEvents$ = (
       return of(null);
     })
   ) as Observable<LatestAddressUpdates>;
+};

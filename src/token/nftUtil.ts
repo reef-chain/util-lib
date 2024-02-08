@@ -10,7 +10,7 @@ import {
 } from "rxjs";
 import { Contract } from "ethers";
 import axios from "axios";
-import { Signer } from "@reef-defi/evm-provider";
+import { Signer } from "@reef-chain/evm-provider";
 import { NFT, NFTMetadata } from "./tokenModel";
 import {
   FeedbackStatusCode,
@@ -19,7 +19,8 @@ import {
 } from "../reefState/model/statusDataObject";
 import { getContractTypeAbi } from "./tokenUtil";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
-import { IpfsUrlResolverFn } from "../reefState/initReefState";
+
+import { IpfsUrlResolverFn } from "../reefState/ipfsUrlResolverFn";
 
 const extractIpfsHash = (ipfsUri: string): string | null => {
   const ipfsProtocol = "ipfs://";

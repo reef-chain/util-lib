@@ -38,7 +38,7 @@ import {
 import { loadSignerNfts } from "./token/nftUtils";
 import { loadTransferHistory } from "./token/transferHistory";
 import { getReefAccountSigner } from "../account/accountSignerUtils";
-import { Provider, Signer } from "@reef-defi/evm-provider";
+import { Provider, Signer } from "@reef-chain/evm-provider";
 import { toTokensWithPrice_sdo } from "./token/tokenUtil";
 import { getReefswapNetworkConfig } from "../network/dex";
 import { filter } from "rxjs/operators";
@@ -49,10 +49,10 @@ import {
   selectedAccountFtBalanceUpdate$,
   selectedAccountNftBalanceUpdate$,
 } from "./token/reloadTokenState";
-import { getLatestBlockAccountUpdates$ } from "../network";
+import { getLatestBlockAccountUpdates$ } from "../reefState/latestBlock";
 import { httpClientInstance$ } from "../graphql/httpClient";
-import { AccountIndexedTransactionType } from "../network/latestBlock";
 import { forceReload$ } from "./token/force-reload-tokens";
+import { AccountIndexedTransactionType } from "./latestBlockModel";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
