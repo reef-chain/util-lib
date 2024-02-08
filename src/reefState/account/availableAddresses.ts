@@ -1,12 +1,12 @@
 import { accountsJsonSubj } from "./setAccounts";
-import { AccountJson } from "@reef-defi/extension-base/background/types";
 import {
   InjectedAccountWithMeta as InjectedAccountWithMetaReef,
   InjectedAccountWithMeta,
-} from "@reef-defi/extension-inject/types";
+  REEF_EXTENSION_IDENT,
+  AccountJson,
+} from "../../extension";
 import { ReefAccount, ReefSigner } from "../../account/accountModel";
 import { map, Observable, shareReplay } from "rxjs";
-import { REEF_EXTENSION_IDENT } from "@reef-defi/extension-inject";
 import { filter } from "rxjs/operators";
 
 // export const availableAddresses$: Observable<ReefAccount[]> = merge(accountsJsonSubj, accountsSubj).pipe(

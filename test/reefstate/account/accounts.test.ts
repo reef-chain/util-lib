@@ -1,4 +1,4 @@
-import { REEF_EXTENSION_IDENT } from "@reef-defi/extension-inject";
+import { REEF_EXTENSION_IDENT } from "../../../src/extension";
 import { toInjectedAccountsWithMeta } from "../../../src/reefState/account/accounts";
 import { describe, it, expect } from "vitest";
 

@@ -3,7 +3,7 @@ import { getSpecTypes } from "@polkadot/types-known";
 import { Metadata, TypeRegistry } from "@polkadot/types";
 import type { AnyJson } from "@polkadot/types/types";
 import type { Call } from "@polkadot/types/interfaces";
-import { base64Decode, base64Encode } from "@reef-defi/util-crypto";
+import { base64Decode, base64Encode } from "@polkadot/util-crypto";
 import { ethers } from "ethers";
 import { Fragment, JsonFragment } from "@ethersproject/abi";
 import { REEF_ADDRESS } from "../token";
