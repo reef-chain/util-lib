@@ -1,8 +1,7 @@
 import { Provider, Signer } from "@reef-chain/evm-provider";
 import type { Signer as InjectedSigner } from "@polkadot/api/types";
-import { web3FromSource } from "@reef-defi/extension-dapp";
 import { ReefAccount } from "./accountModel";
-import { REEF_EXTENSION_IDENT } from "@reef-defi/extension-inject";
+import { web3FromSource, REEF_EXTENSION_IDENT } from "../extension";
 import { accountsJsonSigningKeySubj } from "../reefState/account/setAccounts";
 import {
   SignerPayloadJSON,

@@ -6,8 +6,8 @@ import {
 import {
   InjectedAccount as InjectedAccountReef,
   InjectedAccountWithMeta as InjectedAccountWithMetaReef,
-} from "@reef-defi/extension-inject/types";
-import { REEF_EXTENSION_IDENT } from "@reef-defi/extension-inject";
+  REEF_EXTENSION_IDENT,
+} from "../../extension";
 
 export const accounts_status$ = accountsWithUpdatedIndexedData$;
 
