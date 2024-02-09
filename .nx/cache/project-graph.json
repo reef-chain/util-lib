@@ -74,6 +74,20 @@
               }
             }
           },
+          "build:dts": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:dts"
+            },
+            "configurations": {}
+          },
+          "build:dts-gen": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "build:dts-gen"
+            },
+            "configurations": {}
+          },
           "test": {
             "cache": true,
             "inputs": [
@@ -1484,9 +1498,9 @@
         "hash": "sha512-bxRHW5kHU38zS2lPTPOyuyTm+S+eobPUnTNkdJEfAddYgEcll4xkT8DB9d2008DtTbl7uJag2HuE5NZAZgnNEA=="
       }
     },
-    "npm:@esbuild/darwin-arm64@0.19.12": {
+    "npm:@esbuild/darwin-arm64": {
       "type": "npm",
-      "name": "npm:@esbuild/darwin-arm64@0.19.12",
+      "name": "npm:@esbuild/darwin-arm64",
       "data": {
         "version": "0.19.12",
         "packageName": "@esbuild/darwin-arm64",
@@ -1700,9 +1714,9 @@
         "hash": "sha512-UYqiqemphJcNsFEskc73jQ7B9jgwjWrSayxawS6UVFZGWrAAtkzjxSqnoclCXxWtfwLdzU+vTpcNYhpn43uP1w=="
       }
     },
-    "npm:@esbuild/linux-x64": {
+    "npm:@esbuild/linux-x64@0.19.12": {
       "type": "npm",
-      "name": "npm:@esbuild/linux-x64",
+      "name": "npm:@esbuild/linux-x64@0.19.12",
       "data": {
         "version": "0.19.12",
         "packageName": "@esbuild/linux-x64",
@@ -2978,9 +2992,9 @@
         "hash": "sha512-MxvJ2MlbpHeB5ZnlSAbSvBXAYoxCre4fsAwwCpysz1OWkf9dDGYzvlV4ovnu6jET7/ZQzzDvaKD9CvVSDk/amg=="
       }
     },
-    "npm:@nx/nx-darwin-arm64@17.2.8": {
+    "npm:@nx/nx-darwin-arm64": {
       "type": "npm",
-      "name": "npm:@nx/nx-darwin-arm64@17.2.8",
+      "name": "npm:@nx/nx-darwin-arm64",
       "data": {
         "version": "17.2.8",
         "packageName": "@nx/nx-darwin-arm64",
@@ -3032,18 +3046,18 @@
         "hash": "sha512-9wkAxWzknjpzdofL1xjtU6qPFF1PHlvKCZI3hgEYJDo4mQiatGI+7Ttko+lx/ZMP6v4+Umjtgq7+qWrApeKamQ=="
       }
     },
-    "npm:@nx/nx-linux-x64-gnu": {
+    "npm:@nx/nx-linux-x64-gnu@17.2.8": {
       "type": "npm",
-      "name": "npm:@nx/nx-linux-x64-gnu",
+      "name": "npm:@nx/nx-linux-x64-gnu@17.2.8",
       "data": {
         "version": "17.2.8",
         "packageName": "@nx/nx-linux-x64-gnu",
         "hash": "sha512-sjG1bwGsjLxToasZ3lShildFsF0eyeGu+pOQZIp9+gjFbeIkd19cTlCnHrOV9hoF364GuKSXQyUlwtFYFR4VTQ=="
       }
     },
-    "npm:@nx/nx-linux-x64-musl": {
+    "npm:@nx/nx-linux-x64-musl@17.2.8": {
       "type": "npm",
-      "name": "npm:@nx/nx-linux-x64-musl",
+      "name": "npm:@nx/nx-linux-x64-musl@17.2.8",
       "data": {
         "version": "17.2.8",
         "packageName": "@nx/nx-linux-x64-musl",
@@ -3662,9 +3676,9 @@
         "hash": "sha512-gqBJSmJMWomZFxlppaKea7NeAqFrDrrS0RMt24No92M3nJWcyI9YKGEQKl+EyJqZ5gh6w1s0cTklMHMzRwA1NA=="
       }
     },
-    "npm:@swc/core-darwin-arm64@1.3.107": {
+    "npm:@swc/core-darwin-arm64": {
       "type": "npm",
-      "name": "npm:@swc/core-darwin-arm64@1.3.107",
+      "name": "npm:@swc/core-darwin-arm64",
       "data": {
         "version": "1.3.107",
         "packageName": "@swc/core-darwin-arm64",
@@ -3707,18 +3721,18 @@
         "hash": "sha512-vfPF74cWfAm8hyhS8yvYI94ucMHIo8xIYU+oFOW9uvDlGQRgnUf/6DEVbLyt/3yfX5723Ln57U8uiMALbX5Pyw=="
       }
     },
-    "npm:@swc/core-linux-x64-gnu": {
+    "npm:@swc/core-linux-x64-gnu@1.3.107": {
       "type": "npm",
-      "name": "npm:@swc/core-linux-x64-gnu",
+      "name": "npm:@swc/core-linux-x64-gnu@1.3.107",
       "data": {
         "version": "1.3.107",
         "packageName": "@swc/core-linux-x64-gnu",
         "hash": "sha512-uBVNhIg0ip8rH9OnOsCARUFZ3Mq3tbPHxtmWk9uAa5u8jQwGWeBx5+nTHpDOVd3YxKb6+5xDEI/edeeLpha/9g=="
       }
     },
-    "npm:@swc/core-linux-x64-musl": {
+    "npm:@swc/core-linux-x64-musl@1.3.107": {
       "type": "npm",
-      "name": "npm:@swc/core-linux-x64-musl",
+      "name": "npm:@swc/core-linux-x64-musl@1.3.107",
       "data": {
         "version": "1.3.107",
         "packageName": "@swc/core-linux-x64-musl",
@@ -3986,22 +4000,22 @@
         "hash": "sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g=="
       }
     },
-    "npm:@types/node@20.11.16": {
+    "npm:@types/node@20.11.17": {
       "type": "npm",
-      "name": "npm:@types/node@20.11.16",
+      "name": "npm:@types/node@20.11.17",
       "data": {
-        "version": "20.11.16",
+        "version": "20.11.17",
         "packageName": "@types/node",
-        "hash": "sha512-gKb0enTmRCzXSSUJDq6/sPcqrfCv2mkkG6Jt/clpn5eiCbKTY+SgZUxo+p8ZKMof5dCp9vHQUAB7wOUTod22wQ=="
+        "hash": "sha512-QmgQZGWu1Yw9TDyAP9ZzpFJKynYNeOvwMJmaxABfieQoVoiVOS6MN1WSpqpRcbeA5+RW82kraAVxCCJg+780Qw=="
       }
     },
     "npm:@types/node": {
       "type": "npm",
       "name": "npm:@types/node",
       "data": {
-        "version": "18.19.14",
+        "version": "18.19.15",
         "packageName": "@types/node",
-        "hash": "sha512-EnQ4Us2rmOS64nHDWr0XqAD8DsO6f3XR6lf9UIIrZQpUzPVdN/oPuEzfDWNHSyXLvoGgjuEm/sPwFGSSs35Wtg=="
+        "hash": "sha512-AMZ2UWx+woHNfM11PyAEQmfSxi05jm9OlkxczuHeEqmvwPkYj6MWv44gbzDPefYOLysTOFyI3ziiy2ONmUZfpA=="
       }
     },
     "npm:@types/parse-json": {
@@ -6537,9 +6551,9 @@
       "type": "npm",
       "name": "npm:electron-to-chromium",
       "data": {
-        "version": "1.4.661",
+        "version": "1.4.664",
         "packageName": "electron-to-chromium",
-        "hash": "sha512-AFg4wDHSOk5F+zA8aR+SVIOabu7m0e7BiJnigCvPXzIGy731XENw/lmNxTySpVFtkFEy+eyt4oHhh5FF3NjQNw=="
+        "hash": "sha512-k9VKKSkOSNPvSckZgDDl/IQx45E1quMjX8QfLzUsAs/zve8AyFDK+ByRynSP/OfEfryiKHpQeMf00z0leLCc3A=="
       }
     },
     "npm:elliptic": {
@@ -7613,9 +7627,9 @@
         "hash": "sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw=="
       }
     },
-    "npm:fsevents@2.3.3": {
+    "npm:fsevents": {
       "type": "npm",
-      "name": "npm:fsevents@2.3.3",
+      "name": "npm:fsevents",
       "data": {
         "version": "2.3.3",
         "packageName": "fsevents",
@@ -13918,27 +13932,7 @@
     "util-lib": [
       {
         "source": "util-lib",
-        "target": "npm:@apollo/client",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@metamask/providers",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@polkadot/api",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@polkadot/extension-inject",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@polkadot/types",
+        "target": "npm:ethers",
         "type": "static"
       },
       {
@@ -13948,202 +13942,12 @@
       },
       {
         "source": "util-lib",
-        "target": "npm:axios",
+        "target": "npm:@polkadot/api",
         "type": "static"
       },
       {
         "source": "util-lib",
-        "target": "npm:bignumber.js",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:ethers",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:graphql",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:mqtt",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/esbuild",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/eslint",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/eslint-plugin",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/jest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/js",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/node",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@nx/workspace",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@swc-node/register",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@swc/core",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@types/jest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@types/jsdom",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@types/node",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@typescript-eslint/eslint-plugin",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@typescript-eslint/parser",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:@vitest/coverage-c8",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:dpdm",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:dts-bundle-generator",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:esbuild",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:eslint",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:eslint-config-prettier",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:eslint-plugin-prettier",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:husky",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:jest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:jest-environment-node",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:lint-staged",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:nx",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:postcss",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:postcss-scss",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:prettier",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:ts-jest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:ts-node",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:typescript",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:vite",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:vitest",
-        "type": "static"
-      },
-      {
-        "source": "util-lib",
-        "target": "npm:rxjs",
+        "target": "npm:@polkadot/types",
         "type": "static"
       },
       {
@@ -14154,6 +13958,26 @@
       {
         "source": "util-lib",
         "target": "npm:@ethersproject/abstract-provider",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:rxjs",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:rxjs",
+        "type": "dynamic"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@apollo/client",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:axios",
         "type": "static"
       },
       {
@@ -14173,7 +13997,22 @@
       },
       {
         "source": "util-lib",
+        "target": "npm:@metamask/providers",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
         "target": "npm:@ethersproject/abstract-signer",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@polkadot/extension-inject",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:@ethersproject/abi",
         "type": "static"
       },
       {
@@ -14183,7 +14022,22 @@
       },
       {
         "source": "util-lib",
-        "target": "npm:@ethersproject/abi",
+        "target": "npm:bignumber.js",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:mqtt",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:vitest",
+        "type": "static"
+      },
+      {
+        "source": "util-lib",
+        "target": "npm:vite",
         "type": "static"
       }
     ],
@@ -18010,7 +17864,7 @@
       },
       {
         "source": "npm:@jest/console",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18042,7 +17896,7 @@
       },
       {
         "source": "npm:@jest/console@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18094,7 +17948,7 @@
       },
       {
         "source": "npm:@jest/core",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18236,7 +18090,7 @@
       },
       {
         "source": "npm:@jest/core@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18363,7 +18217,7 @@
       },
       {
         "source": "npm:@jest/environment",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18385,7 +18239,7 @@
       },
       {
         "source": "npm:@jest/environment@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18426,7 +18280,7 @@
       },
       {
         "source": "npm:@jest/fake-timers",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18458,7 +18312,7 @@
       },
       {
         "source": "npm:@jest/fake-timers@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18544,7 +18398,7 @@
       },
       {
         "source": "npm:@jest/reporters@27.5.1",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -18676,7 +18530,7 @@
       },
       {
         "source": "npm:@jest/reporters",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -19061,7 +18915,7 @@
       },
       {
         "source": "npm:@jest/types",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -19093,7 +18947,7 @@
       },
       {
         "source": "npm:@jest/types@29.6.3",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -21354,7 +21208,7 @@
       },
       {
         "source": "npm:@swc/core",
-        "target": "npm:@swc/core-darwin-arm64@1.3.107",
+        "target": "npm:@swc/core-darwin-arm64",
         "type": "static"
       },
       {
@@ -21379,12 +21233,12 @@
       },
       {
         "source": "npm:@swc/core",
-        "target": "npm:@swc/core-linux-x64-gnu",
+        "target": "npm:@swc/core-linux-x64-gnu@1.3.107",
         "type": "static"
       },
       {
         "source": "npm:@swc/core",
-        "target": "npm:@swc/core-linux-x64-musl",
+        "target": "npm:@swc/core-linux-x64-musl@1.3.107",
         "type": "static"
       },
       {
@@ -21466,7 +21320,7 @@
     "npm:@types/bn.js": [
       {
         "source": "npm:@types/bn.js",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       }
     ],
@@ -21487,7 +21341,7 @@
     "npm:@types/graceful-fs": [
       {
         "source": "npm:@types/graceful-fs",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       }
     ],
@@ -21520,7 +21374,7 @@
     "npm:@types/jsdom": [
       {
         "source": "npm:@types/jsdom",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -21534,9 +21388,9 @@
         "type": "static"
       }
     ],
-    "npm:@types/node@20.11.16": [
+    "npm:@types/node@20.11.17": [
       {
-        "source": "npm:@types/node@20.11.16",
+        "source": "npm:@types/node@20.11.17",
         "target": "npm:undici-types",
         "type": "static"
       }
@@ -21551,7 +21405,7 @@
     "npm:@types/readable-stream": [
       {
         "source": "npm:@types/readable-stream",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -21563,7 +21417,7 @@
     "npm:@types/ws": [
       {
         "source": "npm:@types/ws",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       }
     ],
@@ -23623,7 +23477,7 @@
       },
       {
         "source": "npm:chokidar",
-        "target": "npm:fsevents@2.3.3",
+        "target": "npm:fsevents",
         "type": "static"
       }
     ],
@@ -24934,7 +24788,7 @@
       },
       {
         "source": "npm:esbuild",
-        "target": "npm:@esbuild/darwin-arm64@0.19.12",
+        "target": "npm:@esbuild/darwin-arm64",
         "type": "static"
       },
       {
@@ -24994,7 +24848,7 @@
       },
       {
         "source": "npm:esbuild",
-        "target": "npm:@esbuild/linux-x64",
+        "target": "npm:@esbuild/linux-x64@0.19.12",
         "type": "static"
       },
       {
@@ -27657,7 +27511,7 @@
       },
       {
         "source": "npm:jest-circus@27.5.1",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -27759,7 +27613,7 @@
       },
       {
         "source": "npm:jest-circus",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28321,7 +28175,7 @@
       },
       {
         "source": "npm:jest-environment-jsdom",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28358,7 +28212,7 @@
       },
       {
         "source": "npm:jest-environment-node@27.5.1",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28390,7 +28244,7 @@
       },
       {
         "source": "npm:jest-environment-node",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28417,7 +28271,7 @@
       },
       {
         "source": "npm:jest-haste-map",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28467,7 +28321,7 @@
       },
       {
         "source": "npm:jest-haste-map",
-        "target": "npm:fsevents@2.3.3",
+        "target": "npm:fsevents",
         "type": "static"
       }
     ],
@@ -28484,7 +28338,7 @@
       },
       {
         "source": "npm:jest-haste-map@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28529,7 +28383,7 @@
       },
       {
         "source": "npm:jest-haste-map@29.7.0",
-        "target": "npm:fsevents@2.3.3",
+        "target": "npm:fsevents",
         "type": "static"
       }
     ],
@@ -28556,7 +28410,7 @@
       },
       {
         "source": "npm:jest-jasmine2",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28790,7 +28644,7 @@
       },
       {
         "source": "npm:jest-mock",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       }
     ],
@@ -28802,7 +28656,7 @@
       },
       {
         "source": "npm:jest-mock@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -28967,7 +28821,7 @@
       },
       {
         "source": "npm:jest-runner",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29074,7 +28928,7 @@
       },
       {
         "source": "npm:jest-runner@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29303,7 +29157,7 @@
       },
       {
         "source": "npm:jest-runtime@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29380,7 +29234,7 @@
     "npm:jest-serializer": [
       {
         "source": "npm:jest-serializer",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29611,7 +29465,7 @@
       },
       {
         "source": "npm:jest-util@27.5.1",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29643,7 +29497,7 @@
       },
       {
         "source": "npm:jest-util",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29744,7 +29598,7 @@
       },
       {
         "source": "npm:jest-watcher@27.5.1",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29781,7 +29635,7 @@
       },
       {
         "source": "npm:jest-watcher",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29813,7 +29667,7 @@
     "npm:jest-worker": [
       {
         "source": "npm:jest-worker",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -29830,7 +29684,7 @@
     "npm:jest-worker@29.7.0": [
       {
         "source": "npm:jest-worker@29.7.0",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
@@ -31086,7 +30940,7 @@
       },
       {
         "source": "npm:nx",
-        "target": "npm:@nx/nx-darwin-arm64@17.2.8",
+        "target": "npm:@nx/nx-darwin-arm64",
         "type": "static"
       },
       {
@@ -31116,12 +30970,12 @@
       },
       {
         "source": "npm:nx",
-        "target": "npm:@nx/nx-linux-x64-gnu",
+        "target": "npm:@nx/nx-linux-x64-gnu@17.2.8",
         "type": "static"
       },
       {
         "source": "npm:nx",
-        "target": "npm:@nx/nx-linux-x64-musl",
+        "target": "npm:@nx/nx-linux-x64-musl@17.2.8",
         "type": "static"
       },
       {
@@ -32335,7 +32189,7 @@
     "npm:rollup": [
       {
         "source": "npm:rollup",
-        "target": "npm:fsevents@2.3.3",
+        "target": "npm:fsevents",
         "type": "static"
       }
     ],
@@ -33743,7 +33597,7 @@
       },
       {
         "source": "npm:vite",
-        "target": "npm:fsevents@2.3.3",
+        "target": "npm:fsevents",
         "type": "static"
       }
     ],
@@ -33760,7 +33614,7 @@
       },
       {
         "source": "npm:vitest",
-        "target": "npm:@types/node@20.11.16",
+        "target": "npm:@types/node@20.11.17",
         "type": "static"
       },
       {
