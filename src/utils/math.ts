@@ -28,7 +28,7 @@ export const transformAmount = (decimals: number, amount: string): string => {
     return "0".repeat(decimals);
   }
   const addZeros = findDecimalPoint(amount);
-  const cleanedAmount = amount.replaceAll(",", "").replaceAll(".", "");
+  const cleanedAmount = amount.split(",").join("").split(".").join("");
   return cleanedAmount + "0".repeat(Math.max(decimals - addZeros, 0));
 };
 

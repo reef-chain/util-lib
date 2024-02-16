@@ -96,6 +96,7 @@ const toTokenTransfers = (
         blockHeight: transferData.blockHeight,
         id: transferData.blockHeight + "-" + transferData.extrinsicIndex,
         index: transferData.extrinsicIndex,
+        hash: transferData.blockHash,
       },
       reefswapAction: transferData.reefswapAction,
       success: transferData.success,

@@ -85,6 +85,7 @@ export interface TransferExtrinsic {
   index: number;
   blockId: string;
   blockHeight: number;
+  hash: string;
 }
 
 export interface TokenTransfer {
