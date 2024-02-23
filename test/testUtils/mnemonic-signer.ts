@@ -1,6 +1,5 @@
 import { Signer as SignerInterface, SignerResult } from "@polkadot/api/types";
-import { u8aToHex } from "@polkadot/util";
-import { wrapBytes } from "@reef-defi/extension-dapp/wrapBytes";
+import { u8aToHex, u8aWrapBytes } from "@polkadot/util";
 import { TypeRegistry } from "@polkadot/types";
 import { KeyringPair } from "@polkadot/keyring/types";
 import type {
@@ -46,7 +45,7 @@ export class MnemonicSigner implements SignerInterface {
     }
     return {
       id: ++this.nextId,
-      signature: u8aToHex(pair.sign(wrapBytes(payloadRaw.data))),
+      signature: u8aToHex(pair.sign(u8aWrapBytes(payloadRaw.data))),
     };
   }
 }

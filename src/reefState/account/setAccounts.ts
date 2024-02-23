@@ -3,8 +3,10 @@ import { ReefAccount, ReefSigner } from "../../account/accountModel";
 import { ReplaySubject, Subject, BehaviorSubject } from "rxjs";
 import type { Signer as InjectedSigningKey } from "@polkadot/api/types";
 import type { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
-import { AccountJson } from "@reef-defi/extension-base/background/types";
-import { InjectedAccountWithMeta as InjectedAccountWithMetaReef } from "@reef-defi/extension-inject/types";
+import {
+  InjectedAccountWithMeta as InjectedAccountWithMetaReef,
+  AccountJson,
+} from "../../extension";
 
 // export const accountsSubj = new ReplaySubject<ReefSigner[] | null>(1);
 export const accountsJsonSubj = new ReplaySubject<
