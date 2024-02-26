@@ -4,8 +4,9 @@
 import type { Injected, InjectedWindow, InjectOptions } from "./types";
 
 export const REEF_EXTENSION_IDENT = "reef";
-export const REEF_INJECTED_EVENT = "reef-injected";
 export const REEF_SNAP_IDENT = "reef-snap";
+export const REEF_EASY_WALLET_ID = "reef-easy-wallet";
+export const REEF_INJECTED_EVENT = "reef-injected";
 
 // It is recommended to always use the function below to shield the extension and dapp from
 // any future changes. The exposed interface will manage access between the 2 environments,
