@@ -5,7 +5,13 @@ import type { Injected, InjectedWindow, InjectOptions } from "./types";
 
 export const REEF_EXTENSION_IDENT = "reef";
 export const REEF_SNAP_IDENT = "reef-snap";
-export const REEF_EASY_WALLET_ID = "reef-easy-wallet";
+export const REEF_EASY_WALLET_IDENT = "reef-easy-wallet";
+export const ExtensionsIdents = [
+  REEF_EXTENSION_IDENT,
+  REEF_SNAP_IDENT,
+  REEF_EASY_WALLET_IDENT,
+];
+
 export const REEF_INJECTED_EVENT = "reef-injected";
 
 // It is recommended to always use the function below to shield the extension and dapp from

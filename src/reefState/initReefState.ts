@@ -1,4 +1,5 @@
 import { setSelectedNetwork } from "./networkState";
+import { setSelectedExtension } from "./extensionState";
 import { AVAILABLE_NETWORKS, Network } from "../network/network";
 import { accountsJsonSigningKeySubj, setAccounts } from "./account/setAccounts";
 import { setNftIpfsResolverFn } from "./token/nftUtils";
@@ -16,6 +17,7 @@ import {
 
 export interface StateOptions {
   network?: Network;
+  extension?: string;
   jsonAccounts?: {
     accounts:
       | AccountJson[]
@@ -29,6 +31,7 @@ export interface StateOptions {
 
 export const initReefState = ({
   network,
+  extension,
   jsonAccounts,
   ipfsHashResolverFn,
   reefscanEventsConfig,
@@ -38,6 +41,7 @@ export const initReefState = ({
     setReefscanEventsConnConfig(reefscanEventsConfig);
   }
   setSelectedNetwork(network || AVAILABLE_NETWORKS.mainnet);
+  setSelectedExtension(extension);
   if (jsonAccounts) {
     accountsJsonSigningKeySubj.next(jsonAccounts.injectedSigner);
     setAccounts(jsonAccounts.accounts);
