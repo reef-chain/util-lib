@@ -153,7 +153,12 @@ export async function web3Enable(
     ? Promise.all(compatInits.map(c => c().catch(() => false)))
     : Promise.resolve([true]);
 
-  const selectedWallet = localStorage.getItem(SELECTED_EXTENSION_IDENT);
+  let selectedWallet = undefined;
+  try {
+    selectedWallet = localStorage.getItem(SELECTED_EXTENSION_IDENT);
+  } catch (e) {
+    // when cookies disabled localStorage can throw
+  }
 
   web3EnablePromise = documentReadyPromise(
     (): Promise<InjectedExtension[]> =>
