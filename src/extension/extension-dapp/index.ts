@@ -30,6 +30,8 @@ import { documentReadyPromise } from "./util";
 import { connectSnap, getSnap } from "../snap";
 import { enableSnap } from "../snap/inject";
 
+export const SELECTED_EXTENSION_IDENT = "selected_extension_reef";
+
 // just a helper (otherwise we cast all-over, so shorter and more readable)
 const win =
   typeof window !== "undefined" ? (window as Window & InjectedWindow) : null;
@@ -151,6 +153,8 @@ export async function web3Enable(
     ? Promise.all(compatInits.map(c => c().catch(() => false)))
     : Promise.resolve([true]);
 
+  const selectedWallet = localStorage.getItem(SELECTED_EXTENSION_IDENT);
+
   web3EnablePromise = documentReadyPromise(
     (): Promise<InjectedExtension[]> =>
       initCompat.then(() =>
@@ -178,38 +182,24 @@ export async function web3Enable(
                 return { ...info, ...ext };
               })
               .sort((a, b) => {
-                // sort by default extension
-                if (
-                  a.isDefaultExtension?.setAsDefault &&
-                  b.isDefaultExtension?.setAsDefault
-                ) {
-                  return (
-                    b.isDefaultExtension.lastSet - a.isDefaultExtension.lastSet
-                  );
-                }
-                if (a.isDefaultExtension?.setAsDefault) {
+                // sort by selected extension
+                if (selectedWallet && a.name === selectedWallet) {
                   return -1;
                 }
-                if (b.isDefaultExtension?.setAsDefault) {
+                if (selectedWallet && b.name === selectedWallet) {
                   return 1;
                 }
                 // sort by extension id (Reef extension first, Reef snap second, others last)
-                if (
-                  a.name === REEF_EXTENSION_IDENT &&
-                  b.name !== REEF_EXTENSION_IDENT
-                ) {
+                if (a.name === REEF_EXTENSION_IDENT) {
                   return -1;
                 }
-                if (
-                  a.name !== REEF_EXTENSION_IDENT &&
-                  b.name === REEF_EXTENSION_IDENT
-                ) {
+                if (b.name === REEF_EXTENSION_IDENT) {
                   return 1;
                 }
-                if (a.name === REEF_SNAP_IDENT && b.name !== REEF_SNAP_IDENT) {
+                if (a.name === REEF_SNAP_IDENT) {
                   return -1;
                 }
-                if (a.name !== REEF_SNAP_IDENT && b.name === REEF_SNAP_IDENT) {
+                if (b.name === REEF_SNAP_IDENT) {
                   return 1;
                 }
                 return 0;
