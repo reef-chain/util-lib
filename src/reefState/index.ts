@@ -28,6 +28,7 @@ export {
   selectedTransactionHistory_status$,
 } from "./tokenState.rx";
 export { setSelectedNetwork, selectedNetwork$ } from "./networkState";
+export { setSelectedExtension, selectedExtension$ } from "./extensionState";
 export {
   instantProvider$,
   selectedProvider$,

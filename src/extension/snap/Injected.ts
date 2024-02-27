@@ -1,7 +1,4 @@
-import type {
-  IsDefaultExtension,
-  ReefInjected,
-} from "../extension-inject/types";
+import type { ReefInjected } from "../extension-inject/types";
 import type { SendSnapRequest } from "./types";
 
 import Accounts from "./Accounts";
@@ -18,12 +15,8 @@ export default class implements ReefInjected {
   public readonly signer: SigningKey;
   public readonly reefSigner: ReefSigner;
   public readonly reefProvider: ReefProvider;
-  public readonly isDefaultExtension?: IsDefaultExtension | null | undefined;
 
-  constructor(
-    sendRequest: SendSnapRequest,
-    isDefaultExtension?: IsDefaultExtension
-  ) {
+  constructor(sendRequest: SendSnapRequest) {
     this.accounts = new Accounts(sendRequest);
     this.metadata = new Metadata(sendRequest);
     this.provider = new PostMessageProvider(sendRequest);
@@ -34,6 +27,5 @@ export default class implements ReefInjected {
       this.signer,
       this.reefProvider
     );
-    this.isDefaultExtension = isDefaultExtension;
   }
 }
