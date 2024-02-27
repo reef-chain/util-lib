@@ -13,11 +13,6 @@ type This = typeof globalThis;
 
 export type Unsubcall = () => void;
 
-export interface IsDefaultExtension {
-  setAsDefault: boolean;
-  lastSet: number;
-}
-
 export interface InjectedAccount {
   address: string;
   genesisHash?: string | null;
@@ -106,7 +101,6 @@ export interface Injected {
   metadata?: InjectedMetadata;
   provider?: InjectedProvider;
   signer: InjectedSigner;
-  isDefaultExtension?: IsDefaultExtension | null | undefined;
 }
 
 export interface ReefInjected extends Injected {
