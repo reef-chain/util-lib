@@ -97,8 +97,8 @@ const toTokenTransfers = (
         id: transferData.blockHeight + "-" + transferData.extrinsicIndex,
         index: transferData.extrinsicIndex,
         hash: transferData.blockHash,
-        type: transferData.type,
       },
+      type: transferData.type,
       reefswapAction: transferData.reefswapAction,
       success: transferData.success,
     })
@@ -129,7 +129,6 @@ export const loadTransferHistory = ([
           throw new Error("Could not load data.");
         }),
         map((resData: any) => {
-          console.log(toTokenTransfers(resData, account.data, network));
           return toTokenTransfers(resData, account.data, network);
         }),
         switchMap((transfers: TokenTransfer[]): Observable<TokenTransfer[]> => {
