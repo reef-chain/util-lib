@@ -98,4 +98,5 @@ export interface TokenTransfer {
   url: string;
   success: boolean;
   reefswapAction?: string;
+  type: string;
 }
