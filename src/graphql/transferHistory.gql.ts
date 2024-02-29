@@ -4,7 +4,7 @@ export const TRANSFER_HISTORY_QUERY = `
       where: {
         OR: [{ from: { id_eq: $accountId } }, { to: { id_eq: $accountId } }]
       }
-      limit: 15
+      limit: 35
       orderBy: timestamp_DESC
     ) {
       timestamp
