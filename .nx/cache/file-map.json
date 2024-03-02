@@ -2,7 +2,6 @@
   "version": "6.0",
   "nxVersion": "17.2.8",
   "deps": {
-    "@apollo/client": "^3.9.4",
     "@metamask/providers": "^14.0.2",
     "@polkadot/api": "^10.11.2",
     "@polkadot/extension-inject": "^0.46.6",
@@ -120,55 +119,7 @@
         },
         {
           "file": "package.json",
-          "hash": "9267178772818844175",
-          "deps": [
-            "npm:@apollo/client",
-            "npm:@metamask/providers",
-            "npm:@polkadot/api",
-            "npm:@polkadot/extension-inject",
-            "npm:@polkadot/types",
-            "npm:@reef-chain/evm-provider",
-            "npm:axios",
-            "npm:bignumber.js",
-            "npm:ethers",
-            "npm:graphql",
-            "npm:mqtt",
-            "npm:@nx/esbuild",
-            "npm:@nx/eslint",
-            "npm:@nx/eslint-plugin",
-            "npm:@nx/jest",
-            "npm:@nx/js",
-            "npm:@nx/node",
-            "npm:@nx/workspace",
-            "npm:@swc-node/register",
-            "npm:@swc/core",
-            "npm:@types/jest",
-            "npm:@types/jsdom",
-            "npm:@types/node",
-            "npm:@typescript-eslint/eslint-plugin",
-            "npm:@typescript-eslint/parser",
-            "npm:@vitest/coverage-c8",
-            "npm:dpdm",
-            "npm:dts-bundle-generator",
-            "npm:esbuild",
-            "npm:eslint",
-            "npm:eslint-config-prettier",
-            "npm:eslint-plugin-prettier",
-            "npm:husky",
-            "npm:jest",
-            "npm:jest-environment-node",
-            "npm:lint-staged",
-            "npm:nx",
-            "npm:postcss",
-            "npm:postcss-scss",
-            "npm:prettier",
-            "npm:ts-jest",
-            "npm:ts-node",
-            "npm:typescript",
-            "npm:vite",
-            "npm:vitest",
-            "npm:rxjs"
-          ]
+          "hash": "6274835352301322085"
         },
         {
           "file": "project.json",
@@ -210,8 +161,8 @@
         },
         {
           "file": "src/evm/evmEvents.rx.ts",
-          "hash": "7602905195930903244",
-          "deps": ["npm:@apollo/client", "npm:ethers", "npm:rxjs", "npm:axios"]
+          "hash": "2155591311658008491",
+          "deps": ["npm:ethers", "npm:rxjs", "npm:axios", "npm:rxjs/operators"]
         },
         {
           "file": "src/evm/index.ts",
@@ -305,13 +256,11 @@
         },
         {
           "file": "src/graphql/accounts.gql.ts",
-          "hash": "3168696287088414249",
-          "deps": ["npm:@apollo/client"]
+          "hash": "604369418246871314"
         },
         {
           "file": "src/graphql/availablePools.gql.ts",
-          "hash": "1630317712898893994",
-          "deps": ["npm:@apollo/client"]
+          "hash": "1990228056188351910"
         },
         {
           "file": "src/graphql/contractData.gql.ts",
@@ -329,21 +278,19 @@
         },
         {
           "file": "src/graphql/index.ts",
-          "hash": "9336922793914062550"
+          "hash": "17266920891871738732"
         },
         {
           "file": "src/graphql/signerNfts.gql.ts",
-          "hash": "16509474263927910401",
-          "deps": ["npm:@apollo/client"]
+          "hash": "108682093731043297"
         },
         {
           "file": "src/graphql/signerTokens.gql.ts",
-          "hash": "9640371166874647681",
-          "deps": ["npm:@apollo/client"]
+          "hash": "5955713635916797892"
         },
         {
           "file": "src/graphql/transferHistory.gql.ts",
-          "hash": "17109923374814499231"
+          "hash": "16983688686353670801"
         },
         {
           "file": "src/main.ts",
@@ -505,7 +452,7 @@
         },
         {
           "file": "src/reefState/token/force-reload-tokens.ts",
-          "hash": "3780792077756849705",
+          "hash": "13009070429292271193",
           "deps": ["npm:rxjs"]
         },
         {
@@ -520,7 +467,7 @@
         },
         {
           "file": "src/reefState/token/poolUtils.ts",
-          "hash": "7604980325986185164",
+          "hash": "12712811801892679707",
           "deps": ["npm:rxjs"]
         },
         {
@@ -539,7 +486,7 @@
         },
         {
           "file": "src/reefState/token/transferHistory.ts",
-          "hash": "3823851393956874532",
+          "hash": "15150206926831119467",
           "deps": [
             "npm:rxjs",
             "npm:ethers",
@@ -645,7 +592,7 @@
         },
         {
           "file": "src/token/tokenModel.ts",
-          "hash": "16685143624829833983",
+          "hash": "13020337618751810909",
           "deps": ["npm:ethers"]
         },
         {
@@ -915,10 +862,6 @@
           "file": "vite.config.ts",
           "hash": "3220546460705591764",
           "deps": ["npm:path", "npm:vite"]
-        },
-        {
-          "file": "yarn.lock",
-          "hash": "13118886071465495758"
         }
       ]
     },
