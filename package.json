@@ -32,7 +32,6 @@
     "circular-dep-test": "dpdm --no-warning --no-tree ./src/main.ts "
   },
   "dependencies": {
-    "@apollo/client": "^3.9.4",
     "@metamask/providers": "^14.0.2",
     "@polkadot/api": "^10.11.2",
     "@polkadot/extension-inject": "^0.46.6",

@@ -1,5 +1,3 @@
-import { gql } from "@apollo/client";
-
 const AVAILABLE_POOLS_QUERY = `
   query pools_query($hasTokenAddress: String!) {
     verified_pool(
