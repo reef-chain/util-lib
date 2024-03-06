@@ -50,6 +50,20 @@
   "pathMappings": {},
   "nxJsonPlugins": [],
   "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": "test/utils/balanceUtils.test.ts",
+        "hash": "4999726517090268924"
+      },
+      {
+        "file": ".nx/cache/d/server-process.json",
+        "hash": "18248704377505310312"
+      },
+      {
+        "file": "src/utils/balanceUtils.ts",
+        "hash": "3669193246089774712"
+      }
+    ],
     "projectFileMap": {
       "util-lib": [
         {
@@ -103,7 +117,10 @@
         {
           "file": "dts-bundle-generator.config.ts",
           "hash": "12586239538971730000",
-          "deps": ["npm:fs", "npm:path"]
+          "deps": [
+            "npm:fs",
+            "npm:path"
+          ]
         },
         {
           "file": "favicon.svg",
@@ -119,7 +136,54 @@
         },
         {
           "file": "package.json",
-          "hash": "6274835352301322085"
+          "hash": "13203269504480214845",
+          "deps": [
+            "npm:@metamask/providers",
+            "npm:@polkadot/api",
+            "npm:@polkadot/extension-inject",
+            "npm:@polkadot/types",
+            "npm:@reef-chain/evm-provider",
+            "npm:axios",
+            "npm:bignumber.js",
+            "npm:ethers",
+            "npm:graphql",
+            "npm:mqtt",
+            "npm:@nx/esbuild",
+            "npm:@nx/eslint",
+            "npm:@nx/eslint-plugin",
+            "npm:@nx/jest",
+            "npm:@nx/js",
+            "npm:@nx/node",
+            "npm:@nx/workspace",
+            "npm:@swc-node/register",
+            "npm:@swc/core",
+            "npm:@types/jest",
+            "npm:@types/jsdom",
+            "npm:@types/node",
+            "npm:@typescript-eslint/eslint-plugin",
+            "npm:@typescript-eslint/parser",
+            "npm:@vitest/coverage-c8",
+            "npm:dpdm",
+            "npm:dts-bundle-generator",
+            "npm:esbuild",
+            "npm:eslint",
+            "npm:eslint-config-prettier",
+            "npm:eslint-plugin-prettier",
+            "npm:husky",
+            "npm:jest",
+            "npm:jest-environment-node",
+            "npm:lint-staged",
+            "npm:nx",
+            "npm:postcss",
+            "npm:postcss-scss",
+            "npm:prettier",
+            "npm:ts-jest",
+            "npm:ts-node",
+            "npm:typescript",
+            "npm:vite",
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "project.json",
@@ -148,7 +212,9 @@
         {
           "file": "src/account/addressUtil.ts",
           "hash": "8326381101565977276",
-          "deps": ["npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/account/index.ts",
@@ -157,12 +223,19 @@
         {
           "file": "src/evm/bindUtil.ts",
           "hash": "8043438435272421782",
-          "deps": ["npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/evm/evmEvents.rx.ts",
           "hash": "2155591311658008491",
-          "deps": ["npm:ethers", "npm:rxjs", "npm:axios", "npm:rxjs/operators"]
+          "deps": [
+            "npm:ethers",
+            "npm:rxjs",
+            "npm:axios",
+            "npm:rxjs/operators"
+          ]
         },
         {
           "file": "src/evm/index.ts",
@@ -183,7 +256,10 @@
         {
           "file": "src/extension/extension-dapp/index.ts",
           "hash": "5340795694934377706",
-          "deps": ["npm:@polkadot/util", "npm:@polkadot/util-crypto"]
+          "deps": [
+            "npm:@polkadot/util",
+            "npm:@polkadot/util-crypto"
+          ]
         },
         {
           "file": "src/extension/extension-dapp/util.ts",
@@ -223,27 +299,40 @@
         {
           "file": "src/extension/snap/PostMessageProvider.ts",
           "hash": "6745249450859072128",
-          "deps": ["npm:@polkadot/rpc-provider", "npm:@polkadot/types"]
+          "deps": [
+            "npm:@polkadot/rpc-provider",
+            "npm:@polkadot/types"
+          ]
         },
         {
           "file": "src/extension/snap/ReefProvider.ts",
           "hash": "7884142709897643156",
-          "deps": ["npm:@polkadot/api", "npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@polkadot/api",
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/extension/snap/ReefSigner.ts",
           "hash": "13914918329552737460",
-          "deps": ["npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/extension/snap/Signer.ts",
           "hash": "13014017718391629195",
-          "deps": ["npm:@polkadot/api", "npm:@polkadot/types"]
+          "deps": [
+            "npm:@polkadot/api",
+            "npm:@polkadot/types"
+          ]
         },
         {
           "file": "src/extension/snap/index.ts",
           "hash": "17661452770688945330",
-          "deps": ["npm:@metamask/providers"]
+          "deps": [
+            "npm:@metamask/providers"
+          ]
         },
         {
           "file": "src/extension/snap/inject.ts",
@@ -252,7 +341,9 @@
         {
           "file": "src/extension/snap/types.ts",
           "hash": "16499334937116939789",
-          "deps": ["npm:@metamask/providers"]
+          "deps": [
+            "npm:@metamask/providers"
+          ]
         },
         {
           "file": "src/graphql/accounts.gql.ts",
@@ -269,12 +360,18 @@
         {
           "file": "src/graphql/gqlUtil.ts",
           "hash": "11590934271638583219",
-          "deps": ["npm:rxjs", "npm:axios"]
+          "deps": [
+            "npm:rxjs",
+            "npm:axios"
+          ]
         },
         {
           "file": "src/graphql/httpClient.ts",
           "hash": "8779465544924771756",
-          "deps": ["npm:rxjs", "npm:axios"]
+          "deps": [
+            "npm:rxjs",
+            "npm:axios"
+          ]
         },
         {
           "file": "src/graphql/index.ts",
@@ -307,7 +404,9 @@
         {
           "file": "src/network/errors.ts",
           "hash": "16396804821409973323",
-          "deps": ["npm:@polkadot/types"]
+          "deps": [
+            "npm:@polkadot/types"
+          ]
         },
         {
           "file": "src/network/index.ts",
@@ -329,7 +428,10 @@
         {
           "file": "src/network/rpc.ts",
           "hash": "2139782542829613301",
-          "deps": ["npm:@reef-chain/evm-provider", "npm:ethers"]
+          "deps": [
+            "npm:@reef-chain/evm-provider",
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/network/rpcErrorMessageHandler.ts",
@@ -348,47 +450,69 @@
         {
           "file": "src/reefState/account/accountStateUtil.ts",
           "hash": "5484915093919633180",
-          "deps": ["npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/reefState/account/accounts.ts",
           "hash": "16119715179796356624",
-          "deps": ["npm:@polkadot/extension-inject/types"]
+          "deps": [
+            "npm:@polkadot/extension-inject/types"
+          ]
         },
         {
           "file": "src/reefState/account/accountsIndexedData.ts",
           "hash": "1983734638330024245",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/account/accountsLocallyUpdatedData.ts",
           "hash": "14805575758859447849",
-          "deps": ["npm:rxjs", "npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:rxjs",
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/reefState/account/accountsWithUpdatedChainDataBalances.ts",
           "hash": "12357489825420485250",
-          "deps": ["npm:rxjs", "npm:@reef-chain/evm-provider", "npm:ethers"]
+          "deps": [
+            "npm:rxjs",
+            "npm:@reef-chain/evm-provider",
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/reefState/account/availableAddresses.ts",
           "hash": "18058934744384379800",
-          "deps": ["npm:rxjs", "npm:rxjs/operators"]
+          "deps": [
+            "npm:rxjs",
+            "npm:rxjs/operators"
+          ]
         },
         {
           "file": "src/reefState/account/errorUtil.ts",
           "hash": "9338337165698898720",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/account/selectedAccount.ts",
           "hash": "1188173825042179681",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/account/selectedAccountAddressChange.ts",
           "hash": "5284109256318996297",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/account/setAccounts.ts",
@@ -402,7 +526,9 @@
         {
           "file": "src/reefState/extensionState.ts",
           "hash": "5607145624656133648",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/index.ts",
@@ -411,7 +537,10 @@
         {
           "file": "src/reefState/initReefState.ts",
           "hash": "11869049591225160105",
-          "deps": ["npm:@polkadot/extension-inject", "npm:@polkadot/api"]
+          "deps": [
+            "npm:@polkadot/extension-inject",
+            "npm:@polkadot/api"
+          ]
         },
         {
           "file": "src/reefState/ipfsUrlResolverFn.ts",
@@ -420,7 +549,9 @@
         {
           "file": "src/reefState/latestBlock.ts",
           "hash": "6255250715043887684",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/latestBlockModel.ts",
@@ -429,7 +560,9 @@
         {
           "file": "src/reefState/model/statusDataObject.ts",
           "hash": "8463506856014482400",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/model/updateStateModel.ts",
@@ -438,22 +571,31 @@
         {
           "file": "src/reefState/networkState.ts",
           "hash": "6767143436775391666",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/providerState.ts",
           "hash": "12358716324791843785",
-          "deps": ["npm:rxjs", "npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:rxjs",
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "src/reefState/selected-account-plain-data.rx.ts",
           "hash": "657433896791490195",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/token/force-reload-tokens.ts",
-          "hash": "13009070429292271193",
-          "deps": ["npm:rxjs"]
+          "hash": "8415306609896146144",
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/token/nftUtils.ts",
@@ -468,17 +610,25 @@
         {
           "file": "src/reefState/token/poolUtils.ts",
           "hash": "12712811801892679707",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/token/reloadTokenState.ts",
           "hash": "6143818111881776335",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/token/selectedAccountTokenBalances.ts",
           "hash": "3081734444506442542",
-          "deps": ["npm:ethers", "npm:rxjs", "npm:axios"]
+          "deps": [
+            "npm:ethers",
+            "npm:rxjs",
+            "npm:axios"
+          ]
         },
         {
           "file": "src/reefState/token/tokenUtil.ts",
@@ -497,17 +647,25 @@
         {
           "file": "src/reefState/tokenState.rx.ts",
           "hash": "17394590765718445188",
-          "deps": ["npm:rxjs", "npm:@reef-chain/evm-provider", "npm:ethers"]
+          "deps": [
+            "npm:rxjs",
+            "npm:@reef-chain/evm-provider",
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/reefState/tx/pendingTx.rx.ts",
           "hash": "16203848593339174171",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/reefState/ws-connection-state.ts",
           "hash": "2157128280243333565",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/signature/tx-signature-util.ts",
@@ -529,32 +687,44 @@
         {
           "file": "src/token/abi/ERC1155Uri.ts",
           "hash": "7638857718901695486",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/abi/ERC20.ts",
           "hash": "12349653225318262464",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/abi/ERC721Uri.ts",
           "hash": "14190565917272292122",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/abi/ReefswapFactory.ts",
           "hash": "8274789388924955604",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/abi/ReefswapPair.ts",
           "hash": "7100617328504536511",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/abi/ReefswapRouter.ts",
           "hash": "6334348893241240974",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/getIconUrl.ts",
@@ -578,27 +748,38 @@
         {
           "file": "src/token/pool.ts",
           "hash": "7507705257826055274",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/prices.ts",
           "hash": "1011709466370026410",
-          "deps": ["npm:axios"]
+          "deps": [
+            "npm:axios"
+          ]
         },
         {
           "file": "src/token/reefPrice.ts",
           "hash": "16938222289548298641",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/token/tokenModel.ts",
           "hash": "13020337618751810909",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/token/tokenUtil.ts",
           "hash": "3281837581448153812",
-          "deps": ["npm:ethers", "npm:bignumber.js"]
+          "deps": [
+            "npm:ethers",
+            "npm:bignumber.js"
+          ]
         },
         {
           "file": "src/token/transactionUtil.ts",
@@ -625,7 +806,10 @@
         {
           "file": "src/transaction/transaction-status-util.ts",
           "hash": "14394007840336017161",
-          "deps": ["npm:rxjs", "npm:@polkadot/api"]
+          "deps": [
+            "npm:rxjs",
+            "npm:@polkadot/api"
+          ]
         },
         {
           "file": "src/transaction/txErrorUtil.ts",
@@ -638,7 +822,9 @@
         {
           "file": "src/utils/balanceUtils.ts",
           "hash": "10889410825842574884",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/utils/dataWithProgress.ts",
@@ -647,22 +833,30 @@
         {
           "file": "src/utils/emitter-io.ts",
           "hash": "10615035316167519865",
-          "deps": ["npm:mqtt"]
+          "deps": [
+            "npm:mqtt"
+          ]
         },
         {
           "file": "src/utils/math.ts",
           "hash": "15954220369484454356",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/utils/reefscanEvents.ts",
           "hash": "13578911131321243432",
-          "deps": ["npm:rxjs"]
+          "deps": [
+            "npm:rxjs"
+          ]
         },
         {
           "file": "src/utils/utils.ts",
           "hash": "11694992354077686036",
-          "deps": ["npm:ethers"]
+          "deps": [
+            "npm:ethers"
+          ]
         },
         {
           "file": "src/vite-env.d.ts",
@@ -701,7 +895,10 @@
         {
           "file": "test/contract.test.ts",
           "hash": "794199536526755781",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/evm/bindUtils.test.ts",
@@ -715,17 +912,25 @@
         {
           "file": "test/network/dex.test.ts",
           "hash": "7977038110678033073",
-          "deps": ["npm:vitest"]
+          "deps": [
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/network/latestBlock.test.ts",
           "hash": "14706559763724115703",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/network/providerUtil.test.ts",
           "hash": "6999031072545275623",
-          "deps": ["npm:@reef-chain/evm-provider", "npm:vitest"]
+          "deps": [
+            "npm:@reef-chain/evm-provider",
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/network/rpc.test.ts",
@@ -739,12 +944,17 @@
         {
           "file": "test/pools.test.ts",
           "hash": "8421958360028733535",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/reefstate/account/accounts.test.ts",
           "hash": "3689278652106159887",
-          "deps": ["npm:vitest"]
+          "deps": [
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/reefstate/initReefState.test.ts",
@@ -759,17 +969,26 @@
         {
           "file": "test/reefstate/transferHistory.test.ts",
           "hash": "17737627835082971894",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/signature/tx-signature-utils.test.ts",
           "hash": "3141230198941412325",
-          "deps": ["npm:@reef-chain/evm-provider", "npm:vitest"]
+          "deps": [
+            "npm:@reef-chain/evm-provider",
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/testUtils/keyring.ts",
           "hash": "4308375777818461315",
-          "deps": ["npm:@reef-defi/util-crypto", "npm:@reef-defi/keyring"]
+          "deps": [
+            "npm:@reef-defi/util-crypto",
+            "npm:@reef-defi/keyring"
+          ]
         },
         {
           "file": "test/testUtils/mnemonic-signer.ts",
@@ -791,7 +1010,9 @@
         {
           "file": "test/testUtils/signer.ts",
           "hash": "11340460694011109458",
-          "deps": ["npm:@reef-chain/evm-provider"]
+          "deps": [
+            "npm:@reef-chain/evm-provider"
+          ]
         },
         {
           "file": "test/testUtils/test-accounts.ts",
@@ -800,17 +1021,26 @@
         {
           "file": "test/token/prices.test.ts",
           "hash": "11009702589220027818",
-          "deps": ["npm:vitest"]
+          "deps": [
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/token/queryTokens.test.ts",
           "hash": "17496174180297305336",
-          "deps": ["npm:vitest", "npm:rxjs", "npm:ethers"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs",
+            "npm:ethers"
+          ]
         },
         {
           "file": "test/token/tokenIcons.test.ts",
           "hash": "18171135848418460639",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/token/transactionUtil.test.ts",
@@ -824,7 +1054,10 @@
         {
           "file": "test/transaction/inbound.test.ts",
           "hash": "15697429695317582383",
-          "deps": ["npm:vitest", "npm:rxjs"]
+          "deps": [
+            "npm:vitest",
+            "npm:rxjs"
+          ]
         },
         {
           "file": "test/transaction/token-transfer-util.test.ts",
@@ -839,12 +1072,17 @@
         {
           "file": "test/utils/addressUtils.test.ts",
           "hash": "7811299842194986726",
-          "deps": ["npm:vitest"]
+          "deps": [
+            "npm:vitest"
+          ]
         },
         {
           "file": "test/utils/balanceUtils.test.ts",
           "hash": "11305346600814173508",
-          "deps": ["npm:ethers", "npm:vitest"]
+          "deps": [
+            "npm:ethers",
+            "npm:vitest"
+          ]
         },
         {
           "file": "tsconfig.app.json",
@@ -861,10 +1099,16 @@
         {
           "file": "vite.config.ts",
           "hash": "3220546460705591764",
-          "deps": ["npm:path", "npm:vite"]
+          "deps": [
+            "npm:path",
+            "npm:vite"
+          ]
+        },
+        {
+          "file": "yarn.lock",
+          "hash": "9818167461758823619"
         }
       ]
-    },
-    "nonProjectFiles": []
+    }
   }
 }
