@@ -68,9 +68,13 @@ describe("formatDisplayBalance", () => {
     console.log(result);
     expect(result).toEqual("1.2 B REEF");
   });
-  it("should format return value in REEF", () => {
-    const result = formatDisplayBalance("120000000000000000000", true, "REEF");
+  it("should format return value in DOLPHIN", () => {
+    const result = formatDisplayBalance(
+      "120000000000000000000",
+      true,
+      "DOLPHIN"
+    );
     console.log(result);
-    expect(result).toEqual("120.00 REEF");
+    expect(result).toEqual("120.00 DOLPHIN");
   });
 });

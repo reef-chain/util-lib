@@ -52,16 +52,16 @@
   "fileMap": {
     "nonProjectFiles": [
       {
-        "file": "src/utils/balanceUtils.ts",
-        "hash": "14944067315971814878"
+        "file": ".nx/cache/d/server-process.json",
+        "hash": "18248704377505310312"
       },
       {
         "file": "test/utils/balanceUtils.test.ts",
-        "hash": "11680898111551203434"
+        "hash": "463402432942501647"
       },
       {
-        "file": ".nx/cache/d/server-process.json",
-        "hash": "18248704377505310312"
+        "file": "src/utils/balanceUtils.ts",
+        "hash": "7232037832895257701"
       }
     ],
     "projectFileMap": {
