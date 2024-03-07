@@ -42,33 +42,39 @@ const toCurrencyFormat = (value: number): string =>
     currencyDisplay: "symbol",
   }).format(value);
 
+const defaultTokenDetails: TokenBalance = {
+  price: 1,
+  decimals: 18,
+  symbol: "",
+};
+
 const formatHumanReadableBalance = (
   value: string,
-  decimals: number,
-  price: number,
-  symbol: string
+  tokenDetails: TokenBalance
 ): string => {
+  const _tokenDetails = { ...defaultTokenDetails, ...tokenDetails };
   // pass price in params if you are providing balance in token
   const balanceValue = new bigNumber.BigNumber(value)
-    .div(new bigNumber.BigNumber(10).pow(decimals))
-    .multipliedBy(price)
+    .div(new bigNumber.BigNumber(10).pow(_tokenDetails.decimals))
+    .multipliedBy(_tokenDetails.price)
     .toNumber();
 
   const balance = new bigNumber.BigNumber(balanceValue);
-
-  const isSymbol = symbol.length > 0;
+  const isSymbol = _tokenDetails.symbol.length > 0;
 
   if (balance.isNaN()) return "0";
 
   if (balance.isGreaterThanOrEqualTo(1000000)) {
     const humanReadableBalance = formatHumanAmount(balance.toString());
     return isSymbol
-      ? `${humanReadableBalance} ${symbol}`
+      ? `${humanReadableBalance} ${_tokenDetails.symbol}`
       : `$${humanReadableBalance}`;
   }
 
   return isSymbol
-    ? `${toCurrencyFormat(balance.toNumber()).split("$")[1]} ${symbol}`
+    ? `${toCurrencyFormat(balance.toNumber()).split("$")[1]} ${
+        _tokenDetails.symbol
+      }`
     : toCurrencyFormat(balance.toNumber());
 };
 
@@ -101,17 +107,20 @@ const _formatDouble = (value: number): string => {
   }
 };
 
+interface TokenBalance {
+  symbol?: string;
+  decimals?: number;
+  price?: number;
+}
+
 export const formatDisplayBalance = (
   val: BigNumber | string,
-  isHumanReadable = false,
-  symbol = "",
   fraction = 4,
-  decimals = 18,
-  price = 1
+  tokenDetails?: TokenBalance
 ): string => {
   const threshold = BigNumber.from("1000000000000000000");
-  if (isHumanReadable && typeof val == "string") {
-    return formatHumanReadableBalance(val, decimals, price, symbol);
+  if (tokenDetails && typeof val == "string") {
+    return formatHumanReadableBalance(val, tokenDetails);
   }
   if ((val as BigNumber).lt(threshold)) {
     var zeroPadding = _zeroPadding(
