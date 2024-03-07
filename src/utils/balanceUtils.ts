@@ -3,7 +3,7 @@ import { BigNumber } from "ethers";
 import * as bigNumber from "bignumber.js";
 
 const formatHumanAmount = (value = ""): string => {
-  let amount = new bigNumber.BigNumber(value.replaceAll(",", ""));
+  let amount = new bigNumber.BigNumber(value.split(",").join(""));
   let output = "";
 
   if (amount.isNaN()) return amount.toString();
