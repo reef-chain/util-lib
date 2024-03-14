@@ -6,19 +6,28 @@ import { selectedProvider$ } from "../reefState";
 
 export type InitProvider = (
   providerUrl: string,
-  providerConnStateSubj?: Subject<WsConnectionState>
+  providerConnStateSubj?: Subject<WsConnectionState>,
+  autoConnectMs?: number
 ) => Promise<Provider>;
 
 export async function initProvider(
   providerUrl: string,
-  providerConnStateSubj?: Subject<WsConnectionState>
+  providerConnStateSubj?: Subject<WsConnectionState>,
+  autoConnectMs?: number
 ) {
-  const newProvider = new Provider({
-    //@ts-ignore
-    provider: new WsProvider(providerUrl),
-  });
+  let newProvider;
   try {
-    newProvider.api.on("connected", v =>
+    newProvider = new Provider({
+      //@ts-ignore
+      provider: new WsProvider(providerUrl, autoConnectMs),
+    });
+  } catch (e) {
+    console.log("ERROR provider init=", e.message);
+    throw new Error(e);
+  }
+  try {
+    newProvider.api.on("connected", v => {
+      console.log("util-lib providerConnected", v);
       providerConnStateSubj?.next({
         isConnected: true,
         status: {
@@ -26,15 +35,17 @@ export async function initProvider(
           timestamp: new Date().getTime(),
           data: v,
         },
-      })
-    );
-    newProvider.api.on("error", v =>
+      });
+    });
+    newProvider.api.on("error", v => {
+      console.log("util-lib providerError", v);
       providerConnStateSubj?.next({
         isConnected: false,
         status: { value: "error", timestamp: new Date().getTime(), data: v },
-      })
-    );
-    newProvider.api.on("disconnected", v =>
+      });
+    });
+    newProvider.api.on("disconnected", v => {
+      console.log("util-lib providerDISConnected", v);
       providerConnStateSubj?.next({
         isConnected: false,
         status: {
@@ -42,9 +53,10 @@ export async function initProvider(
           timestamp: new Date().getTime(),
           data: v,
         },
-      })
-    );
-    newProvider.api.on("ready", v =>
+      });
+    });
+    newProvider.api.on("ready", v => {
+      console.log("util-lib providerReady", v);
       providerConnStateSubj?.next({
         isConnected: true,
         status: {
@@ -52,29 +64,35 @@ export async function initProvider(
           timestamp: new Date().getTime(),
           data: v,
         },
-      })
-    );
+      });
+    });
     await newProvider.api.isReadyOrError;
   } catch (e) {
     console.log("Provider isReadyOrError ERROR=", e);
+    providerConnStateSubj?.next({
+      isConnected: false,
+      status: { value: "error", timestamp: new Date().getTime(), data: e },
+    });
     throw e;
   }
   return newProvider;
 }
 
-async function getReefStateProvider() {
-  const provider = await firstValueFrom(selectedProvider$);
+async function getReefStateProvider(): Promise<Provider | null> {
+  const provider: unknown = await Promise.race([
+    firstValueFrom(selectedProvider$),
+    new Promise(resolve => setTimeout(() => resolve(null), 50)),
+  ]);
   if (!provider) {
     return null;
   }
-  return provider;
+  return provider as Provider;
 }
 
 export async function disconnectProvider(provider?: Provider) {
   if (!provider) {
     provider = await getReefStateProvider();
   }
-  console.log("DISCCCCCCC=", !!provider);
 
   if (provider) {
     try {
@@ -82,6 +100,7 @@ export async function disconnectProvider(provider?: Provider) {
       await provider.api.disconnect();
     } catch (e: any) {
       console.log("Provider disconnect err=", e.message);
+      throw new Error(e);
     }
   }
 }

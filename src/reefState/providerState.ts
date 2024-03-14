@@ -31,24 +31,16 @@ export const providerConnState$: Observable<WsConnectionState> =
   getCollectedWsStateValue$(providerConnStateSubj);
 
 async function connectProvider(
-  currNet: Network,
-  resolve: (
-    value:
-      | PromiseLike<{
-          provider: Provider | undefined;
-          network: Network;
-        }>
-      | { provider: Provider | undefined; network: Network }
-  ) => void
-) {
+  currNet: Network
+): Promise<{ provider: Provider | undefined; network: Network }> {
   try {
     const iProvider: InitProvider =
       currNet.options?.initProvider || initProvider;
     const pr: Provider = await iProvider(currNet.rpcUrl, providerConnStateSubj);
-    console.log("PROVIDER CONNECTED");
-    resolve({ provider: pr, network: currNet });
+    return { provider: pr, network: currNet };
   } catch (err) {
-    resolve({ provider: undefined, network: currNet });
+    console.log("ERR connectProvider=", err.message);
+    return { provider: undefined, network: currNet };
   }
 }
 
@@ -81,9 +73,8 @@ export const selectedNetworkProvider$: Observable<{
               console.log("Error disconnecting provider=", param.message);
             })
             .finally(() => {
-              return connectProvider(currNet, resolve);
+              resolve(connectProvider(currNet));
             });
-          console.log("PROVIDER CONNECTING");
           /*} catch (e: any) {
 
             }*/
