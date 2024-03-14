@@ -127,6 +127,7 @@ export async function reconnectProvider(provider?: Provider): Promise<boolean> {
   if (!provider) {
     provider = await getReefStateProvider();
   }
+  console.log("RECONNNNN utillib=", !!provider);
   if (provider) {
     try {
       console.log("reccc provi util-lib", !!provider);
