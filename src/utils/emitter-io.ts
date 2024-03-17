@@ -214,7 +214,6 @@ export class Emitter {
       subscribe: request.subscribe,
     };
 
-    console.log(JSON.stringify(request));
     this._mqtt.publish("emitter/link/", JSON.stringify(request));
     return this;
   }
