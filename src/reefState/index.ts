@@ -35,6 +35,7 @@ export {
   selectedNetworkProvider$,
   providerConnState$,
 } from "./providerState";
+export { indexerConnectionState$ } from "../utils/reefscanEvents";
 export {
   FeedbackStatusCode,
   StatusDataObject,
