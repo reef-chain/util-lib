@@ -27,51 +27,63 @@ export async function initProvider(
   }
   try {
     newProvider.api.on("connected", v => {
-      console.log("util-lib providerConnected", v);
+      console.log("util-lib providerConnected");
       providerConnStateSubj?.next({
         isConnected: true,
         status: {
           value: "connected",
           timestamp: new Date().getTime(),
-          data: v,
+          // !!! don't pass data from input parameters since can't be JSON encoded
+          // data: v,
         },
       });
     });
     newProvider.api.on("error", v => {
-      console.log("util-lib providerError", v);
+      console.log("util-lib providerError");
       providerConnStateSubj?.next({
         isConnected: false,
-        status: { value: "error", timestamp: new Date().getTime(), data: v },
+        status: {
+          value: "error",
+          timestamp: new Date().getTime(),
+          // !!! don't pass data from input parameters since can't be JSON encoded,
+          // data: v
+        },
       });
     });
     newProvider.api.on("disconnected", v => {
-      console.log("util-lib providerDISConnected", v);
+      console.log("util-lib providerDISConnected");
       providerConnStateSubj?.next({
         isConnected: false,
         status: {
           value: "disconnected",
           timestamp: new Date().getTime(),
-          data: v,
+          // !!! don't pass data from input parameters since can't be JSON encoded
+          // data: v,
         },
       });
     });
-    newProvider.api.on("ready", v => {
-      console.log("util-lib providerReady", v);
+    newProvider.api.on("ready", _ => {
+      console.log("util-lib providerReady");
       providerConnStateSubj?.next({
         isConnected: true,
         status: {
           value: "connected",
           timestamp: new Date().getTime(),
-          data: v,
+          // !!! don't pass data from input parameters since can't be JSON encoded
+          // data: v,
         },
       });
     });
     await newProvider.api.isReadyOrError;
   } catch (e) {
-    console.log("Provider isReadyOrError ERROR=", e);
+    console.log("Provider isReadyOrError ERROR=", e.message);
     providerConnStateSubj?.next({
       isConnected: false,
-      status: { value: "error", timestamp: new Date().getTime(), data: e },
+      status: {
+        value: "error",
+        timestamp: new Date().getTime(),
+        data: e.message,
+      },
     });
     throw e;
   }
@@ -95,14 +107,23 @@ export async function disconnectProvider(provider?: Provider) {
   }
 
   if (provider) {
+    const disconnected = new Promise((resolve, reject) => {
+      provider.api.once("disconnected", v => {
+        console.log("disconnected provider");
+        resolve(true);
+      });
+    });
+
     try {
       await provider.api.isReadyOrError;
-      await provider.api.disconnect();
+      provider.api.disconnect();
+      return disconnected;
     } catch (e: any) {
       console.log("Provider disconnect err=", e.message);
       throw new Error(e);
     }
   }
+  return false;
 }
 
 export async function connectProvider(provider?: Provider): Promise<boolean> {
@@ -127,12 +148,23 @@ export async function reconnectProvider(provider?: Provider): Promise<boolean> {
   if (!provider) {
     provider = await getReefStateProvider();
   }
-  console.log("RECONNNNN utillib=", !!provider);
   if (provider) {
     try {
-      console.log("reccc provi util-lib", !!provider);
       await disconnectProvider(provider);
-      return await connectProvider(provider);
+      return new Promise((resolve, reject) => {
+        // needs to be in next tick
+        setTimeout(async () => {
+          try {
+            await connectProvider(provider);
+          } catch (e) {
+            console.log("ERROR connecting provider", e.message);
+            resolve(false);
+          }
+          resolve(true);
+        }, 0);
+      });
+      // return Promise.resolve(true);
+      // return await connectProvider(provider);
     } catch (e: any) {
       console.log("Provider reconnect err=", e.message);
     }
