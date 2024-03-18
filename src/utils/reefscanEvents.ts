@@ -171,7 +171,9 @@ export const getBlockDataEmitter = (
   );
 };
 
-export const indexerConnectionState$ = (config?: ReefscanEventsConnConfig) => {
+export const getIndexerConnState$ = (
+  config?: ReefscanEventsConnConfig
+): Observable<{ isConnected: boolean }> => {
   const emitter$ = getIndexerEmitterConn$(config || emitterConfig);
   return emitter$.pipe(map(emitter => ({ isConnected: !!emitter })));
 };
