@@ -6,6 +6,12 @@ const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(
   1
 );
 
+export interface RpcConfig {
+  autoConnectMs?: number;
+}
+
+export let rpcConfig: RpcConfig = {};
+
 export const ACTIVE_NETWORK_LS_KEY = "reef-app-active-network";
 export const selectedNetwork$ = selectedNetworkSubj.asObservable();
 export const setSelectedNetwork = (network: Network): void => {
@@ -21,3 +27,7 @@ export const setSelectedNetwork = (network: Network): void => {
 selectedNetwork$.subscribe(network =>
   console.log("SELECTED NETWORK=", network.rpcUrl)
 );
+
+export const setRpcConfig = (conf: RpcConfig) => {
+  rpcConfig = { ...rpcConfig, ...conf };
+};

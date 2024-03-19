@@ -34,7 +34,7 @@ const emitterConnObsCache = new Map<string, Observable<Emitter | null>>();
 export const setReefscanEventsConnConfig = (
   config: ReefscanEventsConnConfig
 ) => {
-  emitterConfig = { ...config };
+  emitterConfig = { ...emitterConfig, ...config };
 };
 
 function getEmitterConnection(config: ReefscanEventsConnConfig) {

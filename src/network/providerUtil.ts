@@ -3,23 +3,24 @@ import { WsProvider } from "@polkadot/api";
 import { Subject, firstValueFrom } from "rxjs";
 import { WsConnectionState } from "../reefState/ws-connection-state";
 import { selectedProvider$ } from "../reefState";
+import { RpcConfig } from "../reefState/networkState";
 
 export type InitProvider = (
   providerUrl: string,
   providerConnStateSubj?: Subject<WsConnectionState>,
-  autoConnectMs?: number
+  rpcConfig?: RpcConfig
 ) => Promise<Provider>;
 
 export async function initProvider(
   providerUrl: string,
   providerConnStateSubj?: Subject<WsConnectionState>,
-  autoConnectMs?: number
+  rpcConfig?: RpcConfig
 ) {
   let newProvider;
   try {
     newProvider = new Provider({
       //@ts-ignore
-      provider: new WsProvider(providerUrl, autoConnectMs),
+      provider: new WsProvider(providerUrl, rpcConfig?.autoConnectMs),
     });
   } catch (e) {
     console.log("ERROR provider init=", e.message);
