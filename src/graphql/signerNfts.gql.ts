@@ -1,5 +1,3 @@
-import { gql } from "@apollo/client";
-
 const SIGNER_NFTS_QUERY = `
   query signer_nfts($accountId: String) {
     tokenHolders(

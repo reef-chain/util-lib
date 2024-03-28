@@ -1,4 +1,4 @@
-import { setSelectedNetwork } from "./networkState";
+import { RpcConfig, setRpcConfig, setSelectedNetwork } from "./networkState";
 import { setSelectedExtension } from "./extensionState";
 import { AVAILABLE_NETWORKS, Network } from "../network/network";
 import { accountsJsonSigningKeySubj, setAccounts } from "./account/setAccounts";
@@ -27,6 +27,7 @@ export interface StateOptions {
   };
   ipfsHashResolverFn?: IpfsUrlResolverFn;
   reefscanEventsConfig?: ReefscanEventsConnConfig;
+  rpcConfig?: RpcConfig;
 }
 
 export const initReefState = ({
@@ -35,10 +36,14 @@ export const initReefState = ({
   jsonAccounts,
   ipfsHashResolverFn,
   reefscanEventsConfig,
+  rpcConfig,
 }: StateOptions) => {
   setNftIpfsResolverFn(ipfsHashResolverFn);
   if (reefscanEventsConfig) {
     setReefscanEventsConnConfig(reefscanEventsConfig);
+  }
+  if (rpcConfig) {
+    setRpcConfig(rpcConfig);
   }
   setSelectedNetwork(network || AVAILABLE_NETWORKS.mainnet);
   setSelectedExtension(extension);

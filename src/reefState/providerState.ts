@@ -18,7 +18,7 @@ import {
   initProvider,
 } from "../network/providerUtil";
 import { filter } from "rxjs/operators";
-import { selectedNetwork$ } from "./networkState";
+import { rpcConfig, RpcConfig, selectedNetwork$ } from "./networkState";
 import {
   getCollectedWsStateValue$,
   WsConnectionState,
@@ -32,23 +32,20 @@ export const providerConnState$: Observable<WsConnectionState> =
 
 async function connectProvider(
   currNet: Network,
-  resolve: (
-    value:
-      | PromiseLike<{
-          provider: Provider | undefined;
-          network: Network;
-        }>
-      | { provider: Provider | undefined; network: Network }
-  ) => void
-) {
+  rpcConfig?: RpcConfig
+): Promise<{ provider: Provider | undefined; network: Network }> {
   try {
     const iProvider: InitProvider =
       currNet.options?.initProvider || initProvider;
-    const pr: Provider = await iProvider(currNet.rpcUrl, providerConnStateSubj);
-    console.log("PROVIDER CONNECTED");
-    resolve({ provider: pr, network: currNet });
+    const pr: Provider = await iProvider(
+      currNet.rpcUrl,
+      providerConnStateSubj,
+      rpcConfig
+    );
+    return { provider: pr, network: currNet };
   } catch (err) {
-    resolve({ provider: undefined, network: currNet });
+    console.log("ERR connectProvider=", err.message);
+    return { provider: undefined, network: currNet };
   }
 }
 
@@ -81,9 +78,8 @@ export const selectedNetworkProvider$: Observable<{
               console.log("Error disconnecting provider=", param.message);
             })
             .finally(() => {
-              return connectProvider(currNet, resolve);
+              resolve(connectProvider(currNet, rpcConfig));
             });
-          console.log("PROVIDER CONNECTING");
           /*} catch (e: any) {
 
             }*/

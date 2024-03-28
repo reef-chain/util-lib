@@ -1,4 +1,3 @@
-import { gql, SubscriptionOptions } from "@apollo/client";
 import { utils } from "ethers";
 import { map, Observable, of, shareReplay, switchMap } from "rxjs";
 import { getLatestBlockContractEvents$ } from "../reefState/latestBlock";
@@ -58,25 +57,6 @@ const getGqlContractEventsQuery = (
         ? { _gte: fromBlockId, _lte: toBlockId }
         : { _eq: fromBlockId },
     },
-  };
-};
-
-const getGqlLastFinalizedBlock = (): SubscriptionOptions => {
-  const FINALISED_BLOCK_GQL = gql`
-    subscription finalisedBlock {
-      block(
-        order_by: { id: desc }
-        limit: 1
-        where: { finalized: { _eq: true } }
-      ) {
-        id
-      }
-    }
-  `;
-  return {
-    query: FINALISED_BLOCK_GQL,
-    variables: {},
-    fetchPolicy: "network-only",
   };
 };
 

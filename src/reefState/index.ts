@@ -35,6 +35,7 @@ export {
   selectedNetworkProvider$,
   providerConnState$,
 } from "./providerState";
+export { getIndexerConnState$ } from "../utils/reefscanEvents";
 export {
   FeedbackStatusCode,
   StatusDataObject,
@@ -51,3 +52,4 @@ export { reloadTokens } from "./token/force-reload-tokens";
 
 export type { IpfsUrlResolverFn } from "./ipfsUrlResolverFn";
 export type { ReefscanEventsConnConfig } from "../utils/reefscanEvents";
+export type { RpcConfig } from "../reefState/networkState";

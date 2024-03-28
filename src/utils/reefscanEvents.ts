@@ -8,6 +8,7 @@ import {
   ReplaySubject,
   share,
   switchMap,
+  take,
   timer,
 } from "rxjs";
 import { filter, shareReplay } from "rxjs/operators";
@@ -33,7 +34,7 @@ const emitterConnObsCache = new Map<string, Observable<Emitter | null>>();
 export const setReefscanEventsConnConfig = (
   config: ReefscanEventsConnConfig
 ) => {
-  emitterConfig = { ...config };
+  emitterConfig = { ...emitterConfig, ...config };
 };
 
 function getEmitterConnection(config: ReefscanEventsConnConfig) {
@@ -168,4 +169,20 @@ export const getBlockDataEmitter = (
     ),
     shareReplay(1)
   );
+};
+
+export const getIndexerConnState$ = (
+  config?: ReefscanEventsConnConfig
+): Observable<{ isConnected: boolean }> => {
+  const emitter$ = getIndexerEmitterConn$(config || emitterConfig);
+  return emitter$.pipe(map(emitter => ({ isConnected: !!emitter })));
+};
+
+export const disconnectEmitter = (config?: ReefscanEventsConnConfig) => {
+  const emitter$ = getIndexerEmitterConn$(config || emitterConfig);
+  return emitter$.pipe(take(1)).subscribe(emitter => {
+    if (emitter) {
+      emitter.disconnect();
+    }
+  });
 };

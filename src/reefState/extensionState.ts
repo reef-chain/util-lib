@@ -1,5 +1,5 @@
 import { ReplaySubject } from "rxjs";
-import { SELECTED_EXTENSION_IDENT } from "src/extension";
+import { SELECTED_EXTENSION_IDENT } from "../extension";
 
 const selectedExtensionSubj: ReplaySubject<string> = new ReplaySubject<string>(
   1
