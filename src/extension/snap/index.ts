@@ -2,8 +2,7 @@ import type { MetaMaskInpageProvider } from "@metamask/providers";
 
 import type { GetSnapsResponse, Snap, Web3Window } from "./types";
 
-// TODO: set SNAP_ID when it is available
-export const SNAP_ID = "local:http://localhost:8080";
+export const SNAP_ID = "npm:@reef-chain/reef-snap";
 
 export const getSnaps = async (
   provider?: MetaMaskInpageProvider
