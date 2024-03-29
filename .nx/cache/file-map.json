@@ -50,20 +50,6 @@
   "pathMappings": {},
   "nxJsonPlugins": [],
   "fileMap": {
-    "nonProjectFiles": [
-      {
-        "file": "test/utils/balanceUtils.test.ts",
-        "hash": "3553219495251718820"
-      },
-      {
-        "file": ".nx/cache/d/server-process.json",
-        "hash": "4018897703306574621"
-      },
-      {
-        "file": "src/utils/balanceUtils.ts",
-        "hash": "1472040656632366582"
-      }
-    ],
     "projectFileMap": {
       "util-lib": [
         {
@@ -133,7 +119,7 @@
         },
         {
           "file": "package.json",
-          "hash": "13203269504480214845",
+          "hash": "6929439161994262439",
           "deps": [
             "npm:@metamask/providers",
             "npm:@polkadot/api",
@@ -298,12 +284,12 @@
         },
         {
           "file": "src/extension/snap/Signer.ts",
-          "hash": "13014017718391629195",
+          "hash": "13978719045267736498",
           "deps": ["npm:@polkadot/api", "npm:@polkadot/types"]
         },
         {
           "file": "src/extension/snap/index.ts",
-          "hash": "17661452770688945330",
+          "hash": "16310248060190960887",
           "deps": ["npm:@metamask/providers"]
         },
         {
@@ -363,7 +349,7 @@
         },
         {
           "file": "src/network/dex.ts",
-          "hash": "12196627332747386662"
+          "hash": "10023669734589850901"
         },
         {
           "file": "src/network/errors.ts",
@@ -372,7 +358,7 @@
         },
         {
           "file": "src/network/index.ts",
-          "hash": "12820903435120690950"
+          "hash": "13736807159296496717"
         },
         {
           "file": "src/network/network.ts",
@@ -380,7 +366,7 @@
         },
         {
           "file": "src/network/providerUtil.ts",
-          "hash": "8793678855121976457",
+          "hash": "4895177826319318534",
           "deps": [
             "npm:@reef-chain/evm-provider",
             "npm:@polkadot/api",
@@ -467,11 +453,11 @@
         },
         {
           "file": "src/reefState/index.ts",
-          "hash": "6845929519807839175"
+          "hash": "2659471239886764792"
         },
         {
           "file": "src/reefState/initReefState.ts",
-          "hash": "11869049591225160105",
+          "hash": "8033993185973002983",
           "deps": ["npm:@polkadot/extension-inject", "npm:@polkadot/api"]
         },
         {
@@ -498,12 +484,12 @@
         },
         {
           "file": "src/reefState/networkState.ts",
-          "hash": "6767143436775391666",
+          "hash": "3171446080162331132",
           "deps": ["npm:rxjs"]
         },
         {
           "file": "src/reefState/providerState.ts",
-          "hash": "12358716324791843785",
+          "hash": "10922665290574394656",
           "deps": ["npm:rxjs", "npm:@reef-chain/evm-provider"]
         },
         {
@@ -547,7 +533,7 @@
         },
         {
           "file": "src/reefState/token/transferHistory.ts",
-          "hash": "15150206926831119467",
+          "hash": "7673835747729185774",
           "deps": [
             "npm:rxjs",
             "npm:ethers",
@@ -653,7 +639,7 @@
         },
         {
           "file": "src/token/tokenModel.ts",
-          "hash": "13020337618751810909",
+          "hash": "10994991529989158097",
           "deps": ["npm:ethers"]
         },
         {
@@ -698,7 +684,7 @@
         },
         {
           "file": "src/utils/balanceUtils.ts",
-          "hash": "7232037832895257701",
+          "hash": "17686443663456901755",
           "deps": ["npm:ethers", "npm:bignumber.js"]
         },
         {
@@ -707,7 +693,7 @@
         },
         {
           "file": "src/utils/emitter-io.ts",
-          "hash": "10615035316167519865",
+          "hash": "7685732513680543615",
           "deps": ["npm:mqtt"]
         },
         {
@@ -717,7 +703,7 @@
         },
         {
           "file": "src/utils/reefscanEvents.ts",
-          "hash": "13578911131321243432",
+          "hash": "3265975950823562734",
           "deps": ["npm:rxjs"]
         },
         {
@@ -904,7 +890,7 @@
         },
         {
           "file": "test/utils/balanceUtils.test.ts",
-          "hash": "6661913646913586767",
+          "hash": "17274480709574994975",
           "deps": ["npm:ethers", "npm:vitest"]
         },
         {
@@ -926,9 +912,10 @@
         },
         {
           "file": "yarn.lock",
-          "hash": "9818167461758823619"
+          "hash": "7918417405153192045"
         }
       ]
-    }
+    },
+    "nonProjectFiles": []
   }
 }

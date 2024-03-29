@@ -18,9 +18,8 @@ export default class Signer implements SignerInterface {
 
   public async signPayload(payload: SignerPayloadJSON): Promise<SignerResult> {
     try {
-      const approved = await sendRequest("requestSignature", payload);
-      if (!approved) return Promise.reject(new Error("_canceled"));
-      const result = await sendRequest("approveSignExtrinsic", payload);
+      const result = await sendRequest("requestSignature", payload);
+      if (!result) return Promise.reject(new Error("_canceled"));
       return { ...result };
     } catch (e) {
       return Promise.reject(new Error("_canceled"));
@@ -29,9 +28,8 @@ export default class Signer implements SignerInterface {
 
   public async signRaw(payload: SignerPayloadRaw): Promise<SignerResult> {
     try {
-      const approved = await sendRequest("signPayload", payload);
-      if (!approved) return Promise.reject(new Error("_canceled"));
-      const result = await sendRequest("approveSignBytes", payload);
+      const result = await sendRequest("signPayload", payload);
+      if (!result) return Promise.reject(new Error("_canceled"));
       return { ...result };
     } catch (e) {
       return Promise.reject(new Error("_canceled"));
