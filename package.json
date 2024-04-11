@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "2.4.14",
+  "version": "2.5.0",
   "main": "./dist/src/main.js",
   "module": "./dist/module/util-lib.mjs",
   "types": "./dist/dts/main.d.ts",
