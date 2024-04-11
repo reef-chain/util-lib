@@ -89,7 +89,6 @@ export async function decodePayloadMethod(
   provider: Provider,
   methodDataEncoded: string,
   abi?: string | readonly (string | Fragment | JsonFragment)[],
-  sentValue = "0",
   types?: any
 ): Promise<DecodedMethodData | null> {
   const api = provider.api;
@@ -149,24 +148,23 @@ export async function decodePayloadMethod(
   };
 
   const isEvm = methodName.startsWith("evm.call");
-
   if (isEvm) {
-    const contractAddress = args[0];
+    const contractAddress = args.target;
     let decodedData;
     if (!abi || !abi.length) {
       abi = await getContractAbi(contractAddress);
     }
-
     if (abi && abi.length && !!args) {
-      const methodArgs = args[1];
+      const methodArgs = args.input;
       try {
         console.log("ABI can have duplicate member warnings");
         const iface = new ethers.utils.Interface(abi);
         decodedData = iface.parseTransaction({
           data: methodArgs,
-          value: sentValue,
+          value: args.value,
         });
       } catch (e) {
+        console.log("ERROR decoding contract call err=", e.message);
         /* empty */
       }
     }
