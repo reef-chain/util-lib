@@ -120,7 +120,8 @@ const onReefInjectedPromise: () => Promise<boolean> = () =>
 // enables all the providers found on the injected window interface
 export async function web3Enable(
   originName: string,
-  compatInits: (() => Promise<boolean>)[] = []
+  compatInits: (() => Promise<boolean>)[] = [],
+  tryConnectSnap = false
 ): Promise<InjectedExtension[]> {
   if (!originName) {
     throw new Error(
@@ -130,7 +131,7 @@ export async function web3Enable(
 
   try {
     let snap = await getSnap();
-    if (!snap) {
+    if (!snap && tryConnectSnap) {
       await connectSnap();
       snap = await getSnap();
     }
