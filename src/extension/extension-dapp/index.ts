@@ -129,19 +129,21 @@ export async function web3Enable(
     );
   }
 
-  try {
-    let snap = await getSnap();
-    if (!snap && tryConnectSnap) {
-      await connectSnap();
-      snap = await getSnap();
-    }
-    if (snap) {
-      injectExtension(enableSnap, {
-        name: REEF_SNAP_IDENT,
-        version: snap.version,
-      });
-    }
-  } catch (e) {}
+  if (tryConnectSnap) {
+    try {
+      let snap = await getSnap();
+      if (!snap) {
+        await connectSnap();
+        snap = await getSnap();
+      }
+      if (snap) {
+        injectExtension(enableSnap, {
+          name: REEF_SNAP_IDENT,
+          version: snap.version,
+        });
+      }
+    } catch (e) {}
+  }
 
   if (
     isInjectionStarted(REEF_EXTENSION_IDENT) &&
