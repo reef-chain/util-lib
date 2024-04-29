@@ -28,7 +28,7 @@ export default class Signer implements SignerInterface {
 
   public async signRaw(payload: SignerPayloadRaw): Promise<SignerResult> {
     try {
-      const result = await sendRequest("signPayload", payload);
+      const result = await sendRequest("requestSignature", payload);
       if (!result) return Promise.reject(new Error("_canceled"));
       return { ...result };
     } catch (e) {
