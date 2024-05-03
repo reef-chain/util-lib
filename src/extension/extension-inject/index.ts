@@ -6,10 +6,12 @@ import type { Injected, InjectedWindow, InjectOptions } from "./types";
 export const REEF_EXTENSION_IDENT = "reef";
 export const REEF_SNAP_IDENT = "reef-snap";
 export const REEF_EASY_WALLET_IDENT = "reef-easy-wallet";
+export const REEF_WALLET_CONNECT_IDENT = "reef-wallet-connect";
 export const ExtensionsIdents = [
   REEF_EXTENSION_IDENT,
   REEF_SNAP_IDENT,
   REEF_EASY_WALLET_IDENT,
+  REEF_WALLET_CONNECT_IDENT,
 ];
 
 export const REEF_INJECTED_EVENT = "reef-injected";
