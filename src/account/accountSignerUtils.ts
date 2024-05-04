@@ -6,7 +6,6 @@ import { accountsJsonSigningKeySubj } from "../reefState/account/setAccounts";
 import {
   SignerPayloadJSON,
   SignerPayloadRaw,
-  SignerResult,
 } from "@polkadot/types/types/extrinsic";
 import { Deferrable } from "@ethersproject/properties";
 import {
