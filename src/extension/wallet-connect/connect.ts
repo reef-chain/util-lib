@@ -6,21 +6,21 @@ import { getAppMetadata } from "@walletconnect/utils";
 import { getRequiredNamespaces } from "./utils";
 import { logoSvgUrl } from "../../utils/logoSvgUrl";
 
-export const DEFAULT_RELAY_URL = "wss://relay.walletconnect.com";
-export const DEFAULT_PROJECT_ID = "b20768c469f63321e52923a168155240";
-export const DEFAULT_LOGGER = "error";
+export const WC_PROJECT_ID = "b20768c469f63321e52923a168155240";
+const WC_RELAY_URL = "wss://relay.walletconnect.com";
+const WC_LOGGER = "error";
 
 const initWcClient = async (metadata?: CoreTypes.Metadata): Promise<Client> => {
   return await Client.init({
-    logger: DEFAULT_LOGGER,
-    relayUrl: DEFAULT_RELAY_URL,
-    projectId: DEFAULT_PROJECT_ID,
+    logger: WC_LOGGER,
+    relayUrl: WC_RELAY_URL,
+    projectId: WC_PROJECT_ID,
     metadata: metadata || getAppMetadata(),
   });
 };
 
 const web3Modal = new Web3Modal({
-  projectId: DEFAULT_PROJECT_ID,
+  projectId: WC_PROJECT_ID,
   walletConnectVersion: 2,
   enableExplorer: false,
   explorerRecommendedWalletIds: "NONE",

@@ -36,7 +36,7 @@ module.exports = defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['react', '@types/react'],
+      external: ['react', '@types/react', '@web3modal/standalone'],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
