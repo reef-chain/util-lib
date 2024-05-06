@@ -7,8 +7,6 @@ export enum DEFAULT_REEF_METHODS {
   REEF_SIGN_MESSAGE = "reef_signMessage",
 }
 
-export enum DEFAULT_REEF_EVENTS {}
-
 export const genesisHashToChainId = (genesisHash: string): string => {
   return `reef:${genesisHash.substring(2, 34)}`;
 };
@@ -28,7 +26,7 @@ export const getRequiredNamespaces = (): ProposalTypes.RequiredNamespaces => {
         genesisHashToChainId(AVAILABLE_NETWORKS["mainnet"].genesisHash),
         genesisHashToChainId(AVAILABLE_NETWORKS["testnet"].genesisHash),
       ],
-      events: Object.values(DEFAULT_REEF_EVENTS) as any[],
+      events: [],
     },
   };
 };
