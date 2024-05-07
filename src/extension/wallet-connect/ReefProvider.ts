@@ -4,7 +4,7 @@ import { SessionTypes } from "@walletconnect/types";
 
 import { ReefInjectedProvider, Unsubcall } from "../extension-inject/types";
 import { AVAILABLE_NETWORKS } from "../../network/network";
-import { MAINNET_CHAIN_ID, TESTNET_CHAIN_ID } from "./utils";
+import { WC_MAINNET_CHAIN_ID, WC_TESTNET_CHAIN_ID } from "./utils";
 
 let session: SessionTypes.Struct;
 
@@ -38,9 +38,9 @@ export default class ReefProvider implements ReefInjectedProvider {
     if (!account) throw new Error("Provider URL not found");
 
     let rpcUrl = undefined;
-    if (account.startsWith(MAINNET_CHAIN_ID)) {
+    if (account.startsWith(WC_MAINNET_CHAIN_ID)) {
       rpcUrl = AVAILABLE_NETWORKS.mainnet.rpcUrl;
-    } else if (account.startsWith(TESTNET_CHAIN_ID)) {
+    } else if (account.startsWith(WC_TESTNET_CHAIN_ID)) {
       rpcUrl = AVAILABLE_NETWORKS.testnet.rpcUrl;
     } else {
       throw new Error("Provider URL not found");
