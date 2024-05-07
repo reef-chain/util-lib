@@ -11,9 +11,9 @@ import Client from "@walletconnect/sign-client";
 import { SessionTypes } from "@walletconnect/types";
 
 import {
-  DEFAULT_REEF_METHODS,
-  MAINNET_CHAIN_ID,
-  genesisHashToChainId,
+  WC_DEFAULT_METHODS,
+  WC_MAINNET_CHAIN_ID,
+  genesisHashToWcChainId,
 } from "./utils";
 
 let client: Client;
@@ -31,10 +31,10 @@ export default class Signer implements SignerInterface {
         payload: string;
         signature: HexString;
       }>({
-        chainId: genesisHashToChainId(payload.genesisHash),
+        chainId: genesisHashToWcChainId(payload.genesisHash),
         topic: session.topic,
         request: {
-          method: DEFAULT_REEF_METHODS.REEF_SIGN_TRANSACTION,
+          method: WC_DEFAULT_METHODS.REEF_SIGN_TRANSACTION,
           params: {
             address: payload.address,
             transactionPayload: payload,
@@ -56,10 +56,10 @@ export default class Signer implements SignerInterface {
       const result = await client!.request<{
         signature: HexString;
       }>({
-        chainId: MAINNET_CHAIN_ID,
+        chainId: WC_MAINNET_CHAIN_ID,
         topic: session.topic,
         request: {
-          method: DEFAULT_REEF_METHODS.REEF_SIGN_MESSAGE,
+          method: WC_DEFAULT_METHODS.REEF_SIGN_MESSAGE,
           params: {
             address: payload.address,
             message: payload.data,

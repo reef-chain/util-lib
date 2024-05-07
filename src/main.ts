@@ -9,3 +9,4 @@ export * as balanceUtils from "./utils/balanceUtils";
 export * as transactionUtils from "./transaction";
 export * as signatureUtils from "./signature/tx-signature-util";
 export * as extension from "./extension";
+export * as logoSvgUrl from "./utils/logoSvgUrl";
