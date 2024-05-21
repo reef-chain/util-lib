@@ -47,6 +47,11 @@ export default class Signer implements SignerInterface {
         signature: result.signature,
       };
     } catch (e) {
+      if (
+        e.toString().includes("Missing or invalid. Record was recently deleted")
+      ) {
+        return Promise.reject(new Error("_invalid"));
+      }
       return Promise.reject(new Error("_canceled"));
     }
   }
