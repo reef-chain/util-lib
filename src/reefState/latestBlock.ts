@@ -34,7 +34,7 @@ export const publishIndexerEvent = (
 // if networkNameOrSelectedNetwork is undefined reefState selectedNetwork observable is used
 export const getLatestBlockUpdates$ = (
   networkNameOrSelectedNetwork?: NetworkName
-) => {
+): Observable<LatestBlockData> => {
   let selNetwork$: Observable<NetworkName>;
   if (!networkNameOrSelectedNetwork) {
     selNetwork$ = selectedNetwork$.pipe(

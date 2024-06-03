@@ -11,6 +11,7 @@ export type { DexProtocolv2 } from "./dex";
 export {
   getLatestBlockAccountUpdates$,
   getLatestBlockContractEvents$,
+  getLatestBlockUpdates$,
 } from "../reefState/latestBlock";
 export type { Bond } from "./bonds";
 export { bonds } from "./bonds";
