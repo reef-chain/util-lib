@@ -4,7 +4,8 @@ export const REEF_ADDRESS = "0x0000000000000000000000000000000001000000";
 export const REEF_TOKEN: Token = {
   name: "REEF",
   address: REEF_ADDRESS,
-  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/6951.png",
+  iconUrl:
+    "https://storage.googleapis.com/reef-static-images/r-circle-icon-128.png",
   balance: BigNumber.from(0),
   decimals: 18,
   symbol: "REEF",
