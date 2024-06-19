@@ -291,7 +291,8 @@ export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
           res.push(v);
         }
       });
-      return val;
+      console.log(uniqueAddresses.length, res.length);
+      return res;
     }),
     mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
       tokens: [],
