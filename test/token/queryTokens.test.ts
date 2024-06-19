@@ -81,7 +81,6 @@ describe("get tokens", () => {
         )
       )
     );
-    console.log("res===", res.data.length);
     expect(res.getStatusList().length).toBe(1);
     expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
     expect(res.data.length).greaterThan(0);

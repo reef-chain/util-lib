@@ -8,6 +8,7 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
+  EMPTY,
   expand,
   from,
   map,
@@ -16,6 +17,7 @@ import {
   Observable,
   of,
   reduce,
+  scan,
   shareReplay,
   startWith,
   take,
@@ -250,13 +252,11 @@ export const loadAllTokens_sdo = ([
   signer,
   forceReloadj,
   tokensUpdated,
-]: [
-  AxiosInstance,
-  StatusDataObject<ReefAccount>,
-  any,
-  any
-]): Observable<any> => {
+]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
+  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+> => {
   // TODO check the status of signer - could be loading?
+  let offset = 0;
   return !signer
     ? of(
         toFeedbackDM(
@@ -266,7 +266,15 @@ export const loadAllTokens_sdo = ([
         )
       )
     : // can also be httpClient subscription
-      queryGql$(httpClient, getAllTokensQuery(0)).pipe(
+      queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
+        expand((res: any) => {
+          if (res.data.tokenHolders && res.data.tokenHolders.length > 0) {
+            offset += 320;
+            return queryGql$(httpClient, getAllTokensQuery(offset));
+          } else {
+            return EMPTY; // If no token holders, stop fetching
+          }
+        }),
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(
@@ -283,7 +291,7 @@ export const loadAllTokens_sdo = ([
           }
           throw new Error("No result from SIGNER_TOKENS_GQL");
         }),
-        // eslint-disable-next-line camelcase
+        scan((acc, current) => [...acc, ...current], []),
         mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
           tokens: [],
           contractData: [reefTokenWithAmount()],
