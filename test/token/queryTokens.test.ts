@@ -23,7 +23,7 @@ describe("get tokens", () => {
       jsonAccounts: {
         accounts: [
           {
-            address: selectedAddress,
+            address: "5FxjoWsqFzTLSF8m9osTywz8ENKLrDv34qRf1EtdpW8kxc7n",
             // address: "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP",
             isSelected: true,
           },
@@ -81,7 +81,7 @@ describe("get tokens", () => {
         )
       )
     );
-    console.log("res===", res.data[21].data);
+    console.log("res===", res.data[1].data);
     expect(res.getStatusList().length).toBe(1);
     expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
     expect(res.data.length).greaterThan(0);

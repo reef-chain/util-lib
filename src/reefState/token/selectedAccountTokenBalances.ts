@@ -294,11 +294,11 @@ export const loadAllTokens_sdo = ([
           uniqueAddresses.push(v.address);
           res.push({
             address: v.address,
-            balance: tokensBalMap[v.id] || 0,
+            balance: tokensBalMap.get(v.address) ?? 0,
           });
         }
       });
-      return res;
+      return res.sort((a, b) => b.balance - a.balance);
     }),
     mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
       tokens: [],
