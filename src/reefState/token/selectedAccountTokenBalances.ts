@@ -247,68 +247,56 @@ export const loadAccountTokens_sdo = ([
       );
 };
 
-export const loadAllTokens_sdo = ([
-  httpClient,
-  signer,
-  forceReloadj,
-  tokensUpdated,
-]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
-  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
-> => {
+export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
+  AxiosInstance,
+  any,
+  any
+]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
   // TODO check the status of signer - could be loading?
   let offset = 0;
-  return !signer
-    ? of(
-        toFeedbackDM(
-          [],
-          FeedbackStatusCode.MISSING_INPUT_VALUES,
-          "Signer not set"
-        )
-      )
-    : // can also be httpClient subscription
-      queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
-        expand((res: any) => {
-          if (res.data.tokenHolders && res.data.tokenHolders.length > 0) {
-            offset += 320;
-            return queryGql$(httpClient, getAllTokensQuery(offset));
-          } else {
-            return EMPTY; // If no token holders, stop fetching
-          }
-        }),
-        map((res: any): TokenBalance[] => {
-          if (res?.data?.tokenHolders) {
-            return res.data.tokenHolders.map(
-              th =>
-                ({
-                  address: th.token.id,
-                  balance: th.balance,
-                } as TokenBalance)
-            );
-          }
+  return queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
+    expand((res: any) => {
+      if (res.data.tokenHolders && res.data.tokenHolders.length > 0) {
+        offset += 320;
+        return queryGql$(httpClient, getAllTokensQuery(offset));
+      } else {
+        return EMPTY; // If no token holders, stop fetching
+      }
+    }),
+    map((res: any): TokenBalance[] => {
+      if (res?.data?.tokenHolders) {
+        return res.data.tokenHolders.map(
+          th =>
+            ({
+              address: th.token.id,
+              balance: th.balance,
+            } as TokenBalance)
+        );
+      }
 
-          if (isFeedbackDM(res)) {
-            return res;
-          }
-          throw new Error("No result from SIGNER_TOKENS_GQL");
-        }),
-        scan((acc, current) => [...acc, ...current], []),
-        mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
-          tokens: [],
-          contractData: [reefTokenWithAmount()],
-        }),
-        map((tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) =>
-          resolveEmptyIconUrls(tokens_cd.tokens)
-        ),
-        map(sortReefTokenFirst),
-        map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
-          return toFeedbackDM(tkns, collectFeedbackDMStatus(tkns));
-        }),
-        catchError(err => {
-          console.log("loadAccountTokens 1 ERROR=", err);
-          return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
-        }),
-        shareReplay(1)
-      );
+      if (isFeedbackDM(res)) {
+        return res;
+      }
+      throw new Error("No result from SIGNER_TOKENS_GQL");
+    }),
+    scan((acc, current) => [...acc, ...current], []),
+    mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
+      tokens: [],
+      contractData: [reefTokenWithAmount()],
+    }),
+    map((tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) =>
+      resolveEmptyIconUrls(tokens_cd.tokens)
+    ),
+    map(sortReefTokenFirst),
+    map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
+      return toFeedbackDM(tkns, collectFeedbackDMStatus(tkns));
+    }),
+    catchError(err => {
+      console.log("loadAccountTokens 1 ERROR=", err);
+      return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+    }),
+    shareReplay(1)
+  );
 };
 
 export const setReefBalanceFromAccount = ([tokens, selSigner]: [

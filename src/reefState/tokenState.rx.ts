@@ -130,14 +130,13 @@ export const allTokenBalances_status$: Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > = combineLatest([
   httpClientInstance$,
-  selectedAccountAddressChange$,
   forceReload$,
   selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
-    const [httpClient, signer, forceReload, _] = vals;
+    const [httpClient, forceReload, _] = vals;
     return getLatestBlockAccountUpdates$(
-      [signer.data.address],
+      [],
       [AccountIndexedTransactionType.REEF20_TRANSFER]
     ).pipe(
       startWith(true),
