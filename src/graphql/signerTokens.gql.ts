@@ -45,7 +45,6 @@ export const ALL_TOKENS_QUERY = `
       token {
         id
       }
-      balance
     }
   }
 `;
