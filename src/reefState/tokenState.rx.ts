@@ -54,6 +54,7 @@ import { getLatestBlockAccountUpdates$ } from "../reefState/latestBlock";
 import { httpClientInstance$ } from "../graphql/httpClient";
 import { forceReload$ } from "./token/force-reload-tokens";
 import { AccountIndexedTransactionType } from "./latestBlockModel";
+import { selectedTokenBalances$ } from "./selected-account-plain-data.rx";
 
 const reloadingValues$ = combineLatest([
   selectedNetwork$,
@@ -130,11 +131,12 @@ export const allTokenBalances_status$: Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > = combineLatest([
   httpClientInstance$,
+  selectedTokenBalances_status$,
   forceReload$,
   selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
-    const [httpClient, forceReload, _] = vals;
+    const [httpClient, tokenBals, forceReload, _] = vals;
     return getLatestBlockAccountUpdates$(
       [],
       [AccountIndexedTransactionType.REEF20_TRANSFER]

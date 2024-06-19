@@ -248,12 +248,16 @@ export const loadAccountTokens_sdo = ([
       );
 };
 
-export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
-  AxiosInstance,
-  any,
-  any
-]): Observable<any> => {
+export const loadAllTokens_sdo = ([
+  httpClient,
+  tokenBals,
+  forceReloadj,
+  tokensUpdated,
+]: [AxiosInstance, any, any, any]): Observable<any> => {
   // TODO check the status of signer - could be loading?
+  const tokensBalMap = new Map(
+    tokenBals.data.map(tb => [tb.data.address, tb.data.balance])
+  );
   let offset = 0;
   return queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
     expand((res: any) => {
@@ -270,7 +274,7 @@ export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
           th =>
             ({
               address: th.token.id,
-              balance: th.balance,
+              balance: 0,
             } as TokenBalance)
         );
       }
@@ -288,10 +292,12 @@ export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
       val.forEach(v => {
         if (!uniqueAddresses.includes(v.address)) {
           uniqueAddresses.push(v.address);
-          res.push(v);
+          res.push({
+            address: v.address,
+            balance: tokensBalMap[v.id] || 0,
+          });
         }
       });
-      console.log(uniqueAddresses.length, res.length);
       return res;
     }),
     mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
