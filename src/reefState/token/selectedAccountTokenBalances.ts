@@ -8,6 +8,7 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
+  distinct,
   EMPTY,
   expand,
   from,
@@ -251,7 +252,7 @@ export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
   AxiosInstance,
   any,
   any
-]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
+]): Observable<any> => {
   // TODO check the status of signer - could be loading?
   let offset = 0;
   return queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
@@ -280,6 +281,18 @@ export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
       throw new Error("No result from SIGNER_TOKENS_GQL");
     }),
     scan((acc, current) => [...acc, ...current], []),
+    // remove redundancy
+    map(val => {
+      let uniqueAddresses = [];
+      let res = [];
+      val.forEach(v => {
+        if (!uniqueAddresses.includes(v.address)) {
+          uniqueAddresses.push(v.address);
+          res.push(v);
+        }
+      });
+      return val;
+    }),
     mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
       tokens: [],
       contractData: [reefTokenWithAmount()],
