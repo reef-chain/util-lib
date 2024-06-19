@@ -28,6 +28,35 @@ export const getSignerTokensQuery = (address: string) => {
     },
   };
 };
+
+export const ALL_TOKENS_QUERY = `
+  query tokens_query($offset: Int!) {
+    tokenHolders(
+      offset: $offset
+      where: {
+        AND: {
+          nftId_isNull: true
+          token: { id_isNull: false }
+        }
+      }
+      orderBy: balance_DESC
+      limit: 320
+    ) {
+      token {
+        id
+      }
+      balance
+    }
+  }
+`;
+
+export const getAllTokensQuery = (offset: number) => {
+  return {
+    query: ALL_TOKENS_QUERY,
+    variables: { offset },
+  };
+};
+
 /*export const SIGNER_TOKENS_GQL = gql`
   subscription tokens_query($accountId: String!) {
     token_holder(

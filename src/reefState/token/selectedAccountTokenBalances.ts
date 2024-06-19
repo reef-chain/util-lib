@@ -8,15 +8,18 @@ import {
 import { BigNumber } from "ethers";
 import {
   catchError,
+  expand,
   from,
   map,
   mergeMap,
   mergeScan,
   Observable,
   of,
+  reduce,
   shareReplay,
   startWith,
   take,
+  takeWhile,
 } from "rxjs";
 import {
   collectFeedbackDMStatus,
@@ -28,7 +31,10 @@ import {
 import { ReefAccount } from "../../account/accountModel";
 import { sortReefTokenFirst, toPlainString } from "./tokenUtil";
 import { getIconUrl } from "../../token/getIconUrl";
-import { getSignerTokensQuery } from "../../graphql/signerTokens.gql";
+import {
+  getAllTokensQuery,
+  getSignerTokensQuery,
+} from "../../graphql/signerTokens.gql";
 import { AxiosInstance } from "axios";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { getContractDataQuery } from "../../graphql/contractData.gql";
@@ -203,6 +209,64 @@ export const loadAccountTokens_sdo = ([
       )
     : // can also be httpClient subscription
       queryGql$(httpClient, getSignerTokensQuery(signer.data.address)).pipe(
+        map((res: any): TokenBalance[] => {
+          if (res?.data?.tokenHolders) {
+            return res.data.tokenHolders.map(
+              th =>
+                ({
+                  address: th.token.id,
+                  balance: th.balance,
+                } as TokenBalance)
+            );
+          }
+
+          if (isFeedbackDM(res)) {
+            return res;
+          }
+          throw new Error("No result from SIGNER_TOKENS_GQL");
+        }),
+        // eslint-disable-next-line camelcase
+        mergeScan(tokenBalancesWithContractDataCache_sdo(httpClient), {
+          tokens: [],
+          contractData: [reefTokenWithAmount()],
+        }),
+        map((tokens_cd: { tokens: StatusDataObject<Token | TokenBalance>[] }) =>
+          resolveEmptyIconUrls(tokens_cd.tokens)
+        ),
+        map(sortReefTokenFirst),
+        map((tkns: StatusDataObject<Token | TokenBalance>[]) => {
+          return toFeedbackDM(tkns, collectFeedbackDMStatus(tkns));
+        }),
+        catchError(err => {
+          console.log("loadAccountTokens 1 ERROR=", err);
+          return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+        }),
+        shareReplay(1)
+      );
+};
+
+export const loadAllTokens_sdo = ([
+  httpClient,
+  signer,
+  forceReloadj,
+  tokensUpdated,
+]: [
+  AxiosInstance,
+  StatusDataObject<ReefAccount>,
+  any,
+  any
+]): Observable<any> => {
+  // TODO check the status of signer - could be loading?
+  return !signer
+    ? of(
+        toFeedbackDM(
+          [],
+          FeedbackStatusCode.MISSING_INPUT_VALUES,
+          "Signer not set"
+        )
+      )
+    : // can also be httpClient subscription
+      queryGql$(httpClient, getAllTokensQuery(0)).pipe(
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(

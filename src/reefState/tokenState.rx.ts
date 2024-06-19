@@ -20,6 +20,7 @@ import {
 import { reefPrice$ } from "../token/reefPrice";
 import {
   loadAccountTokens_sdo,
+  loadAllTokens_sdo,
   replaceReefBalanceFromAccount,
 } from "./token/selectedAccountTokenBalances";
 import { selectedAccount_status$ } from "./account/selectedAccount";
@@ -86,6 +87,62 @@ export const selectedTokenBalances_status$: Observable<
       startWith(true),
       switchMap(_ => {
         return loadAccountTokens_sdo(vals).pipe(
+          switchMap(
+            (
+              tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+            ) => {
+              // console.log("loading account token balances", tkns);
+              return combineLatest([
+                of(tkns),
+                selectedAccountReefBalance$,
+              ]).pipe(
+                map(arrVal =>
+                  replaceReefBalanceFromAccount(arrVal[0], arrVal[1])
+                )
+              );
+            }
+          ),
+          catchError((err: any) => {
+            console.log("ERROR2 selectedTokenBalances_status$=", err);
+            return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+          })
+        );
+      }),
+      catchError((err: any) => {
+        console.log("ERROR0 selectedTokenBalances_status$=", err);
+        return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+      })
+    );
+  }),
+  mergeWith(
+    reloadingValues$.pipe(
+      map(() => toFeedbackDM([], FeedbackStatusCode.LOADING))
+    )
+  ),
+  catchError((err: any) => {
+    console.log("ERROR1 selectedTokenBalances_status$=", err.message);
+    return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
+  }),
+  shareReplay(1)
+);
+
+export const allTokenBalances_status$: Observable<
+  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
+> = combineLatest([
+  httpClientInstance$,
+  selectedAccountAddressChange$,
+  forceReload$,
+  selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
+]).pipe(
+  switchMap(vals => {
+    const [httpClient, signer, forceReload, _] = vals;
+    return getLatestBlockAccountUpdates$(
+      [signer.data.address],
+      [AccountIndexedTransactionType.REEF20_TRANSFER]
+    ).pipe(
+      startWith(true),
+      switchMap(_ => {
+        return loadAllTokens_sdo(vals).pipe(
           switchMap(
             (
               tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>

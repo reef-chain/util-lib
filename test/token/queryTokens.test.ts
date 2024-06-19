@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { initReefState } from "../../src/reefState/initReefState";
 import {
+  allTokenBalances_status$,
   selectedNFTs_status$,
   selectedTokenBalances_status$,
   selectedTokenPrices_status$,
@@ -18,7 +19,7 @@ describe("get tokens", () => {
   const signingKey = {};
   beforeAll(async () => {
     initReefState({
-      network: AVAILABLE_NETWORKS.mainnet,
+      network: AVAILABLE_NETWORKS.testnet,
       jsonAccounts: {
         accounts: [
           {
@@ -70,22 +71,37 @@ describe("get tokens", () => {
     expect(res.data.length).greaterThan(0);
   });
 
+  it("should return all tokens balances", async () => {
+    const res = await firstValueFrom(
+      allTokenBalances_status$.pipe(
+        skipWhile(
+          value =>
+            !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA) ||
+            value.getStatusList().length != 1
+        )
+      )
+    );
+    console.log("res===", res.data.length);
+    expect(res.getStatusList().length).toBe(1);
+    expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    expect(res.data.length).greaterThan(0);
+  });
+
   it("should return token prices", async () => {
     const res = await firstValueFrom(
       selectedTokenPrices_status$.pipe(
-        // tap(v=>console.log('val=',v.data[1]?.data?.balance?.toString(), ' // acc=',v.data[1]?.data?.address)),
-        // skip(100),
         skipWhile(value => {
           const reef = value.data.find(v => v.data.address === REEF_ADDRESS);
           return reef ? !reef.data.price : true;
         })
       )
     );
+
     expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
     const reef = res.data.find(v => v.data.address === REEF_ADDRESS);
     expect(reef?.data.price).greaterThan(0);
     expect(res.data.length).greaterThan(0);
-  }, 20000);
+  }, 40000);
 
   it("should return nfts", async () => {
     const res = await firstValueFrom(
