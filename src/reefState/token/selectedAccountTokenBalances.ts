@@ -247,27 +247,18 @@ export const loadAccountTokens_sdo = ([
       );
 };
 
-export const loadAllTokens_sdo = ([
-  httpClient,
-  signer,
-  forceReloadj,
-  tokensUpdated,
-]: [AxiosInstance, any, any, any]): Observable<
-  StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
-> => {
+export const loadAllTokens_sdo = ([httpClient, forceReloadj, tokensUpdated]: [
+  AxiosInstance,
+  any,
+  any
+]): Observable<StatusDataObject<StatusDataObject<Token | TokenBalance>[]>> => {
   // TODO check the status of signer - could be loading?
   let offset = 0;
-  return queryGql$(
-    httpClient,
-    getAllTokensQuery(signer.data.address, offset)
-  ).pipe(
+  return queryGql$(httpClient, getAllTokensQuery(offset)).pipe(
     expand((res: any) => {
       if (res.data.tokenHolders && res.data.tokenHolders.length > 0) {
         offset += 320;
-        return queryGql$(
-          httpClient,
-          getAllTokensQuery(signer.data.address, offset)
-        );
+        return queryGql$(httpClient, getAllTokensQuery(offset));
       } else {
         return EMPTY; // If no token holders, stop fetching
       }

@@ -30,14 +30,13 @@ export const getSignerTokensQuery = (address: string) => {
 };
 
 export const ALL_TOKENS_QUERY = `
-  query tokens_query($address: String!,$offset: Int!) {
+  query tokens_query($offset: Int!) {
     tokenHolders(
       offset: $offset
       where: {
         AND: {
           nftId_isNull: true
           token: { id_isNull: false }
-          signer: { id_eq: $address }
         }
       }
       orderBy: balance_DESC
@@ -51,10 +50,10 @@ export const ALL_TOKENS_QUERY = `
   }
 `;
 
-export const getAllTokensQuery = (address: string, offset: number) => {
+export const getAllTokensQuery = (offset: number) => {
   return {
     query: ALL_TOKENS_QUERY,
-    variables: { offset, address },
+    variables: { offset },
   };
 };
 
