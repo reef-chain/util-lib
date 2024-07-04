@@ -2,11 +2,33 @@ import { WsProvider } from "@polkadot/api";
 import { WebSocket } from "@polkadot/x-ws";
 import { Subject } from "rxjs";
 
-export class ReefWsProvider extends WsProvider {
-  private customWebSocket: WsProvider;
+export class FlutterWebSocket extends WebSocket {
+  private sendToFlutterSubject: Subject<any> | null;
 
+  constructor(url: string) {
+    super(url);
+    this.sendToFlutterSubject;
+  }
+
+  connectFlutterWs(_sendToFlutterSubject: Subject<any>) {
+    this.sendToFlutterSubject = _sendToFlutterSubject;
+  }
+
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+    super.send(data);
+    console.log("sending mesaage====================");
+    if (this.sendToFlutterSubject) {
+      this.sendToFlutterSubject.next({ data });
+    } else {
+      console.log(
+        "FlutterWebSocket Error=== Flutter Web Socket not initialized!"
+      );
+    }
+  }
+}
+
+export class ReefWsProvider extends WsProvider {
   constructor(
-    customWebSocket: WsProvider,
     endpoint?: string,
     autoConnectMs?: number,
     headers: Record<string, string> = {},
@@ -14,7 +36,6 @@ export class ReefWsProvider extends WsProvider {
     cacheCapacity?: number
   ) {
     super(endpoint, autoConnectMs, headers, timeout, cacheCapacity);
-    this.customWebSocket = customWebSocket;
   }
 
   override connect(): any {
@@ -27,7 +48,10 @@ export class ReefWsProvider extends WsProvider {
         this as any
       ).selectEndpointIndex((this as any)["__internal__endpoints"]);
 
-      (this as any)["__internal__websocket"] = this.customWebSocket;
+      // note: if i directly pass the websocket and don't create a new instance then in that case the provider doesn't initialize i.e this.customWebSocket doesnt work, hence need to initialize it here and using custom web socket
+      (this as any)["__internal__websocket"] = new FlutterWebSocket(
+        this.endpoint
+      );
 
       if ((this as any)["__internal__websocket"]) {
         (this as any)["__internal__websocket"].onclose = (this as any)[
@@ -49,29 +73,6 @@ export class ReefWsProvider extends WsProvider {
       (this as any)["__internal__emit"]("error", error);
 
       throw error;
-    }
-  }
-}
-
-export class FlutterWebSocket extends WebSocket {
-  private sendToFlutterSubject: Subject<any> | null;
-
-  constructor(url: string) {
-    super(url);
-    this.sendToFlutterSubject;
-  }
-
-  connectFlutterWs(_sendToFlutterSubject: Subject<any>) {
-    this.sendToFlutterSubject = _sendToFlutterSubject;
-  }
-
-  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    if (this.sendToFlutterSubject) {
-      this.sendToFlutterSubject.next({ data });
-    } else {
-      console.log(
-        "FlutterWebSocket Error=== Flutter Web Socket not initialized!"
-      );
     }
   }
 }
