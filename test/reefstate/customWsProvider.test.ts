@@ -4,10 +4,6 @@ import { AVAILABLE_NETWORKS } from "../../src/network";
 import { firstValueFrom } from "rxjs";
 import { selectedProvider$ } from "../../src/reefState";
 import { WsProvider } from "@polkadot/api";
-import {
-  ProviderInterfaceEmitted,
-  ProviderInterfaceEmitCb,
-} from "@polkadot/rpc-provider/types";
 
 class CustomWsProvider extends WsProvider {
   constructor(url: string) {
