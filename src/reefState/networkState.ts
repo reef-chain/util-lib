@@ -8,6 +8,7 @@ const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(
 
 export interface RpcConfig {
   autoConnectMs?: number;
+  customWsProvider?: any;
 }
 
 export let rpcConfig: RpcConfig = {};

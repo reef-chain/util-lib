@@ -1,9 +1,9 @@
 import { Provider } from "@reef-chain/evm-provider";
-import { WsProvider } from "@polkadot/api";
 import { Subject, firstValueFrom } from "rxjs";
 import { WsConnectionState } from "../reefState/ws-connection-state";
 import { selectedProvider$ } from "../reefState";
 import { RpcConfig } from "../reefState/networkState";
+import { ReefWsProvider } from "./reefWsProvider";
 
 export type InitProvider = (
   providerUrl: string,
@@ -20,7 +20,11 @@ export async function initProvider(
   try {
     newProvider = new Provider({
       //@ts-ignore
-      provider: new WsProvider(providerUrl, rpcConfig?.autoConnectMs),
+      provider: new ReefWsProvider(
+        providerUrl,
+        rpcConfig?.autoConnectMs,
+        rpcConfig?.customWsProvider
+      ),
     });
   } catch (e) {
     console.log("ERROR provider init=", e.message);
