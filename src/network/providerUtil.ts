@@ -3,7 +3,6 @@ import { Subject, firstValueFrom } from "rxjs";
 import { WsConnectionState } from "../reefState/ws-connection-state";
 import { selectedProvider$ } from "../reefState";
 import { RpcConfig } from "../reefState/networkState";
-import { ReefWsProvider } from "./reefWsProvider";
 import { WsProvider } from "@polkadot/api";
 
 export type InitProvider = (
@@ -22,11 +21,7 @@ export async function initProvider(
     newProvider = new Provider({
       //@ts-ignore
       provider: rpcConfig?.customWsProvider
-        ? new ReefWsProvider(
-            providerUrl,
-            rpcConfig?.autoConnectMs,
-            rpcConfig.customWsProvider
-          )
+        ? rpcConfig.customWsProvider
         : new WsProvider(providerUrl, rpcConfig?.autoConnectMs),
     });
   } catch (e) {

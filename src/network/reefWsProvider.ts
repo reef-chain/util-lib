@@ -1,18 +1,20 @@
 import { WsProvider } from "@polkadot/api";
+import { WebSocket } from "@polkadot/x-ws";
+import { Subject } from "rxjs";
 
 export class ReefWsProvider extends WsProvider {
-  private customWsProvider?: WsProvider;
+  private customWebSocket: WsProvider;
 
   constructor(
+    customWebSocket: WsProvider,
     endpoint?: string,
     autoConnectMs?: number,
-    customWsProvider?: WsProvider,
     headers: Record<string, string> = {},
     timeout?: number,
     cacheCapacity?: number
   ) {
     super(endpoint, autoConnectMs, headers, timeout, cacheCapacity);
-    this.customWsProvider = customWsProvider;
+    this.customWebSocket = customWebSocket;
   }
 
   override connect(): any {
@@ -25,7 +27,7 @@ export class ReefWsProvider extends WsProvider {
         this as any
       ).selectEndpointIndex((this as any)["__internal__endpoints"]);
 
-      (this as any)["__internal__websocket"] = this.customWsProvider;
+      (this as any)["__internal__websocket"] = this.customWebSocket;
 
       if ((this as any)["__internal__websocket"]) {
         (this as any)["__internal__websocket"].onclose = (this as any)[
@@ -47,6 +49,30 @@ export class ReefWsProvider extends WsProvider {
       (this as any)["__internal__emit"]("error", error);
 
       throw error;
+    }
+  }
+}
+
+export class FlutterWebSocket extends WebSocket {
+  private sendToFlutterSubject: Subject<any> | null;
+
+  constructor(url: string) {
+    super(url);
+    this.sendToFlutterSubject;
+  }
+
+  connectFlutterWs(_sendToFlutterSubject: Subject<any>) {
+    this.sendToFlutterSubject = _sendToFlutterSubject;
+  }
+
+  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+    super.send(data);
+    if (this.sendToFlutterSubject) {
+      this.sendToFlutterSubject.next({ data });
+    } else {
+      console.log(
+        "FlutterWebSocket Error=== Flutter Web Socket not initialized!"
+      );
     }
   }
 }
