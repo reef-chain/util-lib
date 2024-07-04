@@ -1,4 +1,3 @@
-import { WebSocket } from "@polkadot/x-ws";
 import { WsProvider } from "@polkadot/api";
 
 export class ReefWsProvider extends WsProvider {
