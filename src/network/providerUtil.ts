@@ -5,7 +5,6 @@ import { selectedProvider$ } from "../reefState";
 import { RpcConfig } from "../reefState/networkState";
 import { ReefWsProvider } from "./reefWsProvider";
 import { WsProvider } from "@polkadot/api";
-import { rpc } from "@polkadot/types/interfaces/definitions";
 
 export type InitProvider = (
   providerUrl: string,
