@@ -5,12 +5,12 @@ export class ReefWsProvider extends WsProvider {
   private customWsProvider?: WsProvider;
 
   constructor(
-    endpoint: string,
-    autoConnectMs: number,
+    endpoint?: string,
+    autoConnectMs?: number,
+    customWsProvider?: WsProvider,
     headers: Record<string, string> = {},
-    timeout: number,
-    cacheCapacity: number,
-    customWsProvider?: WsProvider
+    timeout?: number,
+    cacheCapacity?: number
   ) {
     super(endpoint, autoConnectMs, headers, timeout, cacheCapacity);
     this.customWsProvider = customWsProvider;
@@ -26,8 +26,7 @@ export class ReefWsProvider extends WsProvider {
         this as any
       ).selectEndpointIndex((this as any)["__internal__endpoints"]);
 
-      (this as any)["__internal__websocket"] =
-        this.customWsProvider ?? new WebSocket((this as any).endpoint);
+      (this as any)["__internal__websocket"] = this.customWsProvider;
 
       if ((this as any)["__internal__websocket"]) {
         (this as any)["__internal__websocket"].onclose = (this as any)[

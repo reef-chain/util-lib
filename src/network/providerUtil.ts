@@ -25,8 +25,8 @@ export async function initProvider(
       provider: rpcConfig?.customWsProvider
         ? new ReefWsProvider(
             providerUrl,
-            rpcConfig.customWsProvider,
-            rpcConfig?.autoConnectMs
+            rpcConfig?.autoConnectMs,
+            rpcConfig.customWsProvider
           )
         : new WsProvider(providerUrl, rpcConfig?.autoConnectMs),
     });
