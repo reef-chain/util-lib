@@ -2,7 +2,7 @@ import { WebSocket } from "@polkadot/x-ws";
 import { WsProvider } from "@polkadot/api";
 
 export class ReefWsProvider extends WsProvider {
-  private customWsProvider?: any;
+  private customWsProvider?: WsProvider;
 
   constructor(
     endpoint: string,
@@ -10,7 +10,7 @@ export class ReefWsProvider extends WsProvider {
     headers: Record<string, string> = {},
     timeout: number,
     cacheCapacity: number,
-    customWsProvider?: any
+    customWsProvider?: WsProvider
   ) {
     super(endpoint, autoConnectMs, headers, timeout, cacheCapacity);
     this.customWsProvider = customWsProvider;
