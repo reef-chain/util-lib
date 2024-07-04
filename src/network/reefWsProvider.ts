@@ -66,7 +66,6 @@ export class FlutterWebSocket extends WebSocket {
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    super.send(data);
     if (this.sendToFlutterSubject) {
       this.sendToFlutterSubject.next({ data });
     } else {
