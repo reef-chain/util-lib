@@ -5,7 +5,7 @@ import {
   FlutterWebSocket,
   ReefWsProvider,
 } from "../../src/network";
-import { firstValueFrom } from "rxjs";
+import { Subject, firstValueFrom } from "rxjs";
 import { selectedProvider$ } from "../../src/reefState";
 
 describe("should test custom ws provider", () => {
@@ -49,10 +49,7 @@ describe("should test custom ws provider", () => {
         customWsProvider: mobileWsProvider,
       },
     });
-    const provider = await firstValueFrom(selectedProvider$);
-    const api = provider.api;
-
-    const lastHeader = await api.rpc.chain.getHeader();
-    expect(lastHeader.number).toBeDefined();
+    const response = await firstValueFrom(mobileWsProvider.connectToFlutter());
+    expect(response["data"]).toBeDefined();
   });
 });

@@ -1,26 +1,20 @@
+import { Observable, Subject } from "rxjs";
 import { WsProvider } from "@polkadot/api";
 import { WebSocket } from "@polkadot/x-ws";
-import { Subject } from "rxjs";
 
 export class FlutterWebSocket extends WebSocket {
   private sendToFlutterSubject: Subject<any> | null;
 
-  constructor(url: string) {
+  constructor(url: string, sendToFlutterSubject: Subject<any> | null) {
     super(url);
-    this.sendToFlutterSubject;
-  }
-
-  connectFlutterWs(_sendToFlutterSubject: Subject<any>) {
-    this.sendToFlutterSubject = _sendToFlutterSubject;
+    this.sendToFlutterSubject = sendToFlutterSubject;
   }
 
   send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
-    super.send(data);
-    console.log("sending mesaage====================");
     if (this.sendToFlutterSubject) {
       this.sendToFlutterSubject.next({ data });
     } else {
-      console.log(
+      console.error(
         "FlutterWebSocket Error=== Flutter Web Socket not initialized!"
       );
     }
@@ -28,8 +22,10 @@ export class FlutterWebSocket extends WebSocket {
 }
 
 export class ReefWsProvider extends WsProvider {
+  private sendToFlutterSubject: Subject<any> | null;
+
   constructor(
-    endpoint?: string,
+    endpoint: string,
     autoConnectMs?: number,
     headers: Record<string, string> = {},
     timeout?: number,
@@ -39,6 +35,7 @@ export class ReefWsProvider extends WsProvider {
   }
 
   override connect(): any {
+    this.sendToFlutterSubject = new Subject<{ data: any }>();
     if ((this as any)["__internal__websocket"]) {
       throw new Error("WebSocket is already connected");
     }
@@ -48,9 +45,11 @@ export class ReefWsProvider extends WsProvider {
         this as any
       ).selectEndpointIndex((this as any)["__internal__endpoints"]);
 
-      // note: if i directly pass the websocket and don't create a new instance then in that case the provider doesn't initialize i.e this.customWebSocket doesnt work, hence need to initialize it here and using custom web socket
       (this as any)["__internal__websocket"] = new FlutterWebSocket(
-        this.endpoint
+        (this as any)["__internal__endpoints"][
+          (this as any)["__internal__endpointIndex"]
+        ],
+        this.sendToFlutterSubject
       );
 
       if ((this as any)["__internal__websocket"]) {
@@ -74,5 +73,9 @@ export class ReefWsProvider extends WsProvider {
 
       throw error;
     }
+  }
+
+  public connectToFlutter(): Observable<Subject<{ data: any }>> {
+    return this.sendToFlutterSubject.asObservable();
   }
 }
