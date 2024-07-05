@@ -5,17 +5,21 @@ import { WebSocket } from "@polkadot/x-ws";
 export class FlutterWebSocket extends WebSocket {
   private sendToFlutterSubject: Subject<any> | null;
 
-  constructor(url: string, sendToFlutterSubject: Subject<any> | null) {
+  constructor(url: string, sendToFlutterSubject: Subject<any>) {
     super(url);
     this.sendToFlutterSubject = sendToFlutterSubject;
+    // TODO check why if not subscribed here it's not existing in send()
+    this.sendToFlutterSubject.subscribe(v => {
+      // console.log("");
+    });
   }
 
-  send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+  override send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     if (this.sendToFlutterSubject) {
       this.sendToFlutterSubject.next({ data });
     } else {
-      console.error(
-        "FlutterWebSocket Error=== Flutter Web Socket not initialized!"
+      console.log(
+        "ERROR FlutterWebSocket Error=== Flutter Web Socket not initialized!"
       );
     }
   }
@@ -25,18 +29,18 @@ export class FlutterWebSocket extends WebSocket {
 }
 
 export class FlutterWsProvider extends WsProvider {
-  private sendToFlutterSubject: Subject<{ data: any }> = new Subject<{
-    data: any;
-  }>();
+  private sendToFlutterSubject: Subject<{ data: any }>;
 
   constructor(
     endpoint: string,
+    sendToFlutterSubject: Subject<any>,
     autoConnectMs?: number,
     headers: Record<string, string> = {},
     timeout?: number,
     cacheCapacity?: number
   ) {
     super(endpoint, autoConnectMs, headers, timeout, cacheCapacity);
+    this.sendToFlutterSubject = sendToFlutterSubject;
   }
 
   override connect(): any {
@@ -79,7 +83,7 @@ export class FlutterWsProvider extends WsProvider {
     }
   }
 
-  public connectToFlutter(): Observable<{ data: any }> {
-    return this.sendToFlutterSubject.asObservable();
+  getFlutterWs(): FlutterWebSocket {
+    return (this as any)["__internal__websocket"];
   }
 }
