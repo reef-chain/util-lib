@@ -3,7 +3,7 @@ import { initReefState } from "../../src/reefState/initReefState";
 import {
   AVAILABLE_NETWORKS,
   FlutterWebSocket,
-  ReefWsProvider,
+  FlutterWsProvider,
 } from "../../src/network";
 import { Subject, firstValueFrom } from "rxjs";
 import { selectedProvider$ } from "../../src/reefState";
@@ -30,7 +30,7 @@ describe("should test custom ws provider", () => {
   //   expect(lastHeader.number).toBeDefined();
   // }),
   it("should connect to custom ws provider", async () => {
-    const mobileWsProvider = new ReefWsProvider(
+    const mobileWsProvider = new FlutterWsProvider(
       AVAILABLE_NETWORKS.testnet.rpcUrl
     );
     initReefState({

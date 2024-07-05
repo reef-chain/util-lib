@@ -19,10 +19,15 @@ export class FlutterWebSocket extends WebSocket {
       );
     }
   }
+  onFlutterWsMessage(data: MessageEvent<any>): void {
+    this.onmessage(data);
+  }
 }
 
-export class ReefWsProvider extends WsProvider {
-  private sendToFlutterSubject: Subject<any> | null;
+export class FlutterWsProvider extends WsProvider {
+  private sendToFlutterSubject: Subject<{ data: any }> = new Subject<{
+    data: any;
+  }>();
 
   constructor(
     endpoint: string,
@@ -35,7 +40,6 @@ export class ReefWsProvider extends WsProvider {
   }
 
   override connect(): any {
-    this.sendToFlutterSubject = new Subject<{ data: any }>();
     if ((this as any)["__internal__websocket"]) {
       throw new Error("WebSocket is already connected");
     }
@@ -75,7 +79,7 @@ export class ReefWsProvider extends WsProvider {
     }
   }
 
-  public connectToFlutter(): Observable<Subject<{ data: any }>> {
+  public connectToFlutter(): Observable<{ data: any }> {
     return this.sendToFlutterSubject.asObservable();
   }
 }
