@@ -23,8 +23,10 @@ export class FlutterWebSocket extends WebSocket {
       );
     }
   }
-  onFlutterWsMessage(data: MessageEvent<any>): void {
-    this.onmessage(data);
+  onFlutterWsMessage(data: MessageEvent<any>, rpcUrl: string): void {
+    if (this.url === rpcUrl) {
+      this.onmessage(data);
+    }
   }
 }
 
