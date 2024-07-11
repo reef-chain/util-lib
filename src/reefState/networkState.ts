@@ -1,5 +1,6 @@
 import { ReplaySubject } from "rxjs";
 import { Network } from "../network/network";
+import { WsProvider } from "@polkadot/api";
 
 // const providerSubj: ReplaySubject<Provider> = new ReplaySubject<Provider>(1);
 const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(
@@ -8,6 +9,7 @@ const selectedNetworkSubj: ReplaySubject<Network> = new ReplaySubject<Network>(
 
 export interface RpcConfig {
   autoConnectMs?: number;
+  customWsProvider?: WsProvider;
 }
 
 export let rpcConfig: RpcConfig = {};

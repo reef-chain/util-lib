@@ -20,3 +20,4 @@ export type {
   LatestBlockData,
   AccountIndexedTransactionType,
 } from "../reefState/latestBlockModel";
+export { FlutterWsProvider, FlutterWebSocket } from "./flutterWsProvider";
