@@ -1,6 +1,3 @@
-// anukulpandey
-// first fetch the token icon from pool if it is '' then fetch from explorer squid if it is also empty then fetch from the contractData info, if its still empty then resolve it from the base64 strings
-
 import axios from "axios";
 import { firstValueFrom } from "rxjs";
 import { httpClientInstance$, queryGql$ } from "src/graphql";
