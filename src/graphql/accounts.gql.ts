@@ -1,15 +1,18 @@
-export const EVM_ADDRESS_UPDATE_QUERY = `
-  query evmAddresses($accountIds: [String!]!) {
+export const INDEXED_ACCOUNT_UPDATE_QUERY = `
+  query evmIndexedAccount($accountIds: [String!]!) {
     accounts(where: { id_in: $accountIds }, orderBy: timestamp_DESC) {
       id
       evmAddress
+      freeBalance
+      lockedBalance
+      availableBalance
     }
   }
 `;
 
-export const getEvmAddressQuery = (accountIds: string[]) => {
+export const getIndexedAccountsQuery = (accountIds: string[]) => {
   return {
-    query: EVM_ADDRESS_UPDATE_QUERY,
+    query: INDEXED_ACCOUNT_UPDATE_QUERY,
     variables: { accountIds },
   };
 };

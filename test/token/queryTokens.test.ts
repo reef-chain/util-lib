@@ -67,6 +67,7 @@ describe("get tokens", () => {
     );
     expect(res.getStatusList().length).toBe(1);
     expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
+    console.log('TTT=',res.data.map(t=>t.data));
     expect(res.data.length).greaterThan(0);
   });
 

@@ -9,6 +9,9 @@ export interface AddressName {
 
 export interface ReefAccount extends AddressName {
   balance?: BigNumber;
+  freeBalance?: BigNumber;
+  lockedBalance?: BigNumber;
+  availableBalance?: BigNumber;
   evmAddress?: string;
   isEvmClaimed?: boolean;
   source?: string;

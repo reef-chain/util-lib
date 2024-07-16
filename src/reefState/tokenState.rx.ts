@@ -75,7 +75,7 @@ export const selectedTokenBalances_status$: Observable<
   httpClientInstance$,
   selectedAccountAddressChange$,
   forceReload$,
-  selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
+  // selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
     const [httpClient, signer, forceReload, _] = vals;

@@ -22,31 +22,36 @@ import {
 import { getAddressesErrorFallback } from "./errorUtil";
 import { httpClientInstance$ } from "../../graphql/httpClient";
 import { getLatestBlockAccountUpdates$ } from "../latestBlock";
-import { getEvmAddressQuery } from "../../graphql/accounts.gql";
+import { getIndexedAccountsQuery } from "../../graphql/accounts.gql";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { AccountIndexedTransactionType } from "../latestBlockModel";
+import {BigNumber} from "ethers";
 
 // eslint-disable-next-line camelcase
-interface AccountEvmAddrData {
+interface AccountIndexedData {
   address: string;
   // eslint-disable-next-line camelcase
   evm_address?: string;
   isEvmClaimed?: boolean;
+  balance?: BigNumber;
+  freeBalance?: BigNumber;
+  lockedBalance?: BigNumber;
+  availableBalance?: BigNumber;
 }
 
-function toAccountEvmAddrData(result: any): AccountEvmAddrData[] {
+function toAccountIndexedData(result: any): AccountIndexedData[] {
   return result.data.accounts.map(
     acc =>
       ({
         address: acc.id,
         isEvmClaimed: !!acc.evmAddress,
         evm_address: acc.evmAddress,
-      } as AccountEvmAddrData)
+      } as AccountIndexedData)
   );
 }
 
 const indexedAccountValues$: Observable<
-  StatusDataObject<AccountEvmAddrData[]>
+  StatusDataObject<AccountIndexedData[]>
 > = combineLatest([httpClientInstance$, availableAddresses$]).pipe(
   switchMap(([httpClient, signers]) => {
     if (!signers) {
@@ -63,13 +68,15 @@ const indexedAccountValues$: Observable<
       AccountIndexedTransactionType.REEF_BIND_TX,
     ]).pipe(
       startWith(true),
-      switchMap(_ => queryGql$(httpClient, getEvmAddressQuery(addresses)))
+      switchMap(_ => queryGql$(httpClient, getIndexedAccountsQuery(addresses)))
     );
   }),
-  map((result: any): StatusDataObject<AccountEvmAddrData[]> => {
+  map((result: any): StatusDataObject<AccountIndexedData[]> => {
     if (result?.data?.accounts) {
+      console.log('AAAA=',result.data.accounts);
+      ...
       return toFeedbackDM(
-        toAccountEvmAddrData(result),
+        toAccountIndexedData(result),
         FeedbackStatusCode.COMPLETE_DATA,
         "Indexed evm address loaded"
       );
@@ -88,6 +95,7 @@ const indexedAccountValues$: Observable<
 );
 
 export const accountsWithUpdatedIndexedData$ = combineLatest([
+  // TODO remove chain data values
   accountsWithUpdatedChainDataBalances$,
   accountsLocallyUpdatedData$,
   indexedAccountValues$,
@@ -96,17 +104,17 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
     (
       state: {
         lastlocallyUpdated: StatusDataObject<StatusDataObject<ReefAccount>[]>;
-        lastIndexed: StatusDataObject<AccountEvmAddrData[]>;
+        lastIndexed: StatusDataObject<AccountIndexedData[]>;
         lastSigners: StatusDataObject<StatusDataObject<ReefAccount>[]>;
         signers: StatusDataObject<StatusDataObject<ReefAccount>[]>;
       },
       [accountsWithChainBalance, locallyUpdated, indexed]: [
         StatusDataObject<StatusDataObject<ReefAccount>[]>,
         StatusDataObject<StatusDataObject<ReefAccount>[]>,
-        StatusDataObject<AccountEvmAddrData[]>
+        StatusDataObject<AccountIndexedData[]>
       ]
     ) => {
-      let updateBindValues: StatusDataObject<AccountEvmAddrData>[] = [];
+      let updateBindValues: StatusDataObject<AccountIndexedData>[] = [];
       if (state.lastlocallyUpdated !== locallyUpdated) {
         // locally updated change
         updateBindValues = locallyUpdated.data.map(updSigner =>
@@ -121,7 +129,7 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
         );
       } else if (state.lastIndexed !== indexed) {
         // indexed change
-        updateBindValues = indexed.data.map((updSigner: AccountEvmAddrData) =>
+        updateBindValues = indexed.data.map((updSigner: AccountIndexedData) =>
           toFeedbackDM(
             {
               address: updSigner.address,
