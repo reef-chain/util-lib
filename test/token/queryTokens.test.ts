@@ -7,12 +7,11 @@ import {
   selectedTransactionHistory_status$,
 } from "../../src/reefState/tokenState.rx";
 import { FeedbackStatusCode } from "../../src/reefState/model/statusDataObject";
-import { firstValueFrom, skip, skipWhile, tap } from "rxjs";
+import { firstValueFrom, skipWhile, tap } from "rxjs";
 import { AVAILABLE_NETWORKS } from "../../src/network/network";
 import { REEF_ADDRESS } from "../../src/token/tokenModel";
 import { accountsWithUpdatedIndexedData$ } from "../../src/reefState/account/accountsIndexedData";
 import { BigNumber } from "ethers";
-import { accounts_status$ } from "../../src/reefState";
 
 const selectedAddress = "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN";
 describe("get tokens", () => {
@@ -85,6 +84,7 @@ describe("get tokens", () => {
         // tap(v=>console.log('val=',v.data[1]?.data?.balance?.toString(), ' // acc=',v.data[1]?.data?.address)),
         // skip(100),
         skipWhile(value => {
+          // return !value.hasStatus(FeedbackStatusCode.COMPLETE_DATA);
           const reef = value.data.find(v => v.data.address === REEF_ADDRESS);
           return reef ? !reef.data.price : true;
         })

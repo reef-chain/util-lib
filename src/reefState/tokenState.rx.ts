@@ -78,28 +78,18 @@ export const selectedTokenBalances_status$: Observable<
   // selectedAccountFtBalanceUpdate$.pipe(startWith(true)),
 ]).pipe(
   switchMap(vals => {
-    const [httpClient, signer, forceReload, _] = vals;
+    const [httpClient, reefAccount, forceReload] = vals;
     return getLatestBlockAccountUpdates$(
-      [signer.data.address],
+      [reefAccount.data.address],
       [AccountIndexedTransactionType.REEF20_TRANSFER]
     ).pipe(
       startWith(true),
       switchMap(_ => {
         return loadAccountTokens_sdo(vals).pipe(
-          switchMap(
+          map(
             (
               tkns: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
-            ) => {
-              // console.log("loading account token balances", tkns);
-              return combineLatest([
-                of(tkns),
-                selectedAccountReefBalance$,
-              ]).pipe(
-                map(arrVal =>
-                  replaceReefBalanceFromAccount(arrVal[0], arrVal[1])
-                )
-              );
-            }
+            ) => replaceReefBalanceFromAccount(tkns, reefAccount.data)
           ),
           catchError((err: any) => {
             console.log("ERROR2 selectedTokenBalances_status$=", err);

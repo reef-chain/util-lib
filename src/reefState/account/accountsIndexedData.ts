@@ -60,6 +60,7 @@ const indexedAccountValues$: Observable<
     const addresses = reefAccounts.map((s: any) => s.address);
     return getLatestBlockAccountUpdates$(addresses, [
       AccountIndexedTransactionType.REEF_BIND_TX,
+      AccountIndexedTransactionType.REEF20_TRANSFER,
     ]).pipe(
       startWith(true),
       switchMap(_ =>

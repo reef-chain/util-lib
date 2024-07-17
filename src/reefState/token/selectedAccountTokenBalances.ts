@@ -171,14 +171,19 @@ const resolveEmptyIconUrls = (
 // adding shareReplay is messing up TypeScriptValidateTypes
 export const replaceReefBalanceFromAccount = (
   tokens: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>,
-  accountBalance: BigNumber | null | undefined
+  account: ReefAccount
 ) => {
-  if (!accountBalance || accountBalance.lte(BigNumber.from("0"))) {
+  if (
+    !account ||
+    account.freeBalance == null ||
+    account.freeBalance.lte(BigNumber.from("0"))
+  ) {
     return tokens;
   }
   const reefTkn = tokens.data.find(t => t.data.address === REEF_ADDRESS);
   if (reefTkn) {
-    reefTkn.data.balance = accountBalance;
+    reefTkn.data.balance = account.freeBalance;
+    reefTkn.data["lockedBalance"] = account.lockedBalance;
   }
   return tokens;
 };
