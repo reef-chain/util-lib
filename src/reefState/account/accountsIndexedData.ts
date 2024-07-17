@@ -9,13 +9,11 @@ import {
   startWith,
   switchMap,
 } from "rxjs";
-import { accountsWithUpdatedChainDataBalances$ } from "./accountsWithUpdatedChainDataBalances";
-import { ReefAccount } from "../../account/accountModel";
+import { AccountIndexedData, ReefAccount } from "../../account/accountModel";
 import { accountsLocallyUpdatedData$ } from "./accountsLocallyUpdatedData";
 import { availableAddresses$ } from "./availableAddresses";
 import {
   FeedbackStatusCode,
-  isFeedbackDM,
   StatusDataObject,
   toFeedbackDM,
 } from "../model/statusDataObject";
@@ -25,36 +23,32 @@ import { getLatestBlockAccountUpdates$ } from "../latestBlock";
 import { getIndexedAccountsQuery } from "../../graphql/accounts.gql";
 import { queryGql$ } from "../../graphql/gqlUtil";
 import { AccountIndexedTransactionType } from "../latestBlockModel";
-import {BigNumber} from "ethers";
+import { AxiosInstance } from "axios";
+import { BigNumber } from "ethers";
 
-// eslint-disable-next-line camelcase
-interface AccountIndexedData {
-  address: string;
-  // eslint-disable-next-line camelcase
-  evm_address?: string;
-  isEvmClaimed?: boolean;
-  balance?: BigNumber;
-  freeBalance?: BigNumber;
-  lockedBalance?: BigNumber;
-  availableBalance?: BigNumber;
-}
-
-function toAccountIndexedData(result: any): AccountIndexedData[] {
-  return result.data.accounts.map(
+function toAccountIndexedData(accounts: any[]): AccountIndexedData[] {
+  return accounts?.map(
     acc =>
       ({
         address: acc.id,
         isEvmClaimed: !!acc.evmAddress,
-        evm_address: acc.evmAddress,
+        evmAddress: acc.evmAddress,
+        balance: BigNumber.from(acc.availableBalance || 0),
+        // server indexer issues:
+        // acc.availableBalance is free - not locked
+        // acc.freeBalance is total balance - locked+free
+        freeBalance: BigNumber.from(acc.availableBalance || 0),
+        availableBalance: BigNumber.from(acc.freeBalance || 0),
+        lockedBalance: BigNumber.from(acc.lockedBalance || 0),
       } as AccountIndexedData)
   );
 }
 
 const indexedAccountValues$: Observable<
-  StatusDataObject<AccountIndexedData[]>
+  StatusDataObject<StatusDataObject<ReefAccount>[]>
 > = combineLatest([httpClientInstance$, availableAddresses$]).pipe(
-  switchMap(([httpClient, signers]) => {
-    if (!signers) {
+  switchMap(([httpClient, reefAccounts]) => {
+    if (!reefAccounts) {
       return of(
         toFeedbackDM(
           [],
@@ -63,29 +57,48 @@ const indexedAccountValues$: Observable<
         )
       );
     }
-    const addresses = signers.map((s: any) => s.address);
+    const addresses = reefAccounts.map((s: any) => s.address);
     return getLatestBlockAccountUpdates$(addresses, [
       AccountIndexedTransactionType.REEF_BIND_TX,
     ]).pipe(
       startWith(true),
-      switchMap(_ => queryGql$(httpClient, getIndexedAccountsQuery(addresses)))
+      switchMap(_ =>
+        queryGql$(
+          httpClient as AxiosInstance,
+          getIndexedAccountsQuery(addresses)
+        )
+      ),
+      map(res => {
+        return {
+          reefAccounts,
+          indexedAccsData: toAccountIndexedData(res.data?.accounts),
+        };
+      })
     );
   }),
-  map((result: any): StatusDataObject<AccountIndexedData[]> => {
-    if (result?.data?.accounts) {
-      console.log('AAAA=',result.data.accounts);
-      ...
+  map(
+    (result: {
+      reefAccounts: ReefAccount[];
+      indexedAccsData: AccountIndexedData[];
+    }): StatusDataObject<StatusDataObject<ReefAccount>[]> => {
       return toFeedbackDM(
-        toAccountIndexedData(result),
+        result.reefAccounts?.map(rAcc =>
+          toFeedbackDM(
+            {
+              ...rAcc,
+              ...result.indexedAccsData.find(
+                iAcc => iAcc.address === rAcc.address
+              ),
+            } as ReefAccount,
+            FeedbackStatusCode.COMPLETE_DATA
+          )
+        ) as StatusDataObject<ReefAccount>[],
         FeedbackStatusCode.COMPLETE_DATA,
         "Indexed evm address loaded"
       );
+      // throw new Error("No result from EVM_ADDRESS_UPDATE_GQL");
     }
-    if (isFeedbackDM(result)) {
-      return result;
-    }
-    throw new Error("No result from EVM_ADDRESS_UPDATE_GQL");
-  }),
+  ),
   catchError(err => {
     console.log("ERROR indexedAccountValues$=", err.message);
     return of(toFeedbackDM([], FeedbackStatusCode.ERROR, err.message));
@@ -95,8 +108,6 @@ const indexedAccountValues$: Observable<
 );
 
 export const accountsWithUpdatedIndexedData$ = combineLatest([
-  // TODO remove chain data values
-  accountsWithUpdatedChainDataBalances$,
   accountsLocallyUpdatedData$,
   indexedAccountValues$,
 ]).pipe(
@@ -104,88 +115,63 @@ export const accountsWithUpdatedIndexedData$ = combineLatest([
     (
       state: {
         lastlocallyUpdated: StatusDataObject<StatusDataObject<ReefAccount>[]>;
-        lastIndexed: StatusDataObject<AccountIndexedData[]>;
-        lastSigners: StatusDataObject<StatusDataObject<ReefAccount>[]>;
+        lastIndexed: StatusDataObject<StatusDataObject<ReefAccount>[]>;
+        // lastSigners: StatusDataObject<StatusDataObject<ReefAccount>[]>;
         signers: StatusDataObject<StatusDataObject<ReefAccount>[]>;
       },
-      [accountsWithChainBalance, locallyUpdated, indexed]: [
+      [locallyUpdated, indexed]: [
         StatusDataObject<StatusDataObject<ReefAccount>[]>,
-        StatusDataObject<StatusDataObject<ReefAccount>[]>,
-        StatusDataObject<AccountIndexedData[]>
+        StatusDataObject<StatusDataObject<ReefAccount>[]>
       ]
     ) => {
-      let updateBindValues: StatusDataObject<AccountIndexedData>[] = [];
+      let accounts = toFeedbackDM<StatusDataObject<ReefAccount>[]>(
+        [],
+        FeedbackStatusCode.NOT_SET
+      );
+
       if (state.lastlocallyUpdated !== locallyUpdated) {
         // locally updated change
-        updateBindValues = locallyUpdated.data.map(updSigner =>
-          toFeedbackDM(
-            {
-              address: updSigner.data.address,
-              isEvmClaimed: updSigner.data.isEvmClaimed,
-              evmAddress: updSigner.data.evmAddress,
-            },
-            updSigner.getStatusList()
-          )
-        );
-      } else if (state.lastIndexed !== indexed) {
-        // indexed change
-        updateBindValues = indexed.data.map((updSigner: AccountIndexedData) =>
-          toFeedbackDM(
-            {
-              address: updSigner.address,
-              isEvmClaimed: !!updSigner.evm_address,
-              evmAddress: updSigner.evm_address,
-            },
-            indexed.getStatusList()
-          )
-        );
-      } else {
-        // balance change
-        updateBindValues = state.lastSigners.data.map(updSigner =>
-          toFeedbackDM(
-            {
-              address: updSigner.data.address,
-              isEvmClaimed: updSigner.data.isEvmClaimed,
-              evmAddress: updSigner.data.evmAddress,
-            },
-            updSigner.getStatusList()
-          )
+        accounts = toFeedbackDM(
+          indexed.data.map(iAcc => {
+            const upd = locallyUpdated.data.find(
+              uAcc => uAcc.data.address === iAcc.data.address
+            );
+            if (upd) {
+              return toFeedbackDM(
+                { ...iAcc.data, ...upd.data } as ReefAccount,
+                upd.getStatusList()
+              );
+            }
+            return iAcc;
+          }),
+          locallyUpdated.getStatusList().concat(indexed.getStatusList())
         );
       }
-      updateBindValues.forEach((updVal: StatusDataObject<ReefAccount>) => {
-        const signer = accountsWithChainBalance.data.find(
-          sig => sig.data.address === updVal.data.address
-        );
-        if (signer) {
-          const isEvmClaimedPropName = "isEvmClaimed";
-          const resetEvmClaimedStat = signer
-            .getStatusList()
-            .filter(stat => stat.propName != isEvmClaimedPropName);
-          updVal.getStatusList().forEach(updStat => {
-            resetEvmClaimedStat.push({
-              propName: isEvmClaimedPropName,
-              code: updStat.code,
-            });
-          });
-          if (updVal.hasStatus(FeedbackStatusCode.COMPLETE_DATA)) {
-            signer.data.isEvmClaimed = !!updVal.data.isEvmClaimed;
-            signer.data.evmAddress = updVal.data.evmAddress;
-          }
-          signer.setStatus(resetEvmClaimedStat);
-        }
-      });
+
+      if (state.lastIndexed !== indexed) {
+        // indexed change
+        accounts = toFeedbackDM(indexed.data, indexed.getStatusList());
+      }
+
       return {
-        signers: accountsWithChainBalance,
+        signers: accounts,
         lastlocallyUpdated: locallyUpdated,
         lastIndexed: indexed,
-        lastSigners: accountsWithChainBalance,
       };
     },
     {
-      signers: toFeedbackDM([], FeedbackStatusCode.LOADING),
-      lastlocallyUpdated: toFeedbackDM([], FeedbackStatusCode.LOADING),
-      lastIndexed: toFeedbackDM([], FeedbackStatusCode.LOADING),
-      lastSigners: toFeedbackDM([], FeedbackStatusCode.LOADING),
+      signers: toFeedbackDM<StatusDataObject<ReefAccount>[]>(
+        [],
+        FeedbackStatusCode.LOADING
+      ),
+      lastlocallyUpdated: toFeedbackDM<StatusDataObject<ReefAccount>[]>(
+        [],
+        FeedbackStatusCode.LOADING
+      ),
+      lastIndexed: toFeedbackDM<StatusDataObject<ReefAccount>[]>(
+        [],
+        FeedbackStatusCode.LOADING
+      ),
     }
   ),
   map(

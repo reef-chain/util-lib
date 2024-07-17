@@ -12,6 +12,7 @@ import { AVAILABLE_NETWORKS } from "../../src/network/network";
 import { REEF_ADDRESS } from "../../src/token/tokenModel";
 import { accountsWithUpdatedIndexedData$ } from "../../src/reefState/account/accountsIndexedData";
 import { BigNumber } from "ethers";
+import { accounts_status$ } from "../../src/reefState";
 
 const selectedAddress = "5G9f52Dx7bPPYqekh1beQsuvJkhePctWcZvPDDuhWSpDrojN";
 describe("get tokens", () => {
@@ -22,6 +23,7 @@ describe("get tokens", () => {
       jsonAccounts: {
         accounts: [
           {
+            name: "test acc",
             address: selectedAddress,
             // address: "5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP",
             isSelected: true,
@@ -52,6 +54,9 @@ describe("get tokens", () => {
     expect(res.data.length).greaterThan(0);
     expect(res.data[0].data.address).toEqual(selectedAddress);
     expect(res.data[0].data.balance?.gt("0")).toBeTruthy();
+    expect(
+      res.data[0].data.availableBalance?.gt(res.data[0].data.freeBalance)
+    ).toBeTruthy();
     expect(res.data[0].data.isEvmClaimed).toBeDefined();
   });
 
@@ -67,7 +72,10 @@ describe("get tokens", () => {
     );
     expect(res.getStatusList().length).toBe(1);
     expect(res.hasStatus(FeedbackStatusCode.COMPLETE_DATA)).toBe(true);
-    console.log('TTT=',res.data.map(t=>t.data));
+    console.log(
+      "TTT=",
+      res.data.map(t => t.data)
+    );
     expect(res.data.length).greaterThan(0);
   });
 
