@@ -23,6 +23,7 @@ export interface InjectedAccount {
 
 export interface InjectedAccountWithMeta {
   address: string;
+  name?: string;
   meta: {
     genesisHash?: string | null | undefined;
     name?: string | null | undefined;

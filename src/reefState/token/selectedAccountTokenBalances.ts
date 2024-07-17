@@ -191,14 +191,13 @@ export const replaceReefBalanceFromAccount = (
 // noinspection TypeScriptValidateTypes
 export const loadAccountTokens_sdo = ([
   httpClient,
-  signer,
-  forceReloadj,
-  tokensUpdated,
-]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
+  reefAccount_sdo,
+  forceReload,
+]: [AxiosInstance, StatusDataObject<ReefAccount>, boolean]): Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > => {
   // TODO check the status of signer - could be loading?
-  return !signer
+  return !reefAccount_sdo
     ? of(
         toFeedbackDM(
           [],
@@ -207,7 +206,10 @@ export const loadAccountTokens_sdo = ([
         )
       )
     : // can also be httpClient subscription
-      queryGql$(httpClient, getSignerTokensQuery(signer.data.address)).pipe(
+      queryGql$(
+        httpClient,
+        getSignerTokensQuery(reefAccount_sdo.data.address)
+      ).pipe(
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(
