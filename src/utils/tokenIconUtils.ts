@@ -1,10 +1,10 @@
 import axios from "axios";
 import { firstValueFrom } from "rxjs";
-import { httpClientInstance$, queryGql$ } from "src/graphql";
-import { getReefswapNetworkConfig } from "src/network";
-import { selectedNetwork$ } from "src/reefState";
-import { getIconUrl } from "src/token/getIconUrl";
-import { getIpfsUrl } from "src/token/nftUtil";
+import { httpClientInstance$, queryGql$ } from "../graphql";
+import { getReefswapNetworkConfig } from "../network";
+import { selectedNetwork$ } from "../reefState";
+import { getIconUrl } from "../token/getIconUrl";
+import { getIpfsUrl } from "../token/nftUtil";
 
 const getTokenIconExplorerQuery = (tokenAddresses: string[]) => {
   const formattedAddresses = tokenAddresses
