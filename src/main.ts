@@ -6,6 +6,7 @@ export * from "./account";
 export * as evm from "./evm";
 export * as addressUtils from "./utils/addressUtils";
 export * as balanceUtils from "./utils/balanceUtils";
+export * as tokenIconUtils from "./utils/tokenIconUtils";
 export * as transactionUtils from "./transaction";
 export * as signatureUtils from "./signature/tx-signature-util";
 export * as extension from "./extension";
