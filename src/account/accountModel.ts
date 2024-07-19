@@ -17,9 +17,6 @@ export interface AccountIndexedData extends AddressName {
 }
 
 export interface ReefAccount extends AccountIndexedData {
-  // balance?: BigNumber;
-  // evmAddress?: string;
-  // isEvmClaimed?: boolean;
   source?: string;
   genesisHash?: string;
 }
