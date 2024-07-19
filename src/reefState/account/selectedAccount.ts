@@ -57,20 +57,20 @@ export const selectedAccount_status$: Observable<
         StatusDataObject<StatusDataObject<ReefAccount>[]>
       ]
     ): StatusDataObject<ReefAccount> | undefined => {
-      const [selectedAddress, signers] = selectedAddressAndSigners;
-      if (!selectedAddress || !signers || !signers.data?.length) {
+      const [selectedAddress, accounts_sdo] = selectedAddressAndSigners;
+      if (!selectedAddress && (!accounts_sdo || !accounts_sdo.data?.length)) {
         return undefined;
       }
 
       let foundSigner: StatusDataObject<ReefAccount> | undefined =
-        signers.data.find(
+        accounts_sdo.data.find(
           (signer: StatusDataObject<ReefAccount>) =>
             signer.data.address === selectedAddress
         );
       if (!foundSigner) {
         foundSigner =
-          signers && signers.data
-            ? (signers.data[0] as StatusDataObject<ReefAccount>)
+          accounts_sdo && accounts_sdo.data
+            ? (accounts_sdo.data[0] as StatusDataObject<ReefAccount>)
             : undefined;
       }
       try {

@@ -171,14 +171,19 @@ const resolveEmptyIconUrls = (
 // adding shareReplay is messing up TypeScriptValidateTypes
 export const replaceReefBalanceFromAccount = (
   tokens: StatusDataObject<StatusDataObject<Token | TokenBalance>[]>,
-  accountBalance: BigNumber | null | undefined
+  account: ReefAccount
 ) => {
-  if (!accountBalance || accountBalance.lte(BigNumber.from("0"))) {
+  if (
+    !account ||
+    account.freeBalance == null ||
+    account.freeBalance.lte(BigNumber.from("0"))
+  ) {
     return tokens;
   }
   const reefTkn = tokens.data.find(t => t.data.address === REEF_ADDRESS);
   if (reefTkn) {
-    reefTkn.data.balance = accountBalance;
+    reefTkn.data.balance = account.freeBalance;
+    reefTkn.data["lockedBalance"] = account.lockedBalance;
   }
   return tokens;
 };
@@ -186,14 +191,13 @@ export const replaceReefBalanceFromAccount = (
 // noinspection TypeScriptValidateTypes
 export const loadAccountTokens_sdo = ([
   httpClient,
-  signer,
-  forceReloadj,
-  tokensUpdated,
-]: [AxiosInstance, StatusDataObject<ReefAccount>, any, any]): Observable<
+  reefAccount_sdo,
+  forceReload,
+]: [AxiosInstance, StatusDataObject<ReefAccount>, boolean]): Observable<
   StatusDataObject<StatusDataObject<Token | TokenBalance>[]>
 > => {
   // TODO check the status of signer - could be loading?
-  return !signer
+  return !reefAccount_sdo
     ? of(
         toFeedbackDM(
           [],
@@ -202,7 +206,10 @@ export const loadAccountTokens_sdo = ([
         )
       )
     : // can also be httpClient subscription
-      queryGql$(httpClient, getSignerTokensQuery(signer.data.address)).pipe(
+      queryGql$(
+        httpClient,
+        getSignerTokensQuery(reefAccount_sdo.data.address)
+      ).pipe(
         map((res: any): TokenBalance[] => {
           if (res?.data?.tokenHolders) {
             return res.data.tokenHolders.map(

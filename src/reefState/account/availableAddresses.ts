@@ -34,7 +34,7 @@ export const availableAddresses$: Observable<ReefAccount[]> =
             ? (a as InjectedAccountWithMeta).meta
             : { source };
 
-          return { address: a.address, ...meta } as ReefAccount;
+          return { address: a.address, name: a.name, ...meta } as ReefAccount;
         })
     ),
     shareReplay(1)

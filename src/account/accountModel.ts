@@ -7,10 +7,19 @@ export interface AddressName {
   name?: string;
 }
 
-export interface ReefAccount extends AddressName {
-  balance?: BigNumber;
+export interface AccountIndexedData extends AddressName {
   evmAddress?: string;
   isEvmClaimed?: boolean;
+  balance?: BigNumber;
+  freeBalance?: BigNumber;
+  lockedBalance?: BigNumber;
+  availableBalance?: BigNumber;
+}
+
+export interface ReefAccount extends AccountIndexedData {
+  // balance?: BigNumber;
+  // evmAddress?: string;
+  // isEvmClaimed?: boolean;
   source?: string;
   genesisHash?: string;
 }
