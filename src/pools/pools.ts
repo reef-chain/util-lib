@@ -86,25 +86,6 @@ export const loadPool = async (
   };
 };
 
-/*export const loadPools = async (
-  tokens: Token[],
-  signer: Signer,
-  factoryAddress: string,
-): Promise<Pool[]> => {
-  const tokenCombinations = uniqueCombinations(tokens);
-  const pools: Pool[] = [];
-  for (let index = 0; index < tokenCombinations.length; index += 1) {
-    try {
-      const [token1, token2] = tokenCombinations[index];
-      /!* eslint-disable no-await-in-loop *!/
-      const pool = await loadPool(token1, token2, signer, factoryAddress);
-      /!* eslint-disable no-await-in-loop *!/
-      pools.push(pool);
-    } catch (e) {}
-  }
-  return pools;
-};*/
-
 const cachePool$: Map<
   string,
   Observable<StatusDataObject<Pool | null>>
