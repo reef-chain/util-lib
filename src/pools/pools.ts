@@ -31,7 +31,11 @@ import { ensure } from "../utils/utils";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
 import { getReefswapNetworkConfig } from "src/network";
-import { selectedNetwork$ } from "src/reefState";
+import {
+  selectedAccount$,
+  selectedAddress$,
+  selectedNetwork$,
+} from "src/reefState";
 import { queryGql$ } from "src/graphql";
 
 const findPoolTokenAddress = async (
@@ -45,9 +49,13 @@ const findPoolTokenAddress = async (
   return address;
 };
 
-const getPoolInfoQuery = (address: string, time: string) => `
+const getPoolInfoQuery = (
+  address: string,
+  time: string,
+  selectedAddress: string
+) => `
 query PoolInfoQuery {
-  poolInfo(address: "${address}", fromTime: "${time}", signerAddress: "", toTime: "${time}") {
+  poolInfo(address: "${address}", fromTime: "${time}", signerAddress: "${selectedAddress}", toTime: "${time}") {
     totalSupply
     userSupply
     reserves {
@@ -76,6 +84,7 @@ export const loadPool = async (
   date.setDate(date.getDate() - 2);
 
   const network = await firstValueFrom(selectedNetwork$);
+  const selectedAccount = await firstValueFrom(selectedAccount$);
 
   const dexHttpClient = axios.create({
     baseURL: getReefswapNetworkConfig(network).graphqlDexsUrl,
@@ -84,7 +93,11 @@ export const loadPool = async (
   let res = (
     await firstValueFrom(
       queryGql$(dexHttpClient, {
-        query: getPoolInfoQuery(address, date.toISOString()),
+        query: getPoolInfoQuery(
+          address,
+          date.toISOString(),
+          selectedAccount.evmAddress
+        ),
         variables: {},
       })
     )

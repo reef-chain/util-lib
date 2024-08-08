@@ -22,7 +22,7 @@ describe("pools", () => {
     });
   });
   it("should load pool details", async () => {
-    const res = await firstValueFrom(selectedPools_status$.pipe(skip(1)));
+    const res = await firstValueFrom(selectedPools_status$.pipe(skip(10)));
     expect(res.data.length).toBeGreaterThan(0);
   });
 });
