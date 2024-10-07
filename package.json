@@ -1,7 +1,7 @@
 {
   "name": "@reef-chain/util-lib",
   "private": false,
-  "version": "3.0.0-rc1",
+  "version": "3.0.0",
   "main": "./dist/src/main.js",
   "module": "./dist/module/util-lib.mjs",
   "types": "./dist/dts/main.d.ts",
@@ -36,7 +36,7 @@
     "@polkadot/api": "^13.2.1",
     "@polkadot/extension-inject": "0.53.1",
     "@polkadot/types": "^13.2.1",
-    "@reef-chain/evm-provider": "3.0.0-rc1",
+    "@reef-chain/evm-provider": "3.0.0",
     "@walletconnect/sign-client": "^2.12.2",
     "@walletconnect/utils": "^2.12.2",
     "axios": "^1.6.2",
