@@ -30,13 +30,13 @@ import {
 import { ensure } from "../utils/utils";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
 import axios from "axios";
-import { getReefswapNetworkConfig } from "src/network";
+import { getReefswapNetworkConfig } from "../network";
 import {
   selectedAccount$,
   selectedAddress$,
   selectedNetwork$,
-} from "src/reefState";
-import { queryGql$ } from "src/graphql";
+} from "../reefState";
+import { queryGql$ } from "../graphql";
 
 const findPoolTokenAddress = async (
   address1: string,
