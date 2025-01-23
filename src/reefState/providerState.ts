@@ -6,9 +6,9 @@ import {
   map,
   mergeScan,
   Observable,
+  ReplaySubject,
   shareReplay,
   startWith,
-  Subject,
   tap,
 } from "rxjs";
 import { Provider } from "@reef-chain/evm-provider";
@@ -26,7 +26,7 @@ import {
 import { Network } from "../network/network";
 import { forceReload$ } from "./token/force-reload-tokens";
 
-const providerConnStateSubj = new Subject<WsConnectionState>();
+const providerConnStateSubj = new ReplaySubject<WsConnectionState>(1);
 export const providerConnState$: Observable<WsConnectionState> =
   getCollectedWsStateValue$(providerConnStateSubj);
 

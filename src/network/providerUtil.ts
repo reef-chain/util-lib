@@ -1,5 +1,5 @@
 import { Provider } from "@reef-chain/evm-provider";
-import { Subject, firstValueFrom } from "rxjs";
+import { firstValueFrom, ReplaySubject } from "rxjs";
 import { WsConnectionState } from "../reefState/ws-connection-state";
 import { selectedProvider$ } from "../reefState";
 import { RpcConfig } from "../reefState/networkState";
@@ -7,13 +7,13 @@ import { WsProvider } from "@polkadot/api";
 
 export type InitProvider = (
   providerUrl: string,
-  providerConnStateSubj?: Subject<WsConnectionState>,
+  providerConnStateSubj?: ReplaySubject<WsConnectionState>,
   rpcConfig?: RpcConfig
 ) => Promise<Provider>;
 
 export async function initProvider(
   providerUrl: string,
-  providerConnStateSubj?: Subject<WsConnectionState>,
+  providerConnStateSubj?: ReplaySubject<WsConnectionState>,
   rpcConfig?: RpcConfig
 ) {
   let newProvider;
@@ -42,7 +42,7 @@ export async function initProvider(
       });
     });
     newProvider.api.on("error", v => {
-      console.log("util-lib providerError");
+      console.log("util-lib providerError =", v);
       providerConnStateSubj?.next({
         isConnected: false,
         status: {
@@ -54,7 +54,7 @@ export async function initProvider(
       });
     });
     newProvider.api.on("disconnected", v => {
-      console.log("util-lib providerDISConnected");
+      console.log("util-lib providerDISConnected=", v);
       providerConnStateSubj?.next({
         isConnected: false,
         status: {

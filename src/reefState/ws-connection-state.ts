@@ -1,4 +1,4 @@
-import { scan, shareReplay, startWith, Subject } from "rxjs";
+import { ReplaySubject, scan, shareReplay, startWith } from "rxjs";
 
 type ConnState = "error" | "connecting" | "connected" | "disconnected";
 
@@ -9,7 +9,7 @@ export interface WsConnectionState {
 }
 
 export function getCollectedWsStateValue$(
-  fromSubj: Subject<WsConnectionState>
+  fromSubj: ReplaySubject<WsConnectionState>
 ) {
   return fromSubj.pipe(
     scan(
