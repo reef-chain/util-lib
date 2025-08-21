@@ -2,9 +2,10 @@ export const calculateTokenPrices = (pairs: any[], tokenPrices: {}) => {
   let updated = false;
 
   pairs.forEach(pair => {
-    const { token1, token2, reserved1, reserved2 } = pair;
-    const reserve1 = parseFloat(reserved1);
-    const reserve2 = parseFloat(reserved2);
+    const { token1, token2, reserved1, reserved2, decimals1, decimals2 } = pair;
+
+    const reserve1 = parseFloat(reserved1) / Math.pow(10, decimals1);
+    const reserve2 = parseFloat(reserved2) / Math.pow(10, decimals2);
 
     if (
       tokenPrices[token1] !== undefined &&
