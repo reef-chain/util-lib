@@ -130,7 +130,13 @@ export const calculateTokenPrice_sdo = (
     reefTokenPool.data!,
     REEF_ADDRESS
   );
-  ratio = reefReserve / tokenReserve;
+
+  const normalizedReefReserve = Number(reefReserve) / Math.pow(10, 18);
+  const normalizedTokenReserve =
+    Number(tokenReserve) / Math.pow(10, (token as Token).decimals);
+
+  ratio = normalizedReefReserve / normalizedTokenReserve;
+
   const priceVal = ratio * reefPrice.data;
   return toFeedbackDM(priceVal, FeedbackStatusCode.COMPLETE_DATA);
 };
