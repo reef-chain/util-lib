@@ -1,5 +1,5 @@
 import { Signer } from "@reef-chain/evm-provider";
-import { Contract } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { getReefswapFactory } from "../network/rpc";
 import {
   EMPTY_ADDRESS,
@@ -13,6 +13,7 @@ import { ReefswapPair } from "../token/abi/ReefswapPair";
 import {
   catchError,
   combineLatest,
+  firstValueFrom,
   map,
   Observable,
   of,
@@ -28,6 +29,14 @@ import {
 } from "../reefState/model/statusDataObject";
 import { ensure } from "../utils/utils";
 import { Signer as EthersSigner } from "@ethersproject/abstract-signer";
+import axios from "axios";
+import { getReefswapNetworkConfig } from "../network";
+import {
+  selectedAccount$,
+  selectedAddress$,
+  selectedNetwork$,
+} from "../reefState";
+import { queryGql$ } from "../graphql";
 
 const findPoolTokenAddress = async (
   address1: string,
@@ -39,6 +48,23 @@ const findPoolTokenAddress = async (
   const address = await reefswapFactory.getPair(address1, address2);
   return address;
 };
+
+const getPoolInfoQuery = (
+  address: string,
+  time: string,
+  selectedAddress: string
+) => `
+query PoolInfoQuery {
+  poolInfo(address: "${address}", fromTime: "${time}", signerAddress: "${selectedAddress}", toTime: "${time}") {
+    totalSupply
+    userSupply
+    reserves {
+      reserved1
+      reserved2
+    }
+  }
+}
+`;
 
 export const loadPool = async (
   token1: Token | TokenBalance,
@@ -53,57 +79,53 @@ export const loadPool = async (
     factoryAddress
   );
   ensure(address !== EMPTY_ADDRESS, "Pool does not exist!");
-  const contract = new Contract(
-    address,
-    ReefswapPair,
-    signer as unknown as EthersSigner
-  );
 
-  const decimals = await contract.decimals();
-  const reserves = await contract.getReserves();
-  const totalSupply = await contract.totalSupply();
-  const liquidity = await contract.balanceOf(await signer.getAddress());
+  let date = new Date();
+  date.setDate(date.getDate() - 2);
 
-  const address1 = await contract.token1();
+  const network = await firstValueFrom(selectedNetwork$);
+  const selectedAccount = await firstValueFrom(selectedAccount$);
 
-  const [finalReserve1, finalReserve2] =
-    token1.address !== address1
-      ? [reserves[0], reserves[1]]
-      : [reserves[1], reserves[0]];
+  const dexHttpClient = axios.create({
+    baseURL: getReefswapNetworkConfig(network).graphqlDexsUrl,
+  });
 
-  const tokenBalance1 = finalReserve1.mul(liquidity).div(totalSupply);
-  const tokenBalance2 = finalReserve2.mul(liquidity).div(totalSupply);
+  let res = (
+    await firstValueFrom(
+      queryGql$(dexHttpClient, {
+        query: getPoolInfoQuery(
+          address,
+          date.toISOString(),
+          selectedAccount.evmAddress
+        ),
+        variables: {},
+      })
+    )
+  ).data.poolInfo;
+
+  const decimals = "18"; // not sure if it is always 18 or what
+  const liquidity = res.userSupply;
+  const totalSupply = res.totalSupply;
+
+  const tokenBalance1 = BigNumber.from(res.reserves.reserved1)
+    .mul(liquidity)
+    .div(totalSupply);
+  const tokenBalance2 = BigNumber.from(res.reserves.reserved2)
+    .mul(liquidity)
+    .div(totalSupply);
 
   return {
     poolAddress: address,
     decimals: parseInt(decimals, 10),
-    reserve1: finalReserve1.toString(),
-    reserve2: finalReserve2.toString(),
+    reserve1: res.reserves.reserved1,
+    reserve2: res.reserves.reserved2,
     totalSupply: totalSupply.toString(),
     userPoolBalance: liquidity.toString(),
+    //@ts-ignore
     token1: { ...token1, balance: tokenBalance1 },
     token2: { ...token2, balance: tokenBalance2 },
   };
 };
-
-/*export const loadPools = async (
-  tokens: Token[],
-  signer: Signer,
-  factoryAddress: string,
-): Promise<Pool[]> => {
-  const tokenCombinations = uniqueCombinations(tokens);
-  const pools: Pool[] = [];
-  for (let index = 0; index < tokenCombinations.length; index += 1) {
-    try {
-      const [token1, token2] = tokenCombinations[index];
-      /!* eslint-disable no-await-in-loop *!/
-      const pool = await loadPool(token1, token2, signer, factoryAddress);
-      /!* eslint-disable no-await-in-loop *!/
-      pools.push(pool);
-    } catch (e) {}
-  }
-  return pools;
-};*/
 
 const cachePool$: Map<
   string,
